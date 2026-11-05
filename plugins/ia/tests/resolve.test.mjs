@@ -5,7 +5,7 @@
 // packets: every cell of the bound playbook read by identity, for a
 // whole-procedure activity or when the position delivers none of them.
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { WHOLE_PROCEDURE } from '../scripts/lib/workspace.mjs';
@@ -544,4 +544,33 @@ test('legacy Development task pins require an explicit persisted Delivery rebind
     assert.equal(again.status, 0, again.stdout + again.stderr);
     assert.equal(again.json.binding.revision, 4, 'the migrated key resolves without another rebind');
   }
+});
+
+// Every entry under a folder with its content (a directory is a marker), so a rewritten file shows as well as a new one.
+function snapshot(folder) {
+  const rows = {};
+  for (const entry of readdirSync(folder, { recursive: true, withFileTypes: true })) {
+    const path = join(entry.parentPath, entry.name);
+    rows[path.slice(folder.length)] = entry.isDirectory() ? '<directory>' : readFileSync(path).toString('hex');
+  }
+  return rows;
+}
+
+test('a workspace with no bindings refuses only the method it asks for, writes nothing, and reads on', t => {
+  const { dir, env } = world(t);
+  const repo = makeRepo(join(dir, 'repo'));
+  const home = join(dir, 'home');
+  mkdirSync(home, { recursive: true });
+  mkdirSync(join(dir, 'temp'), { recursive: true });
+  const before = { repo: snapshot(repo), home: snapshot(home), temp: snapshot(join(dir, 'temp')) };
+  const out = resolve(['--entry', 'work', '--activity', 'task', '--root', repo], env(undefined, { IA_HOME: home }));
+  assert.equal(out.status, 1);
+  assert.equal(out.json.error.code, 'IA-CORE-NO-METHOD');
+  assert.equal(out.json.error.key, 'work.task');
+  assert.equal(out.json.error.message, 'no method is bound for work.task in this repository: .ia/bindings.json names no work.task, no work.*, and no defaults.work. List the kits with kit.mjs list and bind one with bind.mjs set work.task <kit> <capability>');
+  assert.deepEqual(snapshot(repo), before.repo, 'the refusal changes nothing in the repository, content included');
+  assert.deepEqual(snapshot(home), before.home, 'nor in the isolated IA home');
+  assert.deepEqual(snapshot(join(dir, 'temp')), before.temp, 'nor in the temp folder, so no retained closure');
+  const listed = run('kit.mjs', ['list'], env(undefined, { IA_HOME: home }), { cwd: repo });
+  assert.equal(listed.status, 0, listed.stdout + listed.stderr);
 });

@@ -37,7 +37,7 @@
     },
     {
       "path": "plugins/ia/README.md",
-      "sha256": "7eb508767eee22a7fccac1bb5452cb5ca951a1b89b8172a489ebf6073ce42964"
+      "sha256": "2e36d16d0ef1d227c13c4ac1db1c9ec34fa1d8a78bc29a0d0193f9eaefa7b770"
     },
     {
       "path": "plugins/ia/agents/checker.md",
@@ -557,7 +557,7 @@
     },
     {
       "path": "plugins/ia/scripts/bootstrap.mjs",
-      "sha256": "c6c5b74fc022e613f93ff626ed8e4d8a3d5b9578ec295790d3aaed8d37a56f29"
+      "sha256": "0ad8d543ecb27e8f9a5cf364b393c96c8d6f6fc46857c76b70fab0af4d327986"
     },
     {
       "path": "plugins/ia/scripts/ceiling.mjs",
