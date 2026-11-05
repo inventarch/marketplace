@@ -204,8 +204,18 @@ export function declareAssets(dir, paths) {
   writeFileSync(path, JSON.stringify(descriptor, null, 2) + '\n');
 }
 
-// A repository that is an IA workspace, with optional bindings and lock.
+// The lock rows that install every kit a bindings object names, at the version and archive the kit's own
+// releases.json gives when it is found in `kitsDirs`, else a placeholder: a repository that binds a kit installs it.
+export function installLock(bindings) {
+  const ids = [...new Set([...Object.values(bindings.bindings ?? {}).flat(), ...Object.values(bindings.defaults ?? {})].map(b => b.kit))];
+  return { engine: '0.1.0', formatVersion: 1, packages: ids.map(id => ({ id, version: '0.1.0', archive: createHash('sha256').update(id).digest('hex') })) };
+}
+
+// A repository that is an IA workspace, with optional bindings and lock. A repository with bindings and no lock
+// installs the kits those bindings name (a bound kit the lock does not install is refused, which tests that mean it
+// say with lock: null); one with no bindings has no lock unless one is given.
 export function makeRepo(dir, { bindings, lock } = {}) {
+  if (bindings && lock === undefined) lock = installLock(bindings);
   mkdirSync(join(dir, '.ia', 'src'), { recursive: true });
   mkdirSync(join(dir, '.git'), { recursive: true });
   writeFileSync(join(dir, '.ia', 'src', 'workspace.ia'), '#! ia 1.0\n\n@workspace repo\n  meaning\n    says "A repository."\n');

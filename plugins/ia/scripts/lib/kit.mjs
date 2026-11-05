@@ -40,7 +40,7 @@ export const DEFAULT_KITS_DIR = fileURLToPath(new URL('../../config/kits/', impo
 export const kitsDir = (env = process.env) => (env.IA_CORE_KITS_DIR ? resolve(env.IA_CORE_KITS_DIR) : DEFAULT_KITS_DIR);
 
 export class KitError extends Error {
-  constructor(message, code = 'IA-CORE-KIT') { super(message); this.code = code; }
+  constructor(message, code = 'IA-CORE-KIT', extra = {}) { super(message); this.code = code; Object.assign(this, extra); }
 }
 
 const TEXT = /\.(?:ia|json|md|mjs|txt)$/i;
@@ -229,6 +229,12 @@ export function findKit(ref, dir) {
   const kit = kits.find(k => k.id === ref) ?? kits.find(k => k.folder === ref);
   if (!kit) throw new KitError(`no kit ${ref} is carried by this plugin or installed in the IA home; known: ${kits.map(k => k.id).join(', ') || 'none'}`, 'IA-CORE-KIT-UNKNOWN');
   return kit;
+}
+
+// The canonical id of a kit reference: the id of the carried kit findKit resolves it to (an id or a folder alias),
+// or the reference itself when no carried kit answers it.
+export function canonicalKitId(ref) {
+  try { return findKit(ref).id; } catch { return ref; }
 }
 
 // Does a version satisfy a dependency range? Exact versions, ^, ~, >= and *.
@@ -605,14 +611,56 @@ export function readLock(root) {
   return JSON.parse(readFileSync(lockPath, 'utf8'));
 }
 
-// The installed kit, if any: the lock entry for the kit's id.
+// The kit rows of the lock: its `packages` rows, then the kit rows of every package
+// carrier in `entries` (kind: 'package'), which the engine installs as ordinary
+// releases. Each is { via: 'package' | 'entry', row }.
+function lockedKitRows(root) {
+  const lock = readLock(root);
+  const rows = (lock?.packages ?? []).map(row => ({ via: 'package', row }));
+  for (const entry of Array.isArray(lock?.entries) ? lock.entries : []) {
+    if (entry?.kind !== 'package' || !Array.isArray(entry.kits)) continue;
+    for (const row of entry.kits) if (row && typeof row.id === 'string') rows.push({ via: 'entry', row });
+  }
+  return rows;
+}
+
+// The installed kit, if any: the lock's row for the kit's id, from `packages` or from
+// a package carrier's `entries`.
 export function installedKit(root, kitId) {
-  return (readLock(root)?.packages ?? []).find(p => p.id === kitId);
+  return lockedKitRows(root).find(({ row }) => row.id === kitId)?.row;
 }
 
 // Every installed package other than the language base: the kits a workspace carries.
 export function installedKits(root) {
-  return (readLock(root)?.packages ?? []).filter(p => p.id !== 'inventarch/language').map(p => ({ id: p.id, version: p.version, archive: p.archive }));
+  return lockedKitRows(root).filter(({ row }) => row.id !== 'inventarch/language').map(({ row }) => ({ id: row.id, version: row.version, archive: row.archive }));
+}
+
+// The lock's row for the kit and where it came from, or null when no row names it.
+export function kitInstallation(root, kitId) {
+  const id = canonicalKitId(kitId);
+  const found = lockedKitRows(root).find(({ row }) => row.id === id);
+  return found ? { via: found.via, version: found.row.version, archive: found.row.archive ?? null } : null;
+}
+
+// Presence: a repository-bound method runs a kit only while the repository's own lock
+// installs it. Any row naming the kit counts, at any version and archive: a task pin
+// runs its own retained bytes, which may be older than the version the lock now
+// installs. A kit no row names refuses before anything is retained or run, and
+// nothing answers for it from another copy.
+// A folder alias names the kit it resolves to, as findKit reads it; an unknown reference stays as given. An
+// unreadable or corrupt lock propagates from here as its own error, never as not-installed.
+export function requireKitInstalled(root, kit) {
+  const id = canonicalKitId(kit.id);
+  if (kitInstallation(root, id) === null) throw new KitError(`kit ${id} is bound by this repository but its lock does not install it; run ia install ${id} (or kit.mjs add ${id}), then resolve again`, 'IA-CORE-KIT-NOT-INSTALLED', { kit: id });
+}
+
+// Identity: true only when the lock's row for the kit carries exactly this version
+// and archive. Never throws: a lock that cannot be read or parsed matches nothing.
+export function kitInstallMatches(root, kit) {
+  try {
+    const row = kitInstallation(root, kit.id);
+    return row !== null && row.version === kit.version && row.archive === (kit.archive ?? null);
+  } catch { return false; }
 }
 
 // Installs a kit's latest recorded release into the IA workspace at root.

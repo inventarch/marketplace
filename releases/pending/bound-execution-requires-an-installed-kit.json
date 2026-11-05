@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Bound execution requires an installed kit",
+  "summary": "resolve.mjs and check.mjs now refuse a kit the repository binds but its own lock does not install, with IA-CORE-KIT-NOT-INSTALLED, before anything is retained, restored, written or run. This holds for the ordinary and the qualified routes (--qualified, --qualified-input), and a copy the plugin carries, the IA home holds or a task pin retained never stands in for the lock. A kit row of an npm package carrier in the lock's entries counts as installed, as it does for the IA runtime; a pin older than the installed version keeps running from its retained bytes. The refusal also carries the kit's canonical id as `error.kit`, and a binding written with a kit's folder name (such as `ia-authoring`) is guarded as the kit it names. --kit with no binding and the unbound resolve outside a workspace are unchanged.",
+  "plugins": [
+    "ia"
+  ]
+}

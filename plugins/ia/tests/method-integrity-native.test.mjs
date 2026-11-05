@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -14,12 +15,16 @@ function fixture(t) {
   cpSync(KIT, kit, { recursive: true });
   const cli = resolveCli(dir, { cliPath: CLI });
   assert.equal(cli.version, '3.5.0');
+  // A repository whose lock really installs the kit: a workspace of its own (`ia init`), then `kit.mjs add --apply` (the remedy the
+  // installation guard names), which installs the kit's recorded release with this CLI.
   const repo = join(dir, 'consumer');
-  cpSync(join(kit, '.ia'), join(repo, '.ia'), { recursive: true });
-  const restored = runIa(repo, ['restore', '--apply', '--yes'], { cli });
-  assert.equal(restored.code, 0, restored.stdout + restored.stderr);
+  const made = spawnSync(process.execPath, [CLI, 'init', repo, '--apply', '--yes', '--json'], { cwd: dir, encoding: 'utf8' });
+  assert.equal(made.status, 0, made.stdout + made.stderr);
   const runRoot = join(dir, 'run');
   const env = envFor({ cli: CLI, kitsDir, temp: join(dir, 'temp'), runRoot });
+  const installed = run('kit.mjs', ['add', 'inventarch/ia-kb-kit', repo, '--apply'], env);
+  assert.equal(installed.status, 0, installed.stdout + installed.stderr);
+  assert.ok(JSON.parse(readFileSync(join(repo, '.ia', 'distributions.lock.json'), 'utf8')).packages.some(row => row.id === 'inventarch/ia-kb-kit'), 'the lock installs the kit');
   const bind = capability => writeFileSync(join(repo, '.ia', 'bindings.json'), JSON.stringify({ format: 1, bindings: { 'knowledge.check': { kit: 'inventarch/ia-kb-kit', capability } } }));
   const resolve = () => run('resolve.mjs', ['--entry', 'knowledge', '--activity', 'check', '--root', repo], env);
   return { kit, runRoot, bind, resolve };
