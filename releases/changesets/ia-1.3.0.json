@@ -1,0 +1,15 @@
+{
+  "format": "inventarch-marketplace.changeset.v1",
+  "plugin": "ia",
+  "version": "1.3.0",
+  "previous": "1.2.0",
+  "bump": "minor",
+  "notes": [
+    {
+      "id": "bundle-the-inventarch-account-connector",
+      "bump": "minor",
+      "title": "Bundle the InventArch account connector",
+      "summary": "The core now ships the InventArch account connector (MCP server inventarch, with the public Claude Code OAuth client), so signing in through /mcp is enough: ia:init then lists the kits the account offers, downloads each through its signed URL, verifies the SHA-256, installs it with kit.mjs add --from and binds it as the kit recommends. The session-start account offer is now a one-line pointer to that sign-in. Also fixes kit.mjs add --from on an archive whose absolute path has a drive letter under GNU tar."
+    }
+  ]
+}

@@ -58,8 +58,17 @@ test('package --check refuses a stale claim, a changed field and a declared scri
   write(pkg);
   // A bundled kit whose bytes are not its recorded release makes no claim.
   writeFileSync(join(root, 'plugins/ia/config/kits/ia-kb/.ia/release.json'), readFileSync(join(root, 'plugins/ia/config/kits/ia-kb/.ia/release.json'), 'utf8') + '\n');
-  assert.throws(() => packageClaim(root), /ia-kb is not its recorded release 0.9.1/);
+  assert.throws(() => packageClaim(root), /ia-kb is not its recorded release/);
   assert.equal(run(root, '--check').status, 1);
+});
+
+test('package --check refuses runtime sidecars omitted from release assets', t => {
+  const root = copy(t);
+  const path = join(root, 'plugins/ia/config/kits/ia-method/.ia/release.json');
+  const descriptor = JSON.parse(readFileSync(path, 'utf8'));
+  descriptor.assets = descriptor.assets.filter(asset => asset.path !== 'bindings.json');
+  writeFileSync(path, JSON.stringify(descriptor));
+  assert.throws(() => packageClaim(root), /bindings.json must be a declared release asset/);
 });
 
 test('package --write keeps the maintainer\'s version and rewrites only the generated fields', t => {
@@ -90,7 +99,7 @@ test('built files are checked when present, and required with --built', t => {
   const problems = builtProblems(root).join('\n');
   assert.match(problems, /LICENSE is missing/);
   assert.match(problems, /kits\/ia-kb is not plugins\/ia\/config\/kits\/ia-kb: missing /);
-  assert.match(problems, /archives\/[0-9a-f]{64}\.ia\.tgz \(inventarch\/ia-kb-kit 0\.9\.1\) is missing/);
+  assert.match(problems, /archives\/[0-9a-f]{64}\.ia\.tgz \(inventarch\/ia-kb-kit [0-9.]+\) is missing/);
   assert.equal(run(root, '--check').status, 1);
   assert.equal(run(root, '--bogus').status, 2);
 });
@@ -108,6 +117,9 @@ test('package --build packs every recorded release; its archives and manifests c
     assert.equal(sha256(bytes), k.archive, `${k.id} archive`);
     assert.equal(sha256(readFileSync(join(pkg, 'archives', `${k.archive}.distribution.json`))), k.manifest, `${k.id} manifest`);
     assert.equal(sha256(archiveManifest(bytes)), k.manifest);
+    const files = JSON.parse(archiveManifest(bytes)).files;
+    for (const sidecar of ['bindings.json', 'delivery.json'])
+      assert.ok(files.some(file => file.path === sidecar && file.role === 'asset'), `${k.id} retains ${sidecar}`);
   }
   const [first] = packageClaim(root);
   const manifest = join(pkg, 'archives', `${first.archive}.distribution.json`);

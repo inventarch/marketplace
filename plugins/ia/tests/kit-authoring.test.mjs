@@ -427,9 +427,9 @@ test('a requirement without its failure case is reported', () => {
 test('REQ-AUTH-03 success: every listed asset exists and every carried file is listed', () => {
   assert.deepEqual(assetProblems(), []);
   const descriptor = JSON.parse(readFileSync(join(KIT, '.ia', 'release.json'), 'utf8'));
-  assert.deepEqual(descriptor.assets.map(a => a.path), ['assets/probe-examples/admitted.ia', 'assets/probe-examples/refused.ia', 'assets/trigger-config.md', 'scripts/eval-triggers.mjs', 'scripts/field-lint.mjs', 'scripts/lib/scratch.mjs', 'scripts/probe.mjs']);
+  assert.deepEqual(descriptor.assets.map(a => a.path), ['assets/probe-examples/admitted.ia', 'assets/probe-examples/refused.ia', 'assets/trigger-config.md', 'bindings.json', 'checks.json', 'delivery.json', 'scripts/eval-triggers.mjs', 'scripts/field-lint.mjs', 'scripts/lib/scratch.mjs', 'scripts/probe.mjs']);
   // A carried script or example says where it was authored, and names no other kit.
-  for (const path of descriptor.assets.map(a => a.path).filter(p => !p.endsWith('.md'))) {
+  for (const path of descriptor.assets.map(a => a.path).filter(p => p.endsWith('.mjs') || p.endsWith('.ia'))) {
     const lines = readFileSync(join(KIT, path), 'utf8').split('\n');
     const provenance = path.endsWith('.ia') ? lines[1] : lines.find(l => l.startsWith('// '));
     if (path.endsWith('eval-triggers.mjs')) continue;
@@ -444,19 +444,19 @@ test('REQ-AUTH-03 failure: a listed asset that is missing is reported', () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-// These two compare the sources with the recorded release, so they pass once 0.1.1 is recorded.
+// These two compare the sources with the recorded release, so they pass once 0.1.2 is recorded.
 test('REQ-AUTH-04 success: the release index names the kit and the recorded release matches the sources', () => {
   assert.deepEqual(releaseProblems(), []);
   const releases = expandReleases(KIT);
   assert.equal(releases.kit, KIT_ID);
-  assert.equal(releases.releases.at(-1).version, '0.1.1');
+  assert.equal(releases.releases.at(-1).version, '0.1.2');
   assert.equal(releases.releases.at(-1).sources, sourcesDigest(KIT));
 });
 
 test('REQ-AUTH-04 failure: a release record that drifts from the sources is reported', () => {
   const dir = scratchCopy(d => writeFileSync(join(d, 'checks.json'), `${readFileSync(join(d, 'checks.json'), 'utf8')}\n`));
   try {
-    assert.deepEqual(releaseProblems(dir), ['release 0.1.1: recorded sources digest differs from the sources']);
+    assert.deepEqual(releaseProblems(dir), ['release 0.1.2: recorded sources digest differs from the sources']);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 

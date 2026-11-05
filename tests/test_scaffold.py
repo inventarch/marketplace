@@ -382,14 +382,18 @@ class ScaffoldTests(unittest.TestCase):
                     validate(self.root)
 
     def test_core_door_must_equal_the_qualified_server(self):
-        # public-door-mcp: one server, ia, run by node through the plugin's door launcher (which starts npx at the pinned
-        # IA version, never through a shell) and told where the bundled kits are.
+        # public-door-mcp and public-account-connector: the IA door, ia, run by node through the plugin's door launcher
+        # (which starts npx at the pinned IA version, never through a shell) and told where the bundled kits are; and the
+        # account connector, inventarch, a remote HTTP server whose OAuth client is the public Claude Code client.
         expected = {'mcpServers': {'ia': {'command': 'node', 'args': ['${CLAUDE_PLUGIN_ROOT}/scripts/door.mjs'],
-                                          'env': {'IA_KITS_DIR': '${CLAUDE_PLUGIN_ROOT}/config/kits'}}}}
+                                          'env': {'IA_KITS_DIR': '${CLAUDE_PLUGIN_ROOT}/config/kits'}},
+                                   'inventarch': {'type': 'http', 'url': 'https://api.inventarch.dev/mcp',
+                                                  'oauth': {'clientId': 'claude-code', 'callbackPort': 43822}}}}
         canonical = lambda value: json.dumps(value, sort_keys=True)
         self.assertEqual(canonical(qualified_mcp()), canonical(expected))
         self.assertEqual(canonical(load(self.root / 'plugins/ia/.mcp.json')), canonical(expected))
         def door(value): return value['mcpServers']['ia']
+        def connector(value): return value['mcpServers']['inventarch']
         edits = {
             'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.5.0']),
             'cmd /c npx': lambda v: door(v).update(command='cmd', args=['/c', 'npx', '-y', '@inventarch/mcp-door@3.5.0']),
@@ -399,6 +403,13 @@ class ScaffoldTests(unittest.TestCase):
             'second server': lambda v: v['mcpServers'].update(extra={'command': 'npx', 'args': ['-y', 'x']}),
             'renamed server': lambda v: v['mcpServers'].update(door=v['mcpServers'].pop('ia')),
             'remote server': lambda v: v['mcpServers'].update(ia={'type': 'http', 'url': 'https://example.com/mcp'}),
+            'connector dropped': lambda v: v['mcpServers'].pop('inventarch'),
+            'connector elsewhere': lambda v: connector(v).update(url='https://example.com/mcp'),
+            'connector other client': lambda v: connector(v)['oauth'].update(clientId='other'),
+            'connector other port': lambda v: connector(v)['oauth'].update(callbackPort=1234),
+            'connector with a secret': lambda v: connector(v)['oauth'].update(clientSecret='x'),
+            'connector with a header': lambda v: connector(v).update(headers={'Authorization': 'Bearer x'}),
+            'connector over stdio': lambda v: v['mcpServers'].update(inventarch={'command': 'npx', 'args': ['-y', 'x']}),
             'extra env': lambda v: door(v)['env'].update(TOKEN='x'),
             'no kits dir': lambda v: door(v).pop('env'),
         }

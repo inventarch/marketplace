@@ -8,6 +8,14 @@
       "env": {
         "IA_KITS_DIR": "${CLAUDE_PLUGIN_ROOT}/config/kits"
       }
+    },
+    "inventarch": {
+      "type": "http",
+      "url": "https://api.inventarch.dev/mcp",
+      "oauth": {
+        "clientId": "claude-code",
+        "callbackPort": 43822
+      }
     }
   }
 }

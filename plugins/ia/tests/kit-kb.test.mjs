@@ -31,7 +31,7 @@ const KIT = fileURLToPath(new URL('../config/kits/ia-kb/', import.meta.url));
 const PLUGIN = fileURLToPath(new URL('../', import.meta.url));
 const KIT_ID = 'inventarch/ia-kb-kit';
 const SYSTEM = 'ia-kb';
-const VERSION = '0.9.1';
+const VERSION = '0.9.2';
 const PUBLIC_SYSTEMS = ['agent-composition-system', 'agent-system', 'authoring-system', 'compliance-system', 'governance-system', 'hook-authoring-system', 'learning-system', 'session-system', 'template-system', 'work-system', 'workspace-system'];
 const EVALUATORS = ['COMP-PARSE', 'COMP-SCHEMA', 'COMP-SYSTEM', 'COMP-SCHEMA-ENROLLED', 'COMP-CONSENT-DECLARED', 'COMP-CONSENT', 'COMP-IDENTITY', 'COMP-SELECTOR', 'COMP-VARIANT', 'COMP-COVERAGE', 'COMP-FRAGMENT', 'COMP-ADOPTION', 'COMP-KERNEL', 'COMP-FIXTURES', 'COMP-STEWARD', 'COMP-BOOTSTRAP', 'COMP-CHECK'];
 const ROLES = ['documentation', 'asset', 'license'];
@@ -44,6 +44,9 @@ const ASSETS = [
   'assets/kb-document-binding.md',
   'assets/kb-lifecycle.md',
   'assets/kb-placement.md',
+  'bindings.json',
+  'checks.json',
+  'delivery.json',
   'scripts/check-decisions.mjs',
   'scripts/check-locators.mjs',
 ];
@@ -247,7 +250,7 @@ function citationProblems(root = KIT) {
 
 function scratchCopy(mutate, prefix = 'ia-kb-kit-') {
   const dir = realpathSync.native(mkdtempSync(join(tmpdir(), prefix)));
-  for (const part of ['.ia', 'assets', 'scripts', 'releases.json', 'releases', 'checks.json', 'delivery.json']) if (existsSync(join(KIT, part))) cpSync(join(KIT, part), join(dir, part), { recursive: true });
+  for (const part of ['.ia', 'assets', 'scripts', 'releases.json', 'releases', 'bindings.json', 'checks.json', 'delivery.json']) if (existsSync(join(KIT, part))) cpSync(join(KIT, part), join(dir, part), { recursive: true });
   for (const file of walk(dir)) if (/\.(?:ia|json|md|mjs)$/.test(file)) {
     const text = readFileSync(file, 'utf8');
     if (text.includes('\r\n')) writeFileSync(file, lf(text));

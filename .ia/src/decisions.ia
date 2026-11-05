@@ -117,7 +117,7 @@
     says "At session startup only, once per session, never blocking, in one short message, the core tells the user how to add the remote InventArch MCP server (https://api.inventarch.dev/mcp); the host runs OAuth with PKCE, and the plugin stores no token and makes no network call. An account counts as present when the host already lists an inventarch MCP server in its documented local configuration or a design binding is set in the environment. The offer is suppressed by 'accountOffer': false in ~/.ia/config.json, by IA_NO_ACCOUNT_OFFER=1, or by a non-empty CI."
   work
     title "Offer an InventArch account once per session"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-10-30"
     ended "2026-10-30"
@@ -293,7 +293,7 @@
     says "The core ships one MCP server, the IA door, as plugins/ia/.mcp.json: server ia, run as node scripts/door.mjs, a launcher that starts npx -y @inventarch/mcp-door at the plugin's IA pin (lib/cli.mjs PINNED, set by the current CLI pin decision) never through a shell (on Windows, where npx is a .cmd shim, it runs npm's npx-cli.js with node), with stdio passed through and IA_KITS_DIR set to the plugin's config/kits. Codex reads a plugin's .mcp.json too, so the Codex manifest keeps the door off with an empty mcpServers until it is qualified there. Claude Code names its tools mcp__plugin_ia_ia__<tool>, and the reader, checker and worker allowlists name ia_session, ia_catalogue and ia_method that way (reader and worker also ia_position, ia_read and ia_vocabulary). The lanes call ia_session once per session, ia_catalogue {lane} to choose a key and ia_method {key} for the packet; the lanes use only the door's tools, with no script fallback (task drop-door-fallback, done). tools/validate.py admits that one file, exactly."
   work
     title "Ship the IA door as the core's MCP server"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-10-30"
     ended "2026-10-30"
@@ -465,3 +465,39 @@
     decider "Operator"
     choice "Three repository rulesets, kept as JSON under .github/rulesets/ and applied through the GitHub API. main (no bypass) on the default branch: no deletion, no force push, changes only through a pull request with every review thread resolved, stale approvals dismissed, merge commits as the only merge method, and the Gates (ubuntu-latest) and Native verified (ubuntu-latest) checks passing on a branch up to date with main. main-review: a code owner's review (.github/CODEOWNERS), with the operator's account as the only bypass, in pull_request mode, so the operator's and the operator's agents' own pull requests are never blocked. tags (no bypass): no tag may be deleted, moved or force-updated. The repository allows merge commits only, and its default workflow token is read-only."
     rationale "The repository went public on 2026-11-01 with main unprotected, and a pull request had already merged with red checks. GitHub never counts an author's own approval and nearly every pull request here is authored by the operator's account, so a code-owner rule without a bypass would block the operator; splitting the review rule into its own ruleset gives that one account a pull_request bypass while CI, the pull request itself and the history rules bind everyone. Merge commits only, because a kit release pins its sources commit and a squash or rebase would rewrite it. A tag, once the release workflow makes it, is what a user can pin, so nothing may move it."
+
+@decision public-account-connector
+  meaning
+    says "The core ships two MCP servers, both in plugins/ia/.mcp.json: the IA door, server ia (public-door-mcp), and the InventArch account connector, server inventarch: type http, url https://api.inventarch.dev/mcp, oauth.clientId claude-code, oauth.callbackPort 43822 (the pre-registered public Claude Code client of the API's remote MCP, PKCE S256, callbacks http://localhost:43822/callback and http://127.0.0.1:43822/callback). The plugin ships no secret and stores no token; the host runs the OAuth sign-in (/mcp or claude mcp login inventarch). Claude Code names its tools mcp__plugin_ia_inventarch__<tool> (kit_offerings, kit_download). ia:init section 6 uses them after sign-in: it lists the offerings, downloads each licensed kit through scripts/kit-fetch.mjs (the signed URL goes in on stdin, is never printed or stored, and the archive is written only when its SHA-256 equals the offered digest), installs it with kit.mjs add --from and binds as the kit recommends. The Codex manifest is unchanged: Codex still names only the door (.codex-mcp.json), because this catalogue has not qualified an HTTP server with a pre-registered OAuth client there (task codex-account-connector). tools/validate.py admits that pair, exactly, and nothing else."
+  work
+    title "Bundle the InventArch account connector with the core"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-01"
+    ended "2026-11-01"
+    source "docs/decisions.md"
+  decision
+    question "Which MCP servers does the core ship, and how does an account connect?"
+    decider "Thomas"
+    choice "The core ships two MCP servers, both in plugins/ia/.mcp.json: the IA door, server ia (public-door-mcp), and the InventArch account connector, server inventarch: type http, url https://api.inventarch.dev/mcp, oauth.clientId claude-code, oauth.callbackPort 43822 (the pre-registered public Claude Code client of the API's remote MCP, PKCE S256, callbacks http://localhost:43822/callback and http://127.0.0.1:43822/callback). The plugin ships no secret and stores no token; the host runs the OAuth sign-in (/mcp or claude mcp login inventarch). Claude Code names its tools mcp__plugin_ia_inventarch__<tool> (kit_offerings, kit_download). ia:init section 6 uses them after sign-in: it lists the offerings, downloads each licensed kit through scripts/kit-fetch.mjs (the signed URL goes in on stdin, is never printed or stored, and the archive is written only when its SHA-256 equals the offered digest), installs it with kit.mjs add --from and binds as the kit recommends. The Codex manifest is unchanged: Codex still names only the door (.codex-mcp.json), because this catalogue has not qualified an HTTP server with a pre-registered OAuth client there (task codex-account-connector). tools/validate.py admits that pair, exactly, and nothing else."
+    rationale "Nobody should hand-run claude mcp add, an admin CLI or an environment edit: signing in once should be enough to set everything up. The API has one pre-registered public client for Claude Code and no dynamic client registration, and Claude Code accepts that client in a plugin's .mcp.json (claude plugin validate passes it), so the plugin can carry the whole connection without a secret. This supersedes public-door-mcp, which made the door the only MCP server. Options considered: (1) Keep the single IA door and tell the user to run claude mcp add by hand; (2) Bundle the account connector with the Claude Code OAuth client in the core; (3) Ship an installer script that registers the server and the client for the user. Chosen: (2)."
+  relationships
+    supersedes @decision public-door-mcp
+
+@decision public-account-pointer
+  meaning
+    says "At session startup only, once per session, never blocking, in one line, the core points the user to sign in to InventArch through the bundled connector: run /mcp and choose inventarch (or claude mcp login inventarch). It makes no network call, reads no credentials and writes nothing. An account counts as present when a design binding is set in the environment or the host lists an inventarch MCP server the user added by hand in its documented local configuration. Limits: a sign-in to the bundled connector is kept with the host's credentials, which the core never opens, so after a sign-in the pointer still shows once at startup, says to ignore it when already signed in, and never blocks. It is suppressed by 'accountOffer': false in ~/.ia/config.json, by IA_NO_ACCOUNT_OFFER=1, or by a non-empty CI."
+  work
+    title "Point at the connector sign-in instead of teaching claude mcp add"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-01"
+    ended "2026-11-01"
+    source "docs/decisions.md"
+  decision
+    question "What does the session-start account offer say now that the core bundles the connector?"
+    decider "Thomas"
+    choice "At session startup only, once per session, never blocking, in one line, the core points the user to sign in to InventArch through the bundled connector: run /mcp and choose inventarch (or claude mcp login inventarch). It makes no network call, reads no credentials and writes nothing. An account counts as present when a design binding is set in the environment or the host lists an inventarch MCP server the user added by hand in its documented local configuration. Limits: a sign-in to the bundled connector is kept with the host's credentials, which the core never opens, so after a sign-in the pointer still shows once at startup, says to ignore it when already signed in, and never blocks. It is suppressed by 'accountOffer': false in ~/.ia/config.json, by IA_NO_ACCOUNT_OFFER=1, or by a non-empty CI."
+    rationale "With the connector bundled, the offer no longer teaches a command; it points at the sign-in. Calling the API to learn whether the user is signed in would break the no-network rule and would not help a first-time user; reading the host's credentials file would break the public-core-hooks promise that the hook reads no credentials, so a sign-in through the connector is not detected and the pointer stays one line that may be ignored. This supersedes public-account-offer. Options considered: (1) Keep the single IA door and tell the user to run claude mcp add by hand; (2) Point at the sign-in the bundled connector already offers; (3) Detect the sign-in by calling the API. Chosen: (2)."
+  relationships
+    supersedes @decision public-account-offer

@@ -17,6 +17,11 @@ PLUGIN_FILE = 'plugins/ia/skills/knowledge/SKILL.md'
 RELEASE = 'plugins/ia/config/kits/ia-kb/.ia/release.json'
 
 
+def next_patch(version):
+    major, minor, patch = version.split('-')[0].split('.')
+    return f'{major}.{minor}.{int(patch) + 1}'
+
+
 class ConsistencyTests(unittest.TestCase):
     """Each test copies the repository (without .git) and breaks one fact; check() must name it."""
 
@@ -66,6 +71,10 @@ class ConsistencyTests(unittest.TestCase):
         selection = json.loads(self.text('export-selection.json'))
         selection['files'] = proposed(self.root)
         self.write('export-selection.json', json.dumps(selection, indent=2) + '\n')
+
+    def version(self, plugin):
+        # Read, never pinned: a release raises it, and the release pull request runs these tests.
+        return json.loads(self.text(f'plugins/{plugin}/.claude-plugin/plugin.json'))['version']
 
     def bump(self, plugin, version):
         for host in ('claude', 'codex'):
@@ -227,10 +236,12 @@ class ConsistencyTests(unittest.TestCase):
         self.assertProblem(r'sources\.lock\.json: pluginVersion ia is 0\.0\.9, its manifest says')
 
     def test_changelog_must_lead_with_the_manifest_version(self):
+        current = self.version('ia')
+        raised = next_patch(current)
         for host in ('claude', 'codex'):
-            self.json_edit(f'plugins/ia/.{host}-plugin/plugin.json', lambda m: m.update(version='1.2.1'))
-        self.json_edit('sources.lock.json', lambda s: s['pluginVersion'].update({'ia': '1.2.1'}))
-        self.assertProblem(r'plugins/ia/CHANGELOG\.md: latest entry is 1\.2\.0, the manifest says 1\.2\.1')
+            self.json_edit(f'plugins/ia/.{host}-plugin/plugin.json', lambda m: m.update(version=raised))
+        self.json_edit('sources.lock.json', lambda s: s['pluginVersion'].update({'ia': raised}))
+        self.assertProblem(rf'plugins/ia/CHANGELOG\.md: latest entry is {re.escape(current)}, the manifest says {re.escape(raised)}')
 
     # Version bumps against a base (git).
 
@@ -239,7 +250,7 @@ class ConsistencyTests(unittest.TestCase):
         self.write(PLUGIN_FILE, self.text(PLUGIN_FILE) + '\nA shipped change.\n')
         self.rehash()
         self.assertProblem(r'ia: shipped bytes changed since HEAD but no new release note names it', base='HEAD')
-        self.bump('ia', '1.2.1')
+        self.bump('ia', next_patch(self.version('ia')))
         self.assertEqual(check(self.root, base='HEAD'), [])
 
     def note(self, name, plugins=('ia',), bump='patch'):
@@ -281,8 +292,9 @@ class ConsistencyTests(unittest.TestCase):
         self.init_history()
         self.write(PLUGIN_FILE, self.text(PLUGIN_FILE) + '\nA shipped change.\n')
         self.rehash()
+        current = self.version('ia')
         self.bump('ia', '0.9.0')
-        self.assertProblem(r'ia: version 0\.9\.0 is not above 1\.2\.0', base='HEAD')
+        self.assertProblem(rf'ia: version 0\.9\.0 is not above {re.escape(current)}', base='HEAD')
 
     def test_release_ranks_above_its_pre_release(self):
         from consistency import semver
@@ -293,11 +305,13 @@ class ConsistencyTests(unittest.TestCase):
         # decision public-kits-package: a changed ia.kits claim needs a higher package version.
         self.init_history()
         name = 'packages/public-kits/package.json'
+        version = json.loads(self.text(name))['version']
         self.json_edit(name, lambda p: p['ia']['kits'][0].update(version='9.9.9'))
-        self.assertProblem(r'packages/public-kits/package\.json: the carried kit releases changed since HEAD but its version stays 1\.0\.1', base='HEAD')
+        self.assertProblem(r'packages/public-kits/package\.json: the carried kit releases changed since HEAD but its version stays ' + re.escape(version), base='HEAD')
         self.json_edit(name, lambda p: p.update(version='0.9.0'))
-        self.assertProblem(r'packages/public-kits/package\.json: version 0\.9\.0 is not above 1\.0\.1', base='HEAD')
-        self.json_edit(name, lambda p: p.update(version='1.1.0'))
+        self.assertProblem(r'packages/public-kits/package\.json: version 0\.9\.0 is not above ' + re.escape(version), base='HEAD')
+        higher = str(int(version.split('.')[0]) + 1) + '.0.0'
+        self.json_edit(name, lambda p: p.update(version=higher))
         self.assertFalse([p for p in check(self.root, base='HEAD') if 'public-kits' in p])
 
     def test_base_covers_every_commit_since_it(self):
