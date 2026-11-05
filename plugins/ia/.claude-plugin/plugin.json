@@ -1,7 +1,7 @@
 {
   "name": "ia",
   "displayName": "InventArch",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "InventArch's one public plugin: the Work, Knowledge and Delivery lanes resolve the bound method kit as a packet, with ia-method, ia-kb and ia-authoring as defaults; Delivery also routes UX, UI, brand, typography, token and accessibility work to the hosted design service when an account is connected.",
   "author": {
     "name": "InventArch"

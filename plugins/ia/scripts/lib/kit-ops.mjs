@@ -5,7 +5,7 @@
 import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, realpathSync, renameSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENTRIES, readBindings, writeBindings } from './binding.mjs';
 import { adopt, declaredAssets, findKit, homeKitsDir, installedKits, KitError, kitBindings, kitChecks, kitDelivery, kitDependencies, listKits, readDescriptor, readReleases, releaseRecords, sourcesDigest } from './kit.mjs';
@@ -104,7 +104,8 @@ function source(from) {
   if (statSync(path).isDirectory()) return { dir: path, origin: 'source', cleanup: () => {} };
   if (!/\.(?:tgz|tar\.gz|tar)$/i.test(path)) throw new UsageError(`--from takes a kit folder or a .tgz, .tar.gz or .tar archive of one: ${from}`);
   const work = mkdtempSync(join(realpathSync(tmpdir()), 'inventarch-kit-add-'));
-  const ran = spawnSync('tar', ['-xf', path, '-C', work], { encoding: 'utf8', shell: false });
+  // Run in the archive's folder and name it relatively: GNU tar (Git for Windows' is first on many PATHs) reads "C:" in an absolute path as a remote host.
+  const ran = spawnSync('tar', ['-xf', basename(path), '-C', work], { cwd: dirname(path), encoding: 'utf8', shell: false });
   if (ran.status !== 0) { rmSync(work, { recursive: true, force: true }); throw new KitError(`tar could not extract ${from}: ${(ran.stderr || ran.error?.message || '').trim()}`, 'IA-CORE-KIT-ARCHIVE'); }
   const entries = readdirSync(work);
   const dir = existsSync(join(work, 'releases.json')) ? work : entries.length === 1 && existsSync(join(work, entries[0], 'releases.json')) ? join(work, entries[0]) : null;

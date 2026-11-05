@@ -57,14 +57,21 @@ QUALIFIED_HOOKS = {
         'Stop': [(None, [_handler('handlers.mjs', 'stop', 30)])],
     },
 }
-# public-door-mcp: the core ships one MCP server, the IA door, as .mcp.json at its root, exactly this: server ia,
+# public-account-connector (supersedes public-door-mcp): the core ships two MCP servers as .mcp.json at its root, exactly
+# these: the IA door and the InventArch account connector, server inventarch (HTTP, ACCOUNT_MCP_URL, OAuth client id
+# claude-code on callback port 43822; no secret, no token, the host runs the sign-in). The door is server ia,
 # run by node through scripts/door.mjs, which starts npx -y @inventarch/mcp-door at the plugin's IA pin (lib/cli.mjs
 # PINNED, held to sources.lock.json by tools/consistency.py) never through a shell (on Windows, where npx is a .cmd shim, it runs npm's npx-cli.js with node); and
 # told where the bundled kits are. Claude Code names its tools mcp__plugin_ia_ia__<tool>. No other plugin and no other
 # file may declare an MCP server.
+ACCOUNT_MCP_URL = 'https://api.inventarch.dev/mcp'
+
+
 def qualified_mcp():
     return {'mcpServers': {'ia': {'command': 'node', 'args': ['${CLAUDE_PLUGIN_ROOT}/scripts/door.mjs'],
-                                  'env': {'IA_KITS_DIR': '${CLAUDE_PLUGIN_ROOT}/config/kits'}}}}
+                                  'env': {'IA_KITS_DIR': '${CLAUDE_PLUGIN_ROOT}/config/kits'}},
+                           'inventarch': {'type': 'http', 'url': ACCOUNT_MCP_URL,
+                                          'oauth': {'clientId': 'claude-code', 'callbackPort': 43822}}}}
 
 
 MCP_PLUGINS = ('ia',)
@@ -280,7 +287,8 @@ def plugin_files(root, name):
     tests/ as well; only the candidate ZIP leaves tests out."""
     base = root / 'plugins' / name
     found = []
-    for path in sorted(base.rglob('*')):
+    # Sort by case-sensitive parts, as POSIX paths compare: Windows paths compare without case, which reorders the selection.
+    for path in sorted(base.rglob('*'), key=lambda p: p.relative_to(root).as_posix().split('/')):
         rel = path.relative_to(root).as_posix()
         parts = rel.split('/')
         require(not path.is_symlink(), 'symlink in plugin: ' + rel)

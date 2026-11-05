@@ -1,5 +1,5 @@
 // The session-start account offer and governance probe (lib/account.mjs,
-// decisions public-account-offer and public-governance-probe): the offer
+// decisions public-account-pointer, which supersedes public-account-offer, and public-governance-probe): the offer
 // appears once, at startup only, never on resume, and never when an account is
 // found or the offer is turned off; the governance notice appears at startup in
 // a governed repository where no installed kit declares governance handlers;
@@ -24,11 +24,13 @@ const hookEnv = (dir, extra = {}) => {
   return { ...env, ...isolated(dir), ...extra };
 };
 
-test('the offer is made at startup only, and names the remote MCP server and how to stop it', t => {
+test('the offer is made at startup only, points at the bundled connector sign-in and says how to stop', t => {
   const dir = sandbox(t, 'ia-core-account-');
   const env = isolated(dir);
   const offer = accountOffer({ env, source: 'startup', cwd: dir });
-  assert.match(offer, new RegExp(MCP_URL.replace(/[./]/g, '\\$&')));
+  assert.match(offer, /run \/mcp and choose inventarch \(or claude mcp login inventarch\)/);
+  assert.doesNotMatch(offer, /claude mcp add/, 'the user adds no server: the core ships the connector');
+  assert.doesNotMatch(offer, /\n/, 'one line');
   assert.match(offer, /"accountOffer": false/);
   assert.match(offer, /IA_NO_ACCOUNT_OFFER=1/);
   for (const source of ['resume', 'clear', 'compact', undefined]) assert.equal(accountOffer({ env, source, cwd: dir }), null, `no offer on ${source}`);
@@ -67,6 +69,15 @@ test('an account is found from a design binding or an inventarch MCP server in t
   writeFileSync(join(env.CODEX_HOME, 'config.toml'), `[mcp_servers.inventarch]\nurl = "${MCP_URL}"\n`);
   assert.equal(accountFound({ env, cwd: repo, repo }), 'codex config.toml');
   assert.equal(accountOffer({ env, source: 'startup', cwd: repo, repo }), null, 'no offer once an account is found');
+});
+
+test('the host credentials file is never read: a stored sign-in there is not an account', t => {
+  const dir = sandbox(t, 'ia-core-account-');
+  const env = isolated(dir), repo = join(dir, 'repo');
+  mkdirSync(repo);
+  writeFileSync(join(env.CLAUDE_CONFIG_DIR, '.credentials.json'), JSON.stringify({ mcpOAuth: { 'plugin:ia:inventarch|abc123': { accessToken: 'secret-token' } } }));
+  assert.equal(accountFound({ env, cwd: repo, repo }), null);
+  assert.match(accountOffer({ env, source: 'startup', cwd: repo, repo }), /if you already have, ignore this/);
 });
 
 test('the hook shows the offer once at startup outside a workspace too, never on resume, and writes nothing', t => {

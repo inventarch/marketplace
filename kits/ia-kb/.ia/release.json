@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-kb-kit",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "distribution": "workspace-system/definition/distribution/ia-kb-distribution",
   "engine": "^0.1.1",
   "language": [
@@ -52,6 +52,18 @@
       "role": "documentation"
     },
     {
+      "path": "bindings.json",
+      "role": "asset"
+    },
+    {
+      "path": "checks.json",
+      "role": "asset"
+    },
+    {
+      "path": "delivery.json",
+      "role": "asset"
+    },
+    {
       "path": "scripts/check-decisions.mjs",
       "role": "asset"
     },
@@ -64,8 +76,8 @@
   "description": "The IA KB kit, the Knowledge lane's public default: where organisation and repository knowledge lives, where a user's workspaces are saved (~/Documents/ia/<name> by default, never inside ~/.ia), and how a @spec anchor stays bound to one exact body, current, checked and reviewed. An entry capability whose playbook is a whole orient, plan, act and learn procedure; one capability and playbook per stage (place content, bind a document, maintain a document, check, migrate) plus retrieval and review; conventions for placement, workspace location, binding and the locator manifest, lifecycle, role briefs, host adaptation, IA reads and evidence reporting; laws for the blocking rules; librarian, reviewer, curator and gate-runner profiles; declared checks for admission, the decision lifecycle and locator manifests; a contract with cases; and the references, the split-body example and both checkers as assets.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "6c83794804c7fbb0ddff87a975ed3c9d582eef81",
+    "commit": "4e011f535f8ccd346bc91e78b5bdc4182377db3b",
     "recipe": "ustar-v1",
-    "epoch": 1793510988
+    "epoch": 1793853356
   }
 }

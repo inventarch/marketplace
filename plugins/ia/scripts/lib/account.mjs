@@ -1,5 +1,6 @@
 // The session-start account offer and governance probe (decisions
-// public-account-offer and public-governance-probe). Both read local files and
+// public-account-pointer, which supersedes public-account-offer, and
+// public-governance-probe). Both read local files and
 // the environment only: no network, no token, nothing written.
 //
 // The account offer runs at session startup only (a resume or a clear never
@@ -7,9 +8,14 @@
 // "accountOffer": false in <IA home>/config.json, by IA_NO_ACCOUNT_OFFER=1, and
 // by a non-empty CI. An account counts as present when a design binding is set
 // in the environment (INVENTARCH_DESIGN_BINDING) or the host already lists an
-// inventarch MCP server in its documented local configuration: Claude Code's
-// <config dir>/.claude.json (user and per-project servers) or the
-// repository's .mcp.json, or Codex's <CODEX_HOME>/config.toml.
+// inventarch MCP server that the user added by hand in its documented local
+// configuration (Claude Code's <config dir>/.claude.json, user and per-project
+// servers, or the repository's .mcp.json, or Codex's <CODEX_HOME>/config.toml).
+// The core ships the connector itself (.mcp.json, decision
+// public-account-connector), so it never appears in those files, and a sign-in
+// to it is not looked for: the host keeps it with its credentials, which this
+// file never opens. After a sign-in the pointer still shows once at startup,
+// never blocks, and says to ignore it when already signed in.
 //
 // The governance probe: a repository with .ia/governance.json is governed;
 // when no installed kit declares governance handlers (a tool `pre` handler in
@@ -58,7 +64,7 @@ export function accountFound({ env = process.env, home = homedir(), cwd = proces
 // The one-line offer, or null when it does not apply.
 export function accountOffer({ env = process.env, source, home = homedir(), cwd = process.cwd(), repo = null } = {}) {
   if (source !== 'startup' || offerDisabled(env) || accountFound({ env, home, cwd, repo })) return null;
-  return `InventArch: no account is connected. To use the subscription kits, add the InventArch MCP server to your host (Claude Code: claude mcp add --transport http inventarch ${MCP_URL}); the host signs you in. To stop this offer, set "accountOffer": false in ~/.ia/config.json or IA_NO_ACCOUNT_OFFER=1.`;
+  return 'InventArch: no account is connected. To use the subscription kits, sign in to InventArch: run /mcp and choose inventarch (or claude mcp login inventarch); if you already have, ignore this. To stop this offer, set "accountOffer": false in ~/.ia/config.json or IA_NO_ACCOUNT_OFFER=1.';
 }
 
 // Does an installed kit declare governance handlers?

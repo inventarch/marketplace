@@ -23,7 +23,7 @@ The built files sit beside it:
 | `index.json` | `kits/index.json`. |
 | `LICENSE`, `NOTICE` | The repository's. |
 
-The kit folders stay beside the archives. An archive holds a kit's records and declared assets, its scripts included, but not its sidecars (`delivery.json`, `bindings.json`, `checks.json`, `handlers.json`) or its release history, and a door reads those today. They can go once the IA engine takes them from the expanded store.
+The kit folders stay beside the archives for folder consumers and release history. Runtime sidecars (`delivery.json`, `bindings.json`, `checks.json`, `onwrite.json`, `handlers.json`) present in a kit must be declared release assets. The package gate refuses an omitted sidecar: an engine that expands only the IA archive needs those files to discover bindings, deliver whole procedures and locate checks without a plugin. The runtime reconstructs installed-kit identity and asset declarations from the pinned archive manifest; the producer's `.ia/release.json` is not an archive payload file.
 
 The built files are gitignored, not committed. The plugin and `kits/` already hold these bytes twice, and `bundle --check` proves they agree. The committed `package.json` binds the build to them by digest, and the build is deterministic: the same commit always gives the same archives, which the build checks against the recorded digests. Neither the export selection nor the consistency rules read the built files, so they gain nothing from committed bytes, while the history would gain a binary copy of every kit release.
 

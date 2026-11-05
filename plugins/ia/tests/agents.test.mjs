@@ -21,10 +21,12 @@ const DOOR = ['ia_session', 'ia_catalogue', 'ia_method'].map((t) => `mcp__plugin
 const MCP = JSON.parse(readFileSync(fileURLToPath(new URL('../.mcp.json', import.meta.url)), 'utf8'));
 
 test('every agent lists the door tools by their plugin-scoped names, and only door tools', () => {
-  assert.deepEqual(Object.keys(MCP.mcpServers), ['ia'], 'the one server is named ia');
+  // The core also bundles the account connector `inventarch` (decision public-account-connector); only ia:init, in the main session, uses it.
+  assert.deepEqual(Object.keys(MCP.mcpServers), ['ia', 'inventarch'], 'the door is named ia, the account connector inventarch');
   for (const name of ['reader', 'checker', 'worker']) {
     const listed = tools(name);
     for (const tool of DOOR) assert.ok(listed.includes(tool), `${name} lists ${tool}`);
+    assert.ok(!listed.some((t) => t.startsWith('mcp__plugin_ia_inventarch__')), `${name} lists no account connector tool`);
     for (const tool of listed.filter((t) => t.startsWith('mcp__'))) assert.match(tool, /^mcp__plugin_ia_ia__ia_[a-z_]+$/, `${name}: ${tool}`);
   }
   assert.ok(!tools('checker').includes('mcp__plugin_ia_ia__ia_read'), 'the checker reads no records through the door');

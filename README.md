@@ -11,7 +11,7 @@
 - **Three lanes, one door.** `ia:work`, `ia:knowledge` and `ia:delivery` go through the IA door (`ia_session`, `ia_catalogue`, `ia_method`), which reads the method kit the repository binds and returns its playbook as a packet. The agent follows only the packet.
 - **Methods are kits, not prompts.** A kit is a versioned, released set of IA records. You bind one to a lane key in `.ia/bindings.json`, and upgrading, repinning or rebinding it is one previewed command.
 - **Only trusted kits run code.** A kit runs a handler, an on-write check or a check only when its publisher is on the plugin's fixed list and its files are the release it recorded. Any other kit is data only.
-- **Nothing happens behind your back.** Every `kit.mjs` verb previews until you pass `--apply`. The session hook reads no credentials and never fetches. The account offer appears once and never blocks.
+- **Nothing happens behind your back.** Every `kit.mjs` verb previews until you pass `--apply`. The session hook reads no credentials and never fetches. The sign-in pointer appears once and never blocks.
 
 > [!NOTE]
 > **ia 1.2** is re-cut on IA 3.5.0: the lanes call only the IA door, the door is on under Codex too, the upkeep agent ships, and the bundled kits are re-released with the 3.5.0 CLI.
@@ -190,7 +190,7 @@ Everything user-facing starts with `ia`: the plugin `ia`; its skills `ia:work`, 
 
 ### An InventArch account
 
-At the start of a session the core offers, once, to connect an InventArch account. Add the remote MCP server `https://api.inventarch.dev/mcp` to your host (for Claude Code: `claude mcp add --transport http inventarch https://api.inventarch.dev/mcp`); the host runs the sign-in. The plugin stores no token and makes no network call. To stop the offer, set `"accountOffer": false` in `~/.ia/config.json` or `IA_NO_ACCOUNT_OFFER=1`; it never appears when `CI` is set.
+The core bundles the InventArch account connector, an MCP server named `inventarch` (`https://api.inventarch.dev/mcp`) with the public Claude Code OAuth client already filled in, so there is nothing to add by hand. Sign in once through `/mcp` (or `claude mcp login inventarch`); the host runs the OAuth sign-in and keeps the token, and the plugin ships no secret and stores no token. Then run `ia:init`: with the connector's tools available it lists the kits your account offers, downloads each one through a short-lived signed URL, checks the archive's SHA-256, installs it into your IA home and binds it as the kit recommends, previewing each write until you agree. At the start of a session the core points at the sign-in, once, in one line, never blocking and with no network call; it reads none of the host's credentials, so after you sign in it still shows once per session: ignore it, or turn it off. To stop the pointer, set `"accountOffer": false` in `~/.ia/config.json` or `IA_NO_ACCOUNT_OFFER=1`; it never appears when `CI` is set.
 
 ### Governed repositories
 

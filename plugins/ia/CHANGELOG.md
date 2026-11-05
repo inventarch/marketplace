@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+Bundle the InventArch account connector.
+
+- **Bundle the InventArch account connector.** The core now ships the InventArch account connector (MCP server inventarch, with the public Claude Code OAuth client), so signing in through /mcp is enough: ia:init then lists the kits the account offers, downloads each through its signed URL, verifies the SHA-256, installs it with kit.mjs add --from and binds it as the kit recommends. The session-start account offer is now a one-line pointer to that sign-in. Also fixes kit.mjs add --from on an archive whose absolute path has a drive letter under GNU tar.
+
 ## 1.2.0
 
 Re-cut on IA 3.5.0 (decision `public-cli-3-5-0`, which supersedes `public-cli-3-4-1`).

@@ -117,3 +117,36 @@
     owner "Unassigned"
     start "2026-10-31"
     source "docs/roadmap.md"
+
+@task codex-account-connector
+  meaning
+    says "Give Codex the InventArch account connector once its documented plugin MCP config is shown to take a remote HTTP server with the API's pre-registered OAuth client (client id claude-code, callback port 43822) and tools/smoke-codex.mjs can sign in and list kit_offerings. Until then the Codex manifest names only the door (.codex-mcp.json) and Codex users add the server with codex mcp add (decision public-account-connector)."
+  work
+    title "Carry the account connector to Codex"
+    status proposed
+    milestone @milestone marketplace-published
+    owner "Unassigned"
+    start "2026-11-01"
+    source "docs/roadmap.md"
+
+@task plugin-privacy-policy-url
+  meaning
+    says "claude plugin validate warns that plugins/ia/.claude-plugin/plugin.json has no privacyPolicyUrl now that the core bundles a remote connector. This repository has no privacy policy page to point at: publish one (on inventarch.com) and add privacyPolicyUrl to the Claude manifest."
+  work
+    title "Point the plugin manifest at a privacy policy"
+    status proposed
+    milestone @milestone marketplace-published
+    owner "Unassigned"
+    start "2026-11-01"
+    source "docs/roadmap.md"
+
+@task qualify-account-connector
+  meaning
+    says "In a real Claude Code session: the plugin's inventarch server appears in /mcp and signs in with client id claude-code on callback port 43822; kit_offerings and kit_download answer under mcp__plugin_ia_inventarch__*; and a downloaded archive is a kit folder tarball that kit.mjs add --from accepts (its releases.json at the root or in its one folder). Record the observed kit_offerings shape in ia:init section 6."
+  work
+    title "Qualify the account connector in Claude Code"
+    status proposed
+    milestone @milestone marketplace-published
+    owner "Unassigned"
+    start "2026-11-01"
+    source "docs/roadmap.md"

@@ -19,10 +19,10 @@
 //   archives/<archive>.distribution.json   that archive's manifest (its distribution.json), whose sha256 is ia.kits manifest
 //   LICENSE, NOTICE                    the repository's
 // npm is transport only (C7b): the IA engine expands each kit from its archive.
-// The kit folders stay beside the archives, because an archive carries the
-// records and declared assets only, not the sidecars (delivery.json,
-// bindings.json, checks.json, handlers.json) or the release history a door
-// reads today. Exit 0 on success, 1 on drift or a refusal, 2 on bad usage.
+// Runtime sidecars are declared assets, so an archive alone supplies the
+// binding, delivery and check metadata a bare door needs. Kit folders and
+// release history remain for folder consumers. Exit 0 on success, 1 on drift
+// or a refusal, 2 on bad usage.
 import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -67,6 +67,11 @@ export function bundledKits(root) {
 // release row, refusing a kit whose bytes are not that release.
 export function packageClaim(root) {
   return bundledKits(root).map(({ folder, dir, kit, latest }) => {
+    const descriptor = JSON.parse(readFileSync(join(dir, '.ia/release.json'), 'utf8'));
+    for (const name of ['bindings.json', 'delivery.json', 'checks.json', 'onwrite.json', 'handlers.json']) {
+      if (existsSync(join(dir, name)) && !descriptor.assets?.some(asset => asset.path === name))
+        throw new PackageError(`${BUNDLED}/${folder}: ${name} must be a declared release asset so installed kits retain it`);
+    }
     const sources = sourcesDigest(dir);
     if (sources !== latest.sources) throw new PackageError(`${BUNDLED}/${folder} is not its recorded release ${latest.version}: its sources digest is ${sources}, the release records ${latest.sources}`);
     if (!/^[a-f0-9]{64}$/.test(latest.archive ?? '') || !/^[a-f0-9]{64}$/.test(latest.manifest ?? '')) throw new PackageError(`${BUNDLED}/${folder}: release ${latest.version} records no archive and manifest sha256`);
