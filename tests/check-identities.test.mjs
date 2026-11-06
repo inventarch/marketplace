@@ -68,7 +68,7 @@ for (const mode of ['missing', 'empty', 'malformed', 'unpinned', 'wrong-pin', 's
     assert.equal(result.code, codes[mode] ?? 'REGISTRY_INVALID');
   });
 }
-test('registry in actual public checkout refuses even when snapshot is elsewhere', async t => {
+test('registry in actual public checkout is not evaluated even when snapshot is elsewhere', async t => {
   const f = fixture(t); const checkout = join(f.dir, 'public-checkout'); mkdirSync(checkout);
   const contained = join(checkout, 'private.json'); writeFileSync(contained, readFileSync(f.options.registryPath));
   const result = await screen({ ...f.options, publicRoot: checkout, registryPath: contained });
@@ -183,9 +183,16 @@ test('empty manifests and unrepresented directories cannot pass', async t => {
   assert.equal((await screen(f.options)).code, 'PAYLOAD_COVERAGE');
 });
 test('literal profile does not claim markup rendering or soft-line joining', async t => {
-  for (const bytes of ['&#x70;rivate-alpha-workspace', 'private-alpha-\nworkspace']) {
+  for (const bytes of ['&#x70;rivate-alpha-workspace', 'private-alpha-\nworkspace', 'const value = "\\u0070rivate-alpha-workspace";']) {
     const f = fixture(t, { 'design.md': bytes });
     assert.equal((await screen(f.options)).status, 'passed'); // Semantic review remains mandatory.
+  }
+});
+
+test('manifest file-directory clashes and directory case aliases refuse portably', async t => {
+  for (const paths of [['Docs.md', 'docs.md/x.md'], ['Docs/a.md', 'docs/b.md']]) {
+    const f = fixture(t); f.manifest.files.push(...paths.map(path => ({ ...f.manifest.files[0], path }))); f.repin();
+    assert.equal((await screen(f.options)).code, 'PAYLOAD_MANIFEST');
   }
 });
 test('unsupported files prevent a complete result even alongside a match', async t => {
