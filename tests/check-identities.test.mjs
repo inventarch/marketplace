@@ -190,10 +190,12 @@ test('literal profile does not claim markup rendering or soft-line joining', asy
 });
 
 test('manifest file-directory clashes and directory case aliases refuse portably', async t => {
-  for (const paths of [['Docs.md', 'docs.md/x.md'], ['Docs/a.md', 'docs/b.md']]) {
+  for (const paths of [['Docs.md', 'docs.md/x.md'], ['docs.md/x.md', 'Docs.md'], ['Docs/a.md', 'docs/b.md'], ['docs/b.md', 'Docs/a.md']]) {
     const f = fixture(t); f.manifest.files.push(...paths.map(path => ({ ...f.manifest.files[0], path }))); f.repin();
     assert.equal((await screen(f.options)).code, 'PAYLOAD_MANIFEST');
   }
+  const valid = fixture(t, { 'Docs/a.md': 'first', 'Docs/b.md': 'second' });
+  assert.equal((await screen(valid.options)).code, 'CLEAN');
 });
 test('unsupported files prevent a complete result even alongside a match', async t => {
   const f = fixture(t, { 'a.md': 'private-alpha-workspace', 'z.bin': 'uninterpreted' });
