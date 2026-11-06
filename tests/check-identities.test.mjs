@@ -6,6 +6,8 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
+import { syncBuiltinESMExports } from 'node:module';
 
 const tool = new URL('../tools/check-identities.mjs', import.meta.url);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -187,12 +189,33 @@ test('unsupported files prevent a complete result even alongside a match', async
   const f = fixture(t, { 'a.md': 'private-alpha-workspace', 'z.bin': 'uninterpreted' });
   assert.equal((await screen(f.options)).status, 'not-evaluated');
 });
-for (const path of ['CON.md', 'trailing .md.', 'a\\b.md', 'C:/file.md', 'a//b.md', 'control\u0001.md']) {
+for (const path of ['CON.md', 'trailing .md.', 'a\\b.md', 'C:/file.md', 'a//b.md', 'control\u0001.md', 'a?.md', 'a*.md', 'a|b.md', 'a<b.md', 'a>b.md', 'a"b.md']) {
   test(`portable path constraint ${JSON.stringify(path)}`, async t => {
     const f = fixture(t); f.manifest.files.push({ ...f.manifest.files[0], path }); f.repin();
     assert.equal((await screen(f.options)).code, 'PAYLOAD_MANIFEST');
   });
 }
+test('input changes during reading remain not evaluated; payload changes refuse', async t => {
+  assert.ok(existsSync(tool), 'screening must be implemented');
+  await import(tool.href);
+  for (const target of ['registry', 'payload']) {
+    const f = fixture(t), original = fs.lstatSync;
+    const selected = target === 'registry' ? f.options.registryPath : join(f.root, 'design.md');
+    let observations = 0;
+    t.mock.method(fs, 'lstatSync', function(path, ...args) {
+      if (path === selected && ++observations === (target === 'registry' ? 2 : 3)) {
+        const future = new Date(Date.now() + 30000); fs.utimesSync(selected, future, future);
+      }
+      return original.call(this, path, ...args);
+    });
+    syncBuiltinESMExports();
+    try {
+      const result = await screen(f.options);
+      assert.equal(result.status, target === 'registry' ? 'not-evaluated' : 'refused');
+      assert.equal(result.code, target === 'registry' ? 'INPUT_UNAVAILABLE' : 'PAYLOAD_DRIFT');
+    } finally { t.mock.restoreAll(); syncBuiltinESMExports(); }
+  }
+});
 test('CLI redacts private details and returns the tri-state exit', async t => {
   const f = fixture(t, { 'design.md': 'private-alpha-workspace' });
   assert.ok(existsSync(tool), 'screening CLI must be implemented');
