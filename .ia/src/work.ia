@@ -12,9 +12,20 @@
 
 @task publication-identity-screening
   meaning
-    says "Implement and independently qualify the publisher-context identity screening prerequisite under marketplace issue 22. Keep registry acceptance, semantic disclosure review, kit pack integration and common checker qualification separate."
+    says "Implement and independently qualify the publisher-context identity screening prerequisite under marketplace issue 22. Committed red and review stages precede the local implementation; 68 screening controls and 18 baseline integrity controls pass. Public review and authorized registry acceptance remain pending. Keep semantic disclosure review, kit pack integration and common checker qualification separate. Follow-up issue 23 owns expanded I/O and format qualification."
   work
     title "Qualify publisher identity screening"
+    status open
+    milestone @milestone kit-contract-baseline
+    owner "InventArch maintainers"
+    start "2026-11-06"
+    source "docs/kit-contract/SCREENING-SPEC.md"
+
+@task publication-screening-hardening
+  meaning
+    says "Deliver marketplace issue 23 under plan kit-contract-qualification: qualify descriptor-bound bounded reads and exact file identities, high-token-count performance, broader complete kit formats and packing-boundary integration before extending the controlled frozen-text profile. Retain committed failing behavioral tests and independent reviews. No automatic publication authority or merge."
+  work
+    title "Harden and integrate publisher screening"
     status open
     milestone @milestone kit-contract-baseline
     owner "InventArch maintainers"
