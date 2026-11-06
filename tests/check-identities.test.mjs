@@ -63,7 +63,9 @@ for (const mode of ['missing', 'empty', 'malformed', 'unpinned', 'wrong-pin', 's
     if (mode === 'self-approved') { f.registry.approved = true; f.repin(); }
     if (mode === 'scope') { f.manifest.scope = 'other-domain'; f.repin(); }
     if (mode === 'duplicate-key') { const bytes = json(f.registry).replace('"format": 1', '"format": 0, "format": 1'); writeFileSync(f.options.registryPath, bytes); f.options.registrySha256 = sha(bytes); }
-    const result = await screen(f.options); assert.equal(result.status, 'not-evaluated'); assert.notEqual(result.code, 'CLEAN');
+    const result = await screen(f.options); assert.equal(result.status, 'not-evaluated');
+    const codes = { missing: 'INPUT_UNAVAILABLE', unpinned: 'INPUT_PIN', 'wrong-pin': 'INPUT_PIN', scope: 'INPUT_SCOPE' };
+    assert.equal(result.code, codes[mode] ?? 'REGISTRY_INVALID');
   });
 }
 test('registry in actual public checkout refuses even when snapshot is elsewhere', async t => {
@@ -93,6 +95,7 @@ for (const mode of ['extra', 'missing', 'changed', 'size', 'traversal', 'case-co
     const result = await screen(f.options); assert.equal(result.status, 'refused');
     if (['traversal', 'case-collision'].includes(mode)) assert.equal(result.code, 'PAYLOAD_MANIFEST');
     if (['size', 'changed'].includes(mode)) assert.equal(result.code, 'PAYLOAD_DRIFT');
+    if (['extra', 'missing'].includes(mode)) assert.equal(result.code, 'PAYLOAD_COVERAGE');
   });
 }
 test('unavailable manifest never passes', async t => {
@@ -265,6 +268,21 @@ test('all manifest row shapes are checked before publication path policy', async
   f.manifest.files.push({ ...f.manifest.files[0], path: 'second.md', extra: true }); f.repin();
   const result = await screen(f.options);
   assert.equal(result.status, 'not-evaluated'); assert.equal(result.code, 'MANIFEST_INVALID');
+});
+
+test('non-string manifest path and mediaType are malformed shape', async t => {
+  for (const key of ['path', 'mediaType']) {
+    const f = fixture(t); f.manifest.files[0][key] = 5; f.repin();
+    const result = await screen(f.options);
+    assert.equal(result.status, 'not-evaluated'); assert.equal(result.code, 'MANIFEST_INVALID');
+  }
+});
+
+test('inputs inside the snapshot fail custody before parsing', async t => {
+  for (const key of ['registryPath', 'manifestPath']) {
+    const f = fixture(t); const inside = join(f.root, 'input.json'); writeFileSync(inside, readFileSync(f.options[key])); f.options[key] = inside;
+    assert.equal((await screen(f.options)).code, 'INPUT_CUSTODY');
+  }
 });
 
 test('large valid JSON strings retain decoded identity matching without regex stack exhaustion', async t => {
