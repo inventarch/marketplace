@@ -118,12 +118,19 @@ export function screenPublication(options) {
     result.manifestSha256 = options.manifestSha256;
     if (manifest.scope !== registry.scope) unavailable('INPUT_SCOPE');
     if (manifest.files.length > 1024) unavailable('PAYLOAD_LIMIT');
-    const paths = new Set(); let declaredBytes = 0;
+    const paths = new Set(), prefixes = new Map(); let declaredBytes = 0;
     for (const file of manifest.files) {
       if (!keys(file, ['path', 'sha256', 'bytes', 'mediaType']) || typeof file.path !== 'string' || typeof file.mediaType !== 'string' || !HASH.test(file.sha256 ?? '') || !Number.isSafeInteger(file.bytes) || file.bytes < 0) unavailable('MANIFEST_INVALID');
     }
     for (const file of manifest.files) {
       if (!portable(file.path) || paths.has(normalize(file.path)) || !['text', 'json'].includes(file.mediaType) || (extname(file.path).toLowerCase() === '.json' && file.mediaType !== 'json')) refuse('PAYLOAD_MANIFEST');
+      const segments = file.path.split('/');
+      for (let i = 1; i <= segments.length; i++) {
+        const original = segments.slice(0, i).join('/'), key = normalize(original), kind = i === segments.length ? 'file' : 'directory';
+        const previous = prefixes.get(key);
+        if (previous && (previous.original !== original || previous.kind !== kind)) refuse('PAYLOAD_MANIFEST');
+        prefixes.set(key, { original, kind });
+      }
       paths.add(normalize(file.path)); declaredBytes += file.bytes;
       if (file.bytes > MAX_FILE || declaredBytes > MAX_TOTAL) unavailable('PAYLOAD_LIMIT');
     }
