@@ -252,6 +252,14 @@ test('CLI runs through a linked directory and emits real screening evidence', as
   }
 });
 
+test('API imports from a stdin host without trying to run the CLI', () => {
+  const result = spawnSync(process.execPath, ['--input-type=module', '-'], {
+    input: `const { screenPublication } = await import(${JSON.stringify(tool.href)}); process.stdout.write(screenPublication({}).code);`,
+    encoding: 'utf8', windowsHide: true,
+  });
+  assert.equal(result.status, 0); assert.equal(result.stderr, ''); assert.equal(result.stdout, 'ROOT_INVALID');
+});
+
 test('all manifest row shapes are checked before publication path policy', async t => {
   const f = fixture(t); f.manifest.files[0].path = '../escape.md';
   f.manifest.files.push({ ...f.manifest.files[0], path: 'second.md', extra: true }); f.repin();
