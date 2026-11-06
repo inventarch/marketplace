@@ -130,7 +130,7 @@ test('malformed UTF-8 and duplicate manifest members are not evaluated', async t
     assert.equal((await screen(f.options)).status, 'not-evaluated');
   }
 });
-test('per-file, total and count limits refuse valid clean payloads', async t => {
+test('per-file, total and count limits leave oversized payloads not evaluated', async t => {
   const full = 'x'.repeat(4 * 1024 * 1024);
   const boundary = fixture(t, { 'at-limit.md': full });
   assert.equal((await screen(boundary.options)).status, 'passed');
@@ -189,7 +189,7 @@ test('unsupported files prevent a complete result even alongside a match', async
   const f = fixture(t, { 'a.md': 'private-alpha-workspace', 'z.bin': 'uninterpreted' });
   assert.equal((await screen(f.options)).status, 'not-evaluated');
 });
-for (const path of ['CON.md', 'trailing .md.', 'a\\b.md', 'C:/file.md', 'a//b.md', 'control\u0001.md', 'a?.md', 'a*.md', 'a|b.md', 'a<b.md', 'a>b.md', 'a"b.md']) {
+for (const path of ['CON.md', 'CONIN$.md', 'CONOUT$.md', 'COM¹.md', 'LPT².md', 'trailing .md.', 'a\\b.md', 'C:/file.md', 'a//b.md', 'control\u0001.md', 'a?.md', 'a*.md', 'a|b.md', 'a<b.md', 'a>b.md', 'a"b.md']) {
   test(`portable path constraint ${JSON.stringify(path)}`, async t => {
     const f = fixture(t); f.manifest.files.push({ ...f.manifest.files[0], path }); f.repin();
     assert.equal((await screen(f.options)).code, 'PAYLOAD_MANIFEST');
@@ -236,8 +236,65 @@ test('CLI clean/unavailable/usage outcomes disclose only the safe schema', async
     assert.deepEqual(Object.keys(JSON.parse(result.stdout)).sort(), ['code', 'coverage', 'manifestSha256', 'status']);
     assert.equal(result.stderr, ''); assert.ok(!result.stdout.includes(f.dir)); assert.ok(!result.stdout.includes('private-sensitive'));
   }
-  for (const args of [[], [...cliArgs(f.options), '--unknown'], [...cliArgs(f.options), '--root', f.root]]) {
+  for (const args of [[], [...cliArgs(f.options), '--unknown'], [...cliArgs(f.options), 'constructor', 'inert'], [...cliArgs(f.options), '--root', f.root]]) {
     const result = run(args); assert.equal(result.status, 2); assert.equal(result.stdout, '');
     assert.match(result.stderr, /^usage:/); assert.ok(!result.stderr.includes(f.dir));
   }
+});
+
+test('CLI runs through a linked directory and emits real screening evidence', async t => {
+  const f = fixture(t), alias = join(f.dir, 'tool-directory');
+  symlinkSync(fileURLToPath(new URL('../tools/', import.meta.url)), alias, process.platform === 'win32' ? 'junction' : 'dir');
+  for (const [options, status] of [[f.options, 0], [{ ...f.options, registryPath: join(f.dir, 'missing.json') }, 2]]) {
+    const result = spawnSync(process.execPath, [join(alias, 'check-identities.mjs'), ...cliArgs(options)], { encoding: 'utf8', windowsHide: true });
+    assert.equal(result.status, status); assert.equal(result.stderr, '');
+    assert.equal(JSON.parse(result.stdout).status, status === 0 ? 'passed' : 'not-evaluated');
+  }
+});
+
+test('all manifest row shapes are checked before publication path policy', async t => {
+  const f = fixture(t); f.manifest.files[0].path = '../escape.md';
+  f.manifest.files.push({ ...f.manifest.files[0], path: 'second.md', extra: true }); f.repin();
+  const result = await screen(f.options);
+  assert.equal(result.status, 'not-evaluated'); assert.equal(result.code, 'MANIFEST_INVALID');
+});
+
+test('large valid JSON strings retain decoded identity matching without regex stack exhaustion', async t => {
+  const bytes = '{"value":"' + 'x'.repeat(3 * 1024 * 1024) + '\\u0070rivate-alpha-workspace"}';
+  const f = fixture(t, { 'large.json': bytes });
+  assert.equal((await screen(f.options)).code, 'IDENTITY_MATCH');
+});
+
+test('registry entry count, lengths and duplicate IDs enforce their boundaries', async t => {
+  for (const entries of [
+    Array.from({ length: 257 }, (_, i) => ({ id: `entry-${i}`, value: `identity-${i}` })),
+    [{ id: 'long', value: 'x'.repeat(1025) }],
+    [{ id: 'short', value: 'abc' }],
+    [{ id: 'same', value: 'value-one' }, { id: 'same', value: 'value-two' }],
+  ]) {
+    const f = fixture(t); f.registry.entries = entries; f.repin();
+    assert.equal((await screen(f.options)).code, 'REGISTRY_INVALID');
+  }
+  const f = fixture(t); f.registry.entries = [{ id: 'boundary', value: 'x'.repeat(1024) }]; f.repin();
+  assert.equal((await screen(f.options)).code, 'CLEAN');
+});
+
+test('JSON nesting and directory counts are bounded', async t => {
+  const nested = '['.repeat(65) + '0' + ']'.repeat(65);
+  const payload = fixture(t, { 'deep.json': nested });
+  assert.equal((await screen(payload.options)).code, 'PAYLOAD_FORMAT');
+  const input = fixture(t); const bytes = json(JSON.parse(nested));
+  writeFileSync(input.options.registryPath, bytes); input.options.registrySha256 = sha(bytes);
+  assert.equal((await screen(input.options)).code, 'REGISTRY_INVALID');
+  const f = fixture(t);
+  for (let i = 0; i < 1025; i++) mkdirSync(join(f.root, `directory-${i}`));
+  assert.equal((await screen(f.options)).code, 'PAYLOAD_LIMIT');
+});
+
+test('findings beyond the reporting limit never produce a partial pass', async t => {
+  const entries = Array.from({ length: 256 }, (_, i) => ({ id: `entry-${i}`, value: `identity-${i}-end` }));
+  const f = fixture(t, Object.fromEntries(Array.from({ length: 17 }, (_, i) => [`file-${i}.md`, entries.map(entry => entry.value).join(' ')])));
+  f.registry.entries = entries; f.repin();
+  const result = await screen(f.options);
+  assert.equal(result.status, 'not-evaluated'); assert.equal(result.code, 'PAYLOAD_LIMIT'); assert.deepEqual(result.findings, []);
 });
