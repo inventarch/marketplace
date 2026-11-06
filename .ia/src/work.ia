@@ -12,7 +12,7 @@
 
 @task publication-identity-screening
   meaning
-    says "Implement and independently qualify the publisher-context identity screening prerequisite under marketplace issue 22. Committed red and review stages precede the local implementation; 69 screening controls and 18 baseline integrity controls pass. Public review and authorized registry acceptance remain pending. Keep semantic disclosure review, kit pack integration and common checker qualification separate. Follow-up issue 23 owns expanded I/O and format qualification."
+    says "Implement and independently qualify the publisher-context identity screening prerequisite under marketplace issue 22. Committed red and review stages precede the local implementation; 69 screening controls and 18 baseline integrity controls pass. Public review remains pending; operator registry acceptance and exact-payload screening are retained separately in private publisher evidence. Keep semantic disclosure review, kit pack integration and common checker qualification separate. Follow-up issue 23 owns expanded I/O and format qualification."
   work
     title "Qualify publisher identity screening"
     status open

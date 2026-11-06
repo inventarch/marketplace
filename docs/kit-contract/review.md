@@ -26,4 +26,4 @@ Current review pins:
 | Complete normative context, LF-normalized | `c6278e3d61f2773759b176e562b01eee4565ff67098d0ef30c453180f98a6d1d` |
 | Supplementary parsed semantic value | `71e0ed8a712a27d0ff32c8076b033f5cc4880e07a5015212303dad3ce77534f7` |
 
-The authoritative operator-maintained private-identity list has not been supplied. CAT-06 remains **not evaluated**. The complete publication payload, including this record, remains local. Neither successful integrity tests nor these development reviews freeze an adopted public contract, authenticate public oracle approval, qualify the checker, clear publication, or permit a new kit release.
+At this development-review checkpoint, the authoritative operator-maintained private-identity list was unavailable and CAT-06 was **not evaluated**. Subsequent operator acceptance and exact-payload screening evidence are retained privately by the publisher; this historical review is not their receipt. Neither successful integrity tests nor these development reviews freeze an adopted public contract, authenticate public oracle approval, qualify the checker, clear publication, or permit a new kit release.
