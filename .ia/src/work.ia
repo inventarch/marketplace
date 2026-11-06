@@ -30,7 +30,7 @@
 
 @task kit-contract-public-baseline
   meaning
-    says "Prepare, independently review and screen the complete public expectation baseline under marketplace issue 21. Integrity tests precede the baseline artifact commit. Publication and freezing remain pending until independent approval and authorized private-identity screening evidence are available."
+    says "Prepare, independently review and screen the complete public expectation baseline under marketplace issue 21. The local proposed artifacts retain four contracts, fourteen requirements and 163 cases; eighteen integrity tests pass after committed red and independent review. Publication and freezing remain pending until independent public approval and authorized private-identity screening evidence are available. This does not execute the behavioral cases or qualify the checker."
   work
     title "Qualify the public kit-contract expectation baseline"
     status open
