@@ -2,7 +2,7 @@
 
 Task and spec: `kit-contract-public-baseline`; plan: `kit-contract-qualification`; [issue 21](https://github.com/inventarch/marketplace/issues/21). Authoring attribution: InventArch.
 
-The baseline supplies proposed public expectations before a native contract or checker is implemented. It consists of `expectations.json` and `context.md`, reviewed together. It is not shipped in the plugin or any kit. Version 0.1.0 is a proposal, not a published contract release. All behavioral evaluators remain unavailable.
+The baseline supplies proposed public expectations before a native contract or checker is implemented. It consists of `expectations.json` and `context.md`, reviewed together. `review.md` and `verification.md` retain development evidence and are not normative baseline inputs. It is not shipped in the plugin or any kit. Version 0.1.0 is a proposal, not a published contract release. All behavioral evaluators remain unavailable.
 
 The four contracts must retain 14 requirements and 163 individually attributed cases: candidate conformance (8/86), qualification inputs (2/34), programme audit (1/6) and checker execution (3/37). Preserve every stable contract/requirement/case identity, association, kind, given, request, expected outcome and grammar reference. A repeated semantic variant under another requirement remains a separate obligation. The complete normative context accompanies the data, including applicability, trusted assessment selection, payload identity, oracle independence, bootstrap, consumer verification, current eligibility and custody.
 

@@ -2,7 +2,7 @@
 
 InventArch, 2026-11-06. This records development evidence for issue 21, not publication clearance or a checker-conformance receipt.
 
-Commit order is `990a90d` (spec and observed missing-artifact tests), then `84bbec4` (independent adversarial review and strengthened controls), then the artifact implementation. Immediately before adding the artifacts, the final suite reported 17 failures and one passing UTF-8 control. After adding the reviewed expectation data and normative context without changing the tests, `node --test tests/kit-contract-baseline.test.mjs` passed **18/18**, zero skips, in **134.524 ms** on Node 22.23.4.
+Commit order is `990a90d` (spec and observed missing-artifact tests), then `84bbec4` (independent adversarial review and strengthened controls), then `72a4274` (artifact implementation). Immediately before adding the artifacts, the final suite reported 17 failures and one passing UTF-8 control. After adding the reviewed expectation data and normative context without changing the tests, `node --test tests/kit-contract-baseline.test.mjs` passed **18/18**, zero skips, in **134.524 ms** on Node 22.23.4, Windows. A separate verifier reran the repository tests: **18/18**, zero skips, **383.9703 ms**, and confirmed byte equality with the reviewed scratch proposal.
 
 The three pins in review.md and the tests match the copied artifacts. The four contracts retain 14 requirements and 163 case declarations; all 177 requirement/case evaluator fields remain unavailable. The 18 integrity tests are not executions of those 163 scenarios.
 

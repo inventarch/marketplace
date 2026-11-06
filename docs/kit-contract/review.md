@@ -14,7 +14,9 @@ Three independent verifiers rejected proposed changes to optional grammar metada
 
 The strengthened pre-artifact run had 17 tests: one strict-decoding control passed and 16 artifact-dependent tests failed, with no skips. Both red observations are retained as development evidence. The internal rereview approved the local proposal with minor improvements: a standalone exact-text assertion, hypothetical context wording, BOM controls and additional structural controls. These are included in the final 18-test suite. Progress definitions retain the governing source meaning; a suggested rewrite to a narrower not-started meaning was not adopted.
 
-The subsequent artifact commit must make all 18 pass without changing these reviewed expectations. The independent verifier recomputed all three pins and executed the earlier 17-test body against the scratch proposal successfully; that is a pre-artifact diagnostic, distinct from repository green. Final artifact verification is recorded separately after the copy.
+The subsequent artifact commit, `72a4274`, made all 18 pass without changing these reviewed expectations. The independent verifier recomputed all three pins and executed the earlier 17-test body against the scratch proposal successfully; that is a pre-artifact diagnostic, distinct from repository green. Final artifact verification is recorded in [verification.md](verification.md).
+
+The final internal rereview approved the local proposed baseline with no blocking, medium or minor defects. Its two documentation nits are resolved by linking the green evidence and naming the development review records separately from normative inputs. Full repository/runtime gates remain required before a future PR; no PR or publication is attempted while screening is unavailable. A separate verifier confirmed exact scratch-to-repository byte equality, all three pins, the four-contract inventory and 18/18 passing repository tests with no skips.
 
 Current review pins:
 
