@@ -28,6 +28,8 @@ Portable names reject Windows reserved device names (including CONIN$, CONOUT$ a
 
 The CLI must execute when reached through a linked parent directory. Importing its API must not execute the CLI. Both paths must retain the same tri-state contract.
 
+Both root arguments must name actual directories, not a final-component symlink or junction; callers resolve such aliases before invoking this profile. Links in parent paths are resolved for containment. A manifest row's path and mediaType must be strings before publication policy is evaluated. API import from a stdin or eval host must not require the host's argv entry to name a file.
+
 Evaluation order is roots/input custody, registry pin/shape, manifest pin/shape/scope, manifest path/media constraints and declared resource bounds, directory traversal/aliases, exact file/directory coverage, then each sorted file's size/hash/format and identity matches. No match result is returned until all files pass validation; an unsupported file therefore prevents a complete screen even when another file matches. A result's coverage counts only successfully validated buffers; an early failure can have partial or zero coverage, never a partial pass. Findings enumerate matching entry/file/surface triples once, with surfaces path, text or json-string. Internal failures disclose no exception text.
 
 | Codes | Status |
