@@ -1,5 +1,26 @@
 #! ia 1.0
 
+@spec publication-identity-screening
+  meaning
+    says "Defines bounded publisher-side screening of exact frozen text artifacts against an external operator-selected private-identity registry, with unavailable input never reported as pass."
+  work
+    title "Publisher identity screening"
+    status draft
+    owner "InventArch maintainers"
+    source "docs/kit-contract/SCREENING-SPEC.md"
+    covers ["tools/check-identities.mjs", "tests/check-identities.test.mjs"]
+
+@task publication-identity-screening
+  meaning
+    says "Implement and independently qualify the publisher-context identity screening prerequisite under marketplace issue 22. Keep registry acceptance, semantic disclosure review, kit pack integration and common checker qualification separate."
+  work
+    title "Qualify publisher identity screening"
+    status open
+    milestone @milestone kit-contract-baseline
+    owner "InventArch maintainers"
+    start "2026-11-06"
+    source "docs/kit-contract/SCREENING-SPEC.md"
+
 @plan kit-contract-qualification
   meaning
     says "Independently establish public kit-contract expectations, then qualify their native representation and owned checker before release consumers can rely on them."
