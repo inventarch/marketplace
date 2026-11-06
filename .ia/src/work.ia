@@ -1,5 +1,44 @@
 #! ia 1.0
 
+@plan kit-contract-qualification
+  meaning
+    says "Independently establish public kit-contract expectations, then qualify their native representation and owned checker before release consumers can rely on them."
+  work
+    title "Kit contract qualification"
+    status open
+    source "docs/kit-contract/SPEC.md"
+
+@milestone kit-contract-baseline
+  meaning
+    says "A complete public expectation baseline is independently reviewed, screened and frozen before lowering."
+  work
+    title "Kit contract expectation baseline"
+    status open
+    plan @plan kit-contract-qualification
+    exit "All four contracts, fourteen requirements, 163 cases and normative contexts have retained identities and semantics, independent public review evidence and authorized publication screening."
+    source "docs/kit-contract/SPEC.md"
+
+@spec kit-contract-public-baseline
+  meaning
+    says "Preserves proposed public kit-contract expectation data and normative context with integrity tests, without claiming behavioral execution, native admission or release permission."
+  work
+    title "Public kit contract expectation baseline"
+    status draft
+    owner "InventArch maintainers"
+    source "docs/kit-contract/SPEC.md"
+    covers ["docs/kit-contract/", "tests/kit-contract-baseline.test.mjs"]
+
+@task kit-contract-public-baseline
+  meaning
+    says "Prepare, independently review and screen the complete public expectation baseline under marketplace issue 21. Integrity tests precede the baseline artifact commit. Publication and freezing remain pending until independent approval and authorized private-identity screening evidence are available."
+  work
+    title "Qualify the public kit-contract expectation baseline"
+    status open
+    milestone @milestone kit-contract-baseline
+    owner "InventArch maintainers"
+    start "2026-11-06"
+    source "docs/kit-contract/SPEC.md"
+
 @plan marketplace-public-launch
   meaning
     says "Take the public catalogue from its first local cut to a published, host-qualified repository."
