@@ -58,11 +58,11 @@
     status draft
     owner "InventArch maintainers"
     source "docs/kit-contract/SPEC.md"
-    covers ["docs/kit-contract/", "tests/kit-contract-baseline.test.mjs"]
+    covers ["docs/kit-contract/SPEC.md", "docs/kit-contract/expectations.json", "docs/kit-contract/context.md", "docs/kit-contract/review.md", "docs/kit-contract/verification.md", "tests/kit-contract-baseline.test.mjs"]
 
 @task kit-contract-public-baseline
   meaning
-    says "Prepare, independently review and screen the complete public expectation baseline under marketplace issue 21. The local proposed artifacts retain four contracts, fourteen requirements and 163 cases; eighteen integrity tests pass after committed red and independent review. Publication and freezing remain pending until independent public approval and authorized private-identity screening evidence are available. This does not execute the behavioral cases or qualify the checker."
+    says "Prepare, independently review and screen the complete public expectation baseline under marketplace issue 21. The proposed artifacts retain four contracts, fourteen requirements and 163 cases; eighteen integrity tests pass after committed red and independent review. Adoption and freezing remain pending until independent public approval and authorized screening of the adopted head are available. Exposure for public review is a separate publisher assessment. This does not execute the behavioral cases or qualify the checker."
   work
     title "Qualify the public kit-contract expectation baseline"
     status open
