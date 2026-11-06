@@ -1,0 +1,9 @@
+# Screening specification review
+
+InventArch, 2026-11-06, issue 22. Commit d738f64 retains the spec and 30 observed failing missing-tool tests before implementation. Independent architecture/security and test-adequacy reviews, plus an internal adversarial review, found preimplementation gaps. No implemented security behavior was claimed at that stage.
+
+Corrections before implementation: require the actual publicRoot explicitly; reject multiply linked input documents; exercise resolved checkout aliases; isolate equal-length hash drift and actual JSON media-type changes; require path/media reason codes; define result classification and evaluation precedence; bound entries, values, directories and nesting; constrain API/CLI error disclosure; retain resource-limit, manifest-pin, malformed-input, empty-directory and CLI controls. Three independent verifiers confirmed the custody/default-root and aliased-input risks. The strengthened suite has 48 observed failures before the tool exists, zero skips.
+
+The lexical profile explicitly excludes markup rendering, character references, soft-line joining and arbitrary code/encoding interpretation. Synthetic controls demonstrate those limits rather than implying decoded semantic coverage. Exact-payload semantic review is mandatory in addition to a lexical pass. Registry completeness and acceptance remain external operator responsibilities; selected hashes cannot certify either. The private registry proposal must be independently classified and accepted before it can authorize publication screening.
+
+This is a repository maintainer implementation, not a shipped kit evaluator or a replacement for the shared conformance checker. Direct pack integration and publication enforcement remain subsequent work. No tool is being given permission to publish, access private services or execute a candidate.

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const tool = new URL('../tools/check-identities.mjs', import.meta.url);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -74,17 +75,77 @@ for (const mode of ['extra', 'missing', 'changed', 'size', 'traversal', 'case-co
     const f = fixture(t);
     if (mode === 'extra') writeFileSync(join(f.root, '.hidden.md'), 'private-alpha-workspace');
     if (mode === 'missing') rmSync(join(f.root, 'design.md'));
-    if (mode === 'changed') writeFileSync(join(f.root, 'design.md'), 'changed');
+    if (mode === 'changed') writeFileSync(join(f.root, 'design.md'), 'B public example.\n');
     if (mode === 'size') { f.manifest.files[0].bytes += 1; f.repin(); }
-    if (mode === 'traversal') { f.manifest.files[0].path = '../design.md'; f.repin(); }
+    if (mode === 'traversal') {
+      writeFileSync(join(f.dir, 'outside.md'), 'A public example.\n');
+      f.manifest.files.push({ ...f.manifest.files[0], path: '../outside.md' }); f.repin();
+    }
     if (mode === 'case-collision') { f.manifest.files.push({ ...f.manifest.files[0], path: 'DESIGN.md' }); f.repin(); }
-    if (mode === 'json-as-text') { f.manifest.files[0].path = 'case.json'; f.repin(); }
+    if (mode === 'json-as-text') {
+      const actual = fixture(t, { 'case.json': '{"text":"public"}' });
+      assert.equal((await screen(actual.options)).status, 'passed');
+      actual.manifest.files[0].mediaType = 'text'; actual.repin();
+      assert.equal((await screen(actual.options)).code, 'PAYLOAD_MANIFEST'); return;
+    }
     const result = await screen(f.options); assert.equal(result.status, 'refused');
+    if (['traversal', 'case-collision'].includes(mode)) assert.equal(result.code, 'PAYLOAD_MANIFEST');
+    if (['size', 'changed'].includes(mode)) assert.equal(result.code, 'PAYLOAD_DRIFT');
   });
 }
 test('unavailable manifest never passes', async t => {
   const f = fixture(t); delete f.options.manifestSha256;
   assert.equal((await screen(f.options)).status, 'not-evaluated');
+});
+test('wrong manifest pin is not evaluated', async t => {
+  const f = fixture(t); f.options.manifestSha256 = '0'.repeat(64);
+  assert.equal((await screen(f.options)).code, 'INPUT_PIN');
+});
+test('actual public root must be explicit and valid', async t => {
+  const f = fixture(t); delete f.options.publicRoot;
+  assert.equal((await screen(f.options)).status, 'not-evaluated');
+  f.options.publicRoot = join(f.dir, 'missing-root');
+  assert.equal((await screen(f.options)).status, 'not-evaluated');
+});
+for (const key of ['registryPath', 'manifestPath']) test(`${key} hardlinks and checkout aliases are rejected`, async t => {
+  const f = fixture(t); const checkout = join(f.dir, 'checkout'); mkdirSync(checkout);
+  f.options.publicRoot = checkout;
+  const inside = join(checkout, 'input.json'); linkSync(f.options[key], inside);
+  assert.equal((await screen(f.options)).code, 'INPUT_CUSTODY');
+  rmSync(inside); writeFileSync(inside, readFileSync(f.options[key]));
+  const alias = join(f.dir, 'checkout-alias'); symlinkSync(checkout, alias, process.platform === 'win32' ? 'junction' : 'dir');
+  f.options[key] = join(alias, 'input.json');
+  assert.equal((await screen(f.options)).code, 'INPUT_CUSTODY');
+});
+test('duplicate normalized registry values are not evaluated', async t => {
+  const f = fixture(t); f.registry.entries.push({ id: 'other', value: 'PRIVATE-ALPHA-WORKSPACE' }); f.repin();
+  assert.equal((await screen(f.options)).status, 'not-evaluated');
+});
+test('malformed UTF-8 and duplicate manifest members are not evaluated', async t => {
+  const f = fixture(t);
+  for (const bytes of [Buffer.from([0xc3, 0x28]), Buffer.from(json(f.manifest).replace('"format": 1', '"format": 0, "format": 1'))]) {
+    writeFileSync(f.options.manifestPath, bytes); f.options.manifestSha256 = sha(bytes);
+    assert.equal((await screen(f.options)).status, 'not-evaluated');
+  }
+});
+test('per-file, total and count limits refuse valid clean payloads', async t => {
+  const full = 'x'.repeat(4 * 1024 * 1024);
+  const boundary = fixture(t, { 'at-limit.md': full });
+  assert.equal((await screen(boundary.options)).status, 'passed');
+  for (const files of [
+    { 'too-big.md': full + 'x' },
+    Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`part-${i}.md`, full])),
+    Object.fromEntries(Array.from({ length: 1025 }, (_, i) => [`part-${i}.md`, 'x'])),
+  ]) {
+    const f = fixture(t, files); assert.equal((await screen(f.options)).code, 'PAYLOAD_LIMIT');
+  }
+});
+test('input document limits are checked before parsing', async t => {
+  for (const [key, pin, code] of [['registryPath', 'registrySha256', 'REGISTRY_LIMIT'], ['manifestPath', 'manifestSha256', 'MANIFEST_LIMIT']]) {
+    const f = fixture(t); const bytes = json({ format: 1, scope: 'x'.repeat(4 * 1024 * 1024) });
+    writeFileSync(f.options[key], bytes); f.options[pin] = sha(bytes);
+    assert.equal((await screen(f.options)).code, code);
+  }
 });
 for (const [name, bytes] of [['malformed UTF-8', Buffer.from([0xc3, 0x28])], ['NUL', Buffer.from([65, 0, 66])]]) {
   test(`${name} payload is not evaluated`, async t => {
@@ -111,11 +172,49 @@ test('matching normalizes composed Unicode and locator slashes', async t => {
   const f = fixture(t, { 'design.md': 'PRIVATE\\CAFE\u0301' }); f.registry.entries[0].value = 'private/café'; f.repin();
   assert.equal((await screen(f.options)).code, 'IDENTITY_MATCH');
 });
+test('empty manifests and unrepresented directories cannot pass', async t => {
+  const empty = fixture(t, {}); assert.equal((await screen(empty.options)).code, 'MANIFEST_INVALID');
+  const f = fixture(t); mkdirSync(join(f.root, 'unrepresented'));
+  assert.equal((await screen(f.options)).code, 'PAYLOAD_COVERAGE');
+});
+test('literal profile does not claim markup rendering or soft-line joining', async t => {
+  for (const bytes of ['&#x70;rivate-alpha-workspace', 'private-alpha-\nworkspace']) {
+    const f = fixture(t, { 'design.md': bytes });
+    assert.equal((await screen(f.options)).status, 'passed'); // Semantic review remains mandatory.
+  }
+});
+test('unsupported files prevent a complete result even alongside a match', async t => {
+  const f = fixture(t, { 'a.md': 'private-alpha-workspace', 'z.bin': 'uninterpreted' });
+  assert.equal((await screen(f.options)).status, 'not-evaluated');
+});
+for (const path of ['CON.md', 'trailing .md.', 'a\\b.md', 'C:/file.md', 'a//b.md', 'control\u0001.md']) {
+  test(`portable path constraint ${JSON.stringify(path)}`, async t => {
+    const f = fixture(t); f.manifest.files.push({ ...f.manifest.files[0], path }); f.repin();
+    assert.equal((await screen(f.options)).code, 'PAYLOAD_MANIFEST');
+  });
+}
 test('CLI redacts private details and returns the tri-state exit', async t => {
   const f = fixture(t, { 'design.md': 'private-alpha-workspace' });
   assert.ok(existsSync(tool), 'screening CLI must be implemented');
-  const args = ['--root', f.root, '--registry', f.options.registryPath, '--registry-sha256', f.options.registrySha256, '--manifest', f.options.manifestPath, '--manifest-sha256', f.options.manifestSha256];
-  const result = spawnSync(process.execPath, [tool.pathname.replace(/^\/([A-Za-z]:)/, '$1'), ...args], { encoding: 'utf8', windowsHide: true });
+  const args = cliArgs(f.options);
+  const result = spawnSync(process.execPath, [fileURLToPath(tool), ...args], { encoding: 'utf8', windowsHide: true });
   assert.equal(result.status, 1); assert.equal(JSON.parse(result.stdout).status, 'refused');
+  assert.deepEqual(Object.keys(JSON.parse(result.stdout)).sort(), ['code', 'coverage', 'manifestSha256', 'status']);
   assert.ok(!result.stdout.includes('private-alpha-workspace')); assert.ok(!result.stdout.includes(f.options.registrySha256)); assert.equal(result.stderr, '');
+});
+const cliArgs = options => ['--root', options.root, '--public-root', options.publicRoot, '--registry', options.registryPath, '--registry-sha256', options.registrySha256, '--manifest', options.manifestPath, '--manifest-sha256', options.manifestSha256];
+test('CLI clean/unavailable/usage outcomes disclose only the safe schema', async t => {
+  const f = fixture(t); assert.ok(existsSync(tool), 'screening CLI must be implemented');
+  const run = args => spawnSync(process.execPath, [fileURLToPath(tool), ...args], { encoding: 'utf8', windowsHide: true });
+  const clean = run(cliArgs(f.options)); assert.equal(clean.status, 0);
+  f.options.registryPath = join(f.dir, 'private-sensitive-path.json');
+  const missing = run(cliArgs(f.options)); assert.equal(missing.status, 2);
+  for (const result of [clean, missing]) {
+    assert.deepEqual(Object.keys(JSON.parse(result.stdout)).sort(), ['code', 'coverage', 'manifestSha256', 'status']);
+    assert.equal(result.stderr, ''); assert.ok(!result.stdout.includes(f.dir)); assert.ok(!result.stdout.includes('private-sensitive'));
+  }
+  for (const args of [[], [...cliArgs(f.options), '--unknown'], [...cliArgs(f.options), '--root', f.root]]) {
+    const result = run(args); assert.equal(result.status, 2); assert.equal(result.stdout, '');
+    assert.match(result.stderr, /^usage:/); assert.ok(!result.stderr.includes(f.dir));
+  }
 });
