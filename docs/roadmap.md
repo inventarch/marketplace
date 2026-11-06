@@ -5,6 +5,8 @@ Open work for the public catalogue. Each item is a `@task` in `.ia/src/work.ia`;
 | Task | Standing | Record |
 |---|---|---|
 | Independently review, screen and freeze all four public kit-contract expectation sets and their normative context before lowering or checker implementation. [Issue 21](https://github.com/inventarch/marketplace/issues/21). | open | `kit-contract-public-baseline` |
+| Qualify the publisher's exact frozen-text identity screening profile and retain independent review and public evidence. [Issue 22](https://github.com/inventarch/marketplace/issues/22). | open | `publication-identity-screening` |
+| Qualify descriptor-bound reads, full kit formats, high-token-count performance and packing integration before expanding the screening profile. [Issue 23](https://github.com/inventarch/marketplace/issues/23). | open | `publication-screening-hardening` |
 | Install the core from GitHub in Claude Code and exercise the entry points, the session hook (with a compaction), the account offer and its suppression, the governance probe, the IA door's tools, a kit's handlers and the agents. | open | `qualify-claude-code` |
 | Run the Codex host smoke after every manifest, skill or `CODEX.md` change and commit its report. | open | `qualify-codex` |
 | Run the native qualification shards on Ubuntu, Windows and macOS against the 3.5.0 pins and the re-cut kits. | open | `native-qualification-refresh` |

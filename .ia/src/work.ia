@@ -8,7 +8,7 @@
     status draft
     owner "InventArch maintainers"
     source "docs/kit-contract/SCREENING-SPEC.md"
-    covers ["tools/check-identities.mjs", "tests/check-identities.test.mjs"]
+    covers ["tools/check-identities.mjs", "tests/check-identities.test.mjs", "docs/kit-contract/SCREENING-SPEC.md", "docs/kit-contract/screening-review.md", "docs/kit-contract/screening-verification.md"]
 
 @task publication-identity-screening
   meaning
