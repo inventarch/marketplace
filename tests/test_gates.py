@@ -28,7 +28,7 @@ RUNS = [
     'git config --global user.email "gates-ci@example.invalid"',
     'npm ci',
     'node tools/run-native-tests.mjs --shard ${{ matrix.shard }}',
-    'node tools/run-native-tests.mjs --verify native-reports/*',
+    'node tools/run-native-tests.mjs --verify native-reports',
 ]
 
 # Decision public-ci-matrix.
