@@ -165,6 +165,12 @@ class ReleasePullRequestWorkflowTests(unittest.TestCase):
         self.assertIn("node-version: '22.22.0'", self.text)
         pinned_actions(self, self.text)
 
+    def test_new_release_pull_requests_are_drafts_and_updates_preserve_readiness(self):
+        self.assertIn('gh pr create --draft --head release/next --base main', self.text)
+        self.assertEqual(self.text.count('gh pr create '), 1)
+        self.assertIn('gh pr edit "$number" --title', self.text)
+        self.assertNotIn('gh pr ready', self.text)
+
 
 class ReleaseWorkflowTests(unittest.TestCase):
     """Tagging a merged release (decision public-release-notes): only for a changeset on main, only after Gates passed
