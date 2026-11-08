@@ -444,19 +444,19 @@ test('REQ-AUTH-03 failure: a listed asset that is missing is reported', () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-// These two compare the sources with the recorded release, so they pass once 0.1.2 is recorded.
+// These two compare the sources with the recorded release, so they pass once 0.1.3 is recorded.
 test('REQ-AUTH-04 success: the release index names the kit and the recorded release matches the sources', () => {
   assert.deepEqual(releaseProblems(), []);
   const releases = expandReleases(KIT);
   assert.equal(releases.kit, KIT_ID);
-  assert.equal(releases.releases.at(-1).version, '0.1.2');
+  assert.equal(releases.releases.at(-1).version, '0.1.3');
   assert.equal(releases.releases.at(-1).sources, sourcesDigest(KIT));
 });
 
 test('REQ-AUTH-04 failure: a release record that drifts from the sources is reported', () => {
   const dir = scratchCopy(d => writeFileSync(join(d, 'checks.json'), `${readFileSync(join(d, 'checks.json'), 'utf8')}\n`));
   try {
-    assert.deepEqual(releaseProblems(dir), ['release 0.1.2: recorded sources digest differs from the sources']);
+    assert.deepEqual(releaseProblems(dir), ['release 0.1.3: recorded sources digest differs from the sources']);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 

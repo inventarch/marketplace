@@ -1,6 +1,6 @@
 {
   "name": "@inventarch/public-kits",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The public InventArch method kits as one package: each kit's IA archive and manifest, with its folder, for an IA engine to expand (contract C7b).",
   "license": "Apache-2.0",
   "repository": {
@@ -19,18 +19,18 @@
     "kits": [
       {
         "id": "inventarch/ia-authoring-kit",
-        "version": "0.1.2",
-        "archive": "315c359d8cdbdca15da5a2b380413ee2467337e5aaf91eab4c5dc4a522454605",
-        "manifest": "0b3502f6f7fefe1fbef32780b293e0245c665164378222224977416d4695bdef",
-        "sources": "b1ec9af6565b0f6f2dfcd81f8a71088992c517cb38e92d031c6962c656ad23e8",
+        "version": "0.1.3",
+        "archive": "c67369c7642f19310d42a07d25b3315518c05e0453e67b2d6c08c132973845d8",
+        "manifest": "b1ce63f5d06c7c8d842960c8678d14a70960ba1f1f9b9da45942ce8b508d1dc2",
+        "sources": "a334181a5df0b9324b6a63a6ead3679fa6a1c41c50fa2184786b8b7e50d5cff1",
         "folder": "ia-authoring"
       },
       {
         "id": "inventarch/ia-kb-kit",
-        "version": "0.9.2",
-        "archive": "46d6b92fea1cb20f351b9271fddba062facffadfc9ca52af6272e5a6e361d3e5",
-        "manifest": "ac78e1a92b61af3f0ca2473335ffafe2e43d3bead12575f783970eaf32715734",
-        "sources": "a017128fedc9b81aac0a8ccafa21485b9ef28e9488522eaf61d54aa9277acef6",
+        "version": "0.9.3",
+        "archive": "965a40f31a424cf90d57f0d279f5e5d88810873b8279e901edff97908db875af",
+        "manifest": "5d1888fc8e18f2240af6d1815349d0d2b7398b36c3240089d764ad33761b2dd2",
+        "sources": "3c73993ad2b85a278cec34536d3f293252da8973e3e42d0d0b80df995f43633b",
         "folder": "ia-kb"
       },
       {

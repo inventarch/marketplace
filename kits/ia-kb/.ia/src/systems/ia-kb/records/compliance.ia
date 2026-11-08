@@ -13,7 +13,7 @@
     REQ-KB-05 "Every kb- or ia-kb- name the kit's records other than its cases use in their text resolves to a record the sources declare, and every kit file they name (an assets/ path, or a config/kits/ia-kb/ path under the ia plugin root) is an asset the release lists or a folder holding one; a name or path that resolves to nothing fails the test."
     REQ-KB-06 "The kit's locator checker runs from the kit folder: over the kit's worked example it reports metadata-only standing with zero network requests and no body disclosure and exits 0, and through the core's checker runner kb-check-locators exits 0; a manifest whose commit is a mutable branch name is refused with a non-zero exit, and through the runner the check exits 3."
     REQ-KB-07 "Through the core's checker runner with the pinned CLI, kb-check-validate runs ia validate in the workspace under check and exits 0 when the workspace admits, and exits 3 when validation refuses it."
-    REQ-KB-08 "Every binding key the kit README recommends resolves through the core's resolve.mjs to its capability with all sixteen cells of that capability's playbook, read by identity in phase order (source playbook), the role its README names, the five laws in references with when always, and evidence.required equal to the capability's composed checks: from the restored kit root, and in an IA workspace that adopted the kit and holds a @spec, both at the workspace seat and with --seat at the @spec; a capability that delivery.json leaves out arrives as the position's cells instead."
+    REQ-KB-08 "A workspace that binds the kit while its lock does not install it is refused by the core's resolve.mjs with IA-CORE-KIT-NOT-INSTALLED, naming the kit. Once the kit is installed, every binding key the kit README recommends resolves through resolve.mjs to its capability with all sixteen cells of that capability's playbook, read by identity in phase order (source playbook), the role its README names, the five laws in references with when always, and evidence.required equal to the capability's composed checks: in an IA workspace that adopted the kit and holds a @spec, both at the workspace seat and with --seat at the @spec; a capability that delivery.json leaves out arrives as the position's cells instead."
     REQ-KB-09 "The task-manifest check runs only the declared locator checker on the caller-selected regular file under the workspace; a valid manifest returns metadata-only standing, a mutable revision fails, and an absent, escaping or linked argument refuses before execution. The example check cannot accept a task manifest."
     REQ-KB-10 "Through the core's checker runner, kb-check-decisions runs ia validate and then reads the workspace's admitted records with ia records, both through the CLI the runner resolves, and exits 0 when each of the workspace's own decisions that is made names a non-empty decision.decider, decision.choice and decision.rationale, and each that is superseded keeps them and is superseded by a @decision, through the successor's supersedes or its own superseded-by, in the same file or another; open, withdrawn and adopted decisions are not checked, and decision.effective-revision is not required. Otherwise the checker exits 1 and the runner 3, reporting each such decision with decision-made-needs-acceptance, decision-superseded-needs-acceptance or decision-superseded-needs-successor and a message naming the record and what it lacks. A workspace ia validate does not admit is never judged, since ia records leaves out the decisions validation refuses, and it, records the checker cannot read and a folder without .ia/src exit the checker 2 with nothing on stdout, never a pass."
   relationships
@@ -259,14 +259,14 @@
 
 @case kb-req-08-success
   meaning
-    says "Every binding key the kit README recommends resolves to its capability's whole playbook, with the role the README names, the five laws and the capability's composed checks as evidence.required, from the restored kit root and in an adopting repository at its workspace seat and at a @spec seat."
+    says "Every binding key the kit README recommends resolves to its capability's whole playbook, with the role the README names, the five laws and the capability's composed checks as evidence.required, in a repository that installed the kit, at its workspace seat and at a @spec seat; a workspace whose lock does not install the kit is refused."
     answers "Does every recommended binding deliver what the README says, wherever it is resolved?"
   scenario
     kind success
-    given "The README's bind.mjs lines written as .ia/bindings.json in two IA workspaces made by ia init: one that reads the kit from its restored root, and one that adopted the kit with kit.mjs adopt and holds a @spec model-api; the pinned CLI named by IA_CLI_PATH."
-    request "Run node scripts/resolve.mjs --entry knowledge --activity <activity> --root <workspace> --json for every key, in the adopting workspace also with --seat work-system/contract/spec/model-api."
-    expected "Each packet binds the README's capability, carries the sixteen cells of its playbook in phase order with source playbook, names the README's profile as role.profile with its mandate in references with when role, lists the five kb laws with when always, and requires exactly the capability's composed checks."
-    evaluator "plugins/ia/tests/kit-kb.test.mjs :: REQ-KB-08 success: every recommended binding delivers its whole playbook and the laws, restored and adopted"
+    given "The README's bind.mjs lines written as .ia/bindings.json in two IA workspaces made by ia init: one whose lock does not install the kit, and one that adopted the kit with kit.mjs adopt and holds a @spec model-api; the pinned CLI named by IA_CLI_PATH."
+    request "Run node scripts/resolve.mjs --entry knowledge --activity <activity> --root <workspace> --json for every key in the adopting workspace, also with --seat work-system/contract/spec/model-api, and once in the workspace that does not install the kit."
+    expected "The uninstalled workspace exits 1 with error.code IA-CORE-KIT-NOT-INSTALLED and error.kit inventarch/ia-kb-kit. Each adopting packet binds the README's capability, carries the sixteen cells of its playbook in phase order with source playbook, names the README's profile as role.profile with its mandate in references with when role, lists the five kb laws with when always, and requires exactly the capability's composed checks."
+    evaluator "plugins/ia/tests/kit-kb.test.mjs :: REQ-KB-08 success: every recommended binding delivers its whole playbook and the laws once the kit is installed, and an uninstalled kit is refused"
   relationships
     implements @contract ia-kb#REQ-KB-08
 
@@ -276,8 +276,8 @@
     answers "Is the whole delivery the kit's declaration, not an accident of the seat?"
   scenario
     kind failure
-    given "A scratch kits folder holding a copy of the kit whose delivery.json leaves out kb-check, a workspace binding knowledge.check to kb-check, and IA_CORE_KITS_DIR set to the scratch kits folder."
-    request "Run node scripts/resolve.mjs --entry knowledge --activity check --root <workspace> --json from the restored root."
+    given "A scratch kits folder holding a copy of the kit whose delivery.json leaves out kb-check, a workspace that adopted the kit and binds knowledge.check to kb-check, and IA_CORE_KITS_DIR set to the scratch kits folder."
+    request "Run node scripts/resolve.mjs --entry knowledge --activity check --root <workspace> --json in that workspace."
     expected "The packet carries only the one kb-check cell the position delivers at context and orient, with source position, not the sixteen."
     evaluator "plugins/ia/tests/kit-kb.test.mjs :: REQ-KB-08 failure: a capability delivery.json leaves out arrives as the position's cells"
   relationships

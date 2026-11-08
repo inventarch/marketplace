@@ -15,7 +15,8 @@
     "test": "npm run test:repo && npm run test:tools && npm run test:plugins",
     "selection:propose": "python tools/selection.py",
     "test:codex": "node tools/smoke-codex.mjs",
-    "kit": "node tools/kit.mjs"
+    "kit": "node tools/kit.mjs",
+    "kits:install": "node plugins/ia/scripts/kit.mjs add inventarch/ia-method-kit . --apply && node plugins/ia/scripts/kit.mjs add inventarch/ia-kb-kit . --apply && node plugins/ia/scripts/kit.mjs add inventarch/ia-authoring-kit . --apply"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

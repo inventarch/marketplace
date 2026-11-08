@@ -7,7 +7,7 @@
 - The [kit sources guide](kits/README.md) and each kit's README ([ia-method](kits/ia-method/README.md), [ia-kb](kits/ia-kb/README.md), [ia-authoring](kits/ia-authoring/README.md)) describe what a kit offers and the keys it binds.
 - [Host support](docs/hosts.md) says what each host loads, which hooks run where and what has been qualified on a real host.
 - `/ia:doctor` reports the plugin, workspace, kit and binding state it observes, with the repair it suggests for each problem. `node "<plugin root>/scripts/kit.mjs" check` reports each kit's trust and whether it runs code.
-- A refusal names its code and the command that resolves it (for example `IA-CORE-NO-METHOD` names `kit.mjs bind <kit> --apply`). Follow it before retrying.
+- A refusal names its code and the command that resolves it (for example `IA-CORE-NO-METHOD` names `kit.mjs bind <kit> --install --apply`). Follow it before retrying.
 
 ## Ask
 

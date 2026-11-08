@@ -5,11 +5,11 @@
 // packets: every cell of the bound playbook read by identity, for a
 // whole-procedure activity or when the position delivers none of them.
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { WHOLE_PROCEDURE } from '../scripts/lib/workspace.mjs';
-import { envFor, fakeCli, makeKit, makeRepo, run, sandbox, sha256 } from './helpers/fixtures.mjs';
+import { envFor, fakeCli, installLock, makeKit, makeRepo, run, sandbox, sha256 } from './helpers/fixtures.mjs';
 
 const bindings = (key, kit, capability, extra = {}) => ({ format: 1, bindings: { [key]: { kit, capability } }, ...extra });
 
@@ -24,10 +24,13 @@ function world(t) {
 }
 
 const resolve = (args, env, cwd) => run('resolve.mjs', args, env, { cwd });
+// A repository whose own position answers as the kit's does: a bound kit is installed, and the installed repository answers position itself.
+const answeringAs = (repo, kit) => writeFileSync(join(repo, '.ia', 'fake-cli.json'), readFileSync(join(kit.dir, '.ia', 'fake-cli.json')));
 
 test('a bound activity resolves to a packet: closure, scope key, instructions of the capability, references, role, effects, runner', t => {
   const { dir, alpha, env } = world(t);
   const repo = makeRepo(join(dir, 'repo'), { bindings: bindings('delivery.review', alpha.id, alpha.capability) });
+  answeringAs(repo, alpha);
   const out = resolve(['--entry', 'delivery', '--activity', 'review', '--subject', 'PR 7', '--root', repo, '--json'], env());
   assert.equal(out.status, 0, out.stdout + out.stderr);
   const p = out.json;
@@ -51,7 +54,7 @@ test('a bound activity resolves to a packet: closure, scope key, instructions of
   assert.deepEqual(p.evidence.required, ['alpha-gate']);
   assert.equal(p.kitUpdateAvailable, null);
   assert.match(p.digest, /^[a-f0-9]{64}$/);
-  assert.equal(p.envelope.kitInstalled, false);
+  assert.equal(p.envelope.kitInstalled, true, 'a bound kit is one the lock installs');
   assert.equal(p.envelope.cliVersion, '3.5.0');
   // The capability composes a check, so the packet says the host does not enforce the checker restriction.
   const enforcement = p.missing.find(m => m.kind === 'enforcement');
@@ -167,10 +170,10 @@ test('isolation: two repositories with different bindings resolve different kits
   assert.equal(JSON.parse(readFileSync(join(taskA, 'binding.json'), 'utf8')).revision, 1);
 });
 
-test('pin per key (private-core-task-pin-per-key): a new key joins the task in a new revision, at the version the task holds for its kit; another kit joins beside it; a pinned key whose binding changed needs --rebind', t => {
+test('pin per key: a new key joins the task in a new revision, at the version the task holds for its kit; another kit joins beside it; a pinned key whose binding changed needs --rebind', t => {
   const { dir, kitsDir, alpha, beta, env } = world(t);
   const second = makeKit(kitsDir, { folder: 'alpha2', id: 'inventarch/alpha2-kit', capability: 'alpha2-review', playbook: 'alpha2-operate', checks: [], profile: null });
-  const repo = makeRepo(join(dir, 'repo'), { bindings: { format: 1, bindings: { 'work.task': { kit: alpha.id, capability: alpha.capability }, 'work.meeting': { kit: alpha.id, capability: alpha.capability }, 'work.completion': { kit: beta.id, capability: beta.capability } } } });
+  const repo = makeRepo(join(dir, 'repo'), { bindings: { format: 1, bindings: { 'work.task': { kit: alpha.id, capability: alpha.capability }, 'work.meeting': { kit: alpha.id, capability: alpha.capability }, 'work.completion': { kit: beta.id, capability: beta.capability } } }, lock: installLock({ bindings: { a: { kit: alpha.id }, b: { kit: beta.id }, c: { kit: second.id } } }) });
   const taskRoot = join(dir, 'work', 'proj', 'task-k');
   const read = () => JSON.parse(readFileSync(join(taskRoot, 'binding.json'), 'utf8'));
   const task = resolve(['--entry', 'work', '--activity', 'task', '--root', repo], env(taskRoot)).json;
@@ -229,7 +232,7 @@ test('a format 1 pin is read as its one key and written as format 3 on its next 
   assert.equal(resolve(['--entry', 'work', '--activity', 'task', '--root', repo], env(taskRoot)).json.error.code, 'IA-CORE-PIN-MALFORMED', 'a key whose kit the pin does not hold');
 });
 
-test('unbound resolve (private-core-unbound-resolve): outside an IA workspace --kit and --capability name the method, nothing is pinned; inside one it is refused', t => {
+test('unbound resolve: outside an IA workspace --kit and --capability name the method, nothing is pinned; inside one it is refused', t => {
   const { dir, alpha, env } = world(t);
   const plain = join(dir, 'plain');
   mkdirSync(join(plain, '.git'), { recursive: true });
@@ -292,11 +295,10 @@ test('IA-CORE-NO-METHOD names the carried kits that recommend the key and the co
 
 test('an installed kit cannot replace method content; --seat selects consumer context separately', t => {
   const { dir, alpha, env } = world(t);
-  const restored = makeRepo(join(dir, 'restored'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability) });
-  const noted = resolve(['--entry', 'knowledge', '--activity', 'find', '--root', restored, '--seat', 'work-system/definition/task/t1'], env()).json;
-  assert.equal(noted.envelope.kitInstalled, false);
-  assert.ok(noted.missing.some(m => m.kind === 'seat'));
-  assert.equal(noted.scope.seat, 'work-system/definition/task/t1');
+  // A kit the repository binds but its lock does not install is refused, seat or no seat; it is never read as a context-only kit.
+  const uninstalled = makeRepo(join(dir, 'uninstalled'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability), lock: null });
+  const refused = resolve(['--entry', 'knowledge', '--activity', 'find', '--root', uninstalled, '--seat', 'work-system/definition/task/t1'], env()).json;
+  assert.equal(refused.error.code, 'IA-CORE-KIT-NOT-INSTALLED');
   const installed = makeRepo(join(dir, 'installed'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability), lock: { engine: '0.1.0', formatVersion: 1, packages: [{ id: alpha.id, version: '0.1.0', archive: alpha.archive }] } });
   // The installed repository answers position itself: give it the kit's canned answers.
   writeFileSync(join(installed, '.ia', 'fake-cli.json'), readFileSync(join(alpha.dir, '.ia', 'fake-cli.json')));
@@ -307,7 +309,7 @@ test('an installed kit cannot replace method content; --seat selects consumer co
   assert.equal(seated.missing.some(m => m.kind === 'seat'), true);
 });
 
-test("an adopted repository's packet carries the seat's laws and mandates, and its refused position passes IA's hint on; elsewhere the kit's laws arrive and the repository position is context only", t => {
+test("an adopted repository's packet carries the seat's laws and mandates, and its refused position passes IA's hint on; a kit the lock does not install is refused", t => {
   const { dir, alpha, env } = world(t);
   const canned = JSON.parse(readFileSync(join(alpha.dir, '.ia', 'fake-cli.json'), 'utf8'));
   const answer = (repo, position) => writeFileSync(join(repo, '.ia', 'fake-cli.json'), JSON.stringify({ ...canned, position }));
@@ -318,20 +320,16 @@ test("an adopted repository's packet carries the seat's laws and mandates, and i
   assert.equal(seated.status, 0, seated.stdout + seated.stderr);
   assert.deepEqual([of(seated.json, 'always'), of(seated.json, 'seat')], [['governance-system/governance/law/repo-law'], ['agent-system/policy/mandate/repo-mandate']], "the seat's governance, not the kit's");
   assert.deepEqual(seated.json.instructions.map(c => c.text), resolve(['--entry', 'knowledge', '--activity', 'find', '--root', makeRepo(join(dir, 'plain'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability) })], env()).json.instructions.map(c => c.text), 'the method still comes from the kit');
-  const restored = makeRepo(join(dir, 'restored'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability) });
-  answer(restored, { ...canned.position, rules: [{ identity: 'governance-system/governance/law/repo-law', digest: 'repo' }] });
-  assert.deepEqual(of(resolve(['--entry', 'knowledge', '--activity', 'find', '--root', restored], env()).json, 'always'), ['governance-system/governance/law/alpha-law'], 'a kit that is not adopted brings its own laws');
+  // A kit the lock does not install does not bring its own laws to a repository that binds it: it is refused.
+  const uninstalled = makeRepo(join(dir, 'uninstalled'), { bindings: bindings('knowledge.find', alpha.id, alpha.capability), lock: null });
+  answer(uninstalled, { ...canned.position, rules: [{ identity: 'governance-system/governance/law/repo-law', digest: 'repo' }] });
+  assert.equal(resolve(['--entry', 'knowledge', '--activity', 'find', '--root', uninstalled], env()).json.error.code, 'IA-CORE-KIT-NOT-INSTALLED');
   // A fresh, unrestored clone: IA refuses position in the repository.
   const unrestored = { refuse: { code: 'IA-DIST-NOT-RESTORED', message: 'the locked distributions are not restored', next: 'ia restore --apply' } };
   answer(installed, unrestored);
   const refused = resolve(['--entry', 'knowledge', '--activity', 'find', '--root', installed], env()).json;
   assert.equal(refused.error.code, 'IA-CORE-POSITION');
   assert.match(refused.error.message, /the locked distributions are not restored \(next: ia restore --apply\)/);
-  answer(restored, unrestored);
-  const context = resolve(['--entry', 'knowledge', '--activity', 'find', '--root', restored], env());
-  assert.equal(context.status, 0, context.stdout + context.stderr);
-  assert.ok(context.json.missing.some(m => m.kind === 'position' && /next: ia restore --apply/.test(m.message)));
-  assert.deepEqual(of(context.json, 'always'), ['governance-system/governance/law/alpha-law']);
 });
 
 test('a composed check without a runner is carried as host-run and unavailable; a capability none of whose checks can run refuses', t => {
@@ -420,6 +418,7 @@ test('a whole capability delivers every cell of the bound playbook, read by iden
   // The same playbook from a kit that declares nothing whole gets the position's cell of that phase only.
   const theta = auditKit(kitsDir, { folder: 'theta', id: 'inventarch/theta-kit' });
   writeFileSync(join(repo, '.ia', 'bindings.json'), JSON.stringify(bindings('work.*', theta.id, theta.capability)));
+  writeFileSync(join(repo, '.ia', 'distributions.lock.json'), JSON.stringify(installLock(bindings('work.*', theta.id, theta.capability))));
   const phase = resolve(['--entry', 'work', '--activity', 'task', '--root', repo], env()).json;
   assert.deepEqual(phase.instructions, [{ playbook: theta.playbookId, address: `${theta.playbookId}#plan/Inference`, text: `${theta.id} 0.1.0: plan cell`, source: 'position' }]);
 });
@@ -544,4 +543,33 @@ test('legacy Development task pins require an explicit persisted Delivery rebind
     assert.equal(again.status, 0, again.stdout + again.stderr);
     assert.equal(again.json.binding.revision, 4, 'the migrated key resolves without another rebind');
   }
+});
+
+// Every entry under a folder with its content (a directory is a marker), so a rewritten file shows as well as a new one.
+function snapshot(folder) {
+  const rows = {};
+  for (const entry of readdirSync(folder, { recursive: true, withFileTypes: true })) {
+    const path = join(entry.parentPath, entry.name);
+    rows[path.slice(folder.length)] = entry.isDirectory() ? '<directory>' : readFileSync(path).toString('hex');
+  }
+  return rows;
+}
+
+test('a workspace with no bindings refuses only the method it asks for, writes nothing, and reads on', t => {
+  const { dir, env } = world(t);
+  const repo = makeRepo(join(dir, 'repo'));
+  const home = join(dir, 'home');
+  mkdirSync(home, { recursive: true });
+  mkdirSync(join(dir, 'temp'), { recursive: true });
+  const before = { repo: snapshot(repo), home: snapshot(home), temp: snapshot(join(dir, 'temp')) };
+  const out = resolve(['--entry', 'work', '--activity', 'task', '--root', repo], env(undefined, { IA_HOME: home }));
+  assert.equal(out.status, 1);
+  assert.equal(out.json.error.code, 'IA-CORE-NO-METHOD');
+  assert.equal(out.json.error.key, 'work.task');
+  assert.equal(out.json.error.message, 'no method is bound for work.task in this repository: .ia/bindings.json names no work.task, no work.*, and no defaults.work. List the kits with kit.mjs list and bind one with bind.mjs set work.task <kit> <capability>');
+  assert.deepEqual(snapshot(repo), before.repo, 'the refusal changes nothing in the repository, content included');
+  assert.deepEqual(snapshot(home), before.home, 'nor in the isolated IA home');
+  assert.deepEqual(snapshot(join(dir, 'temp')), before.temp, 'nor in the temp folder, so no retained closure');
+  const listed = run('kit.mjs', ['list'], env(undefined, { IA_HOME: home }), { cwd: repo });
+  assert.equal(listed.status, 0, listed.stdout + listed.stderr);
 });

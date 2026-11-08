@@ -20,6 +20,14 @@ npm ci
 
 It installs Biome, lefthook and the pinned `@inventarch/cli` 3.5.0, and lefthook installs this repository's Git hooks, which run the gates before each commit and push. `LEFTHOOK=0` skips them for one command; CI still runs them. Never use an `ia` on your `PATH` for this repository: the gates use the pinned one.
 
+To run the `ia` plugin's lanes in this repository, also install its three kits once per checkout (and again after a kit release):
+
+```sh
+npm run kits:install
+```
+
+It runs `plugins/ia/scripts/kit.mjs add` for `ia-method`, `ia-kb` and `ia-authoring`, which needs the CLI `npm ci` installed. It writes `.ia/distributions.lock.json`, `.ia/distributions/` and `vendor/ia/`, all ignored by Git. From IA 3.6.0 the IA door runs a kit this repository binds only when that lock installs it (decision `public-cli-3-6-0-own-lock`). It is not the maintainers' `npm run kit` (`tools/kit.mjs`).
+
 ## How the repository is organised
 
 - [AGENTS.md](AGENTS.md) holds the working rules: what may ship, the plugin rules, the kit rules and the gates. Read it before changing anything.

@@ -387,7 +387,7 @@ test('real CLI: the sources repack to the recorded release (opt-in: IA_CORE_TEST
   built.cleanup();
 });
 
-test('real CLI: with the recommended bindings, a word activity, any other Work activity and the vocabulary resolve from a restored root (opt-in: IA_CORE_TEST_CLI)', { skip: SKIP }, () => {
+test('real CLI: with the recommended bindings, an uninstalled kit is refused, then a word activity, any other Work activity and the vocabulary resolve once it is installed (opt-in: IA_CORE_TEST_CLI)', { skip: SKIP }, async () => {
   const base = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-core-method-resolve-')));
   const repo = join(base, 'repo');
   const temp = join(base, 'temp');
@@ -407,9 +407,18 @@ test('real CLI: with the recommended bindings, a word activity, any other Work a
       return JSON.parse(ran.stdout);
     };
     const cellsOf = packet => packet.instructions.map(c => c.address.split('#')[0]);
+    // The lock does not install the kit yet: the resolver refuses and names the kit.
+    const refused = core('resolve.mjs', ['--entry', 'work', '--activity', 'milestone', '--root', repo, '--json']);
+    assert.equal(refused.status, 1, refused.stdout + refused.stderr);
+    const refusal = JSON.parse(refused.stdout).error;
+    assert.equal(refusal.code, 'IA-CORE-KIT-NOT-INSTALLED');
+    assert.equal(refusal.kit, KIT_ID);
+    // Installed (the vendored route), the same bindings resolve.
+    const { resolveCli } = await import('../scripts/lib/cli.mjs');
+    assert.ok(adopt(repo, kit(), { cli: resolveCli(repo, { env: { IA_CLI_PATH: CLI } }) }).written.length > 0);
     // A word activity: the word's own playbook, never method-operate.
     const milestone = resolve('work', 'milestone');
-    assert.equal(milestone.envelope.kitInstalled, false, 'read from a restored root');
+    assert.equal(milestone.envelope.kitInstalled, true, 'read from the installed kit');
     assert.ok(milestone.instructions.length > 0);
     assert.deepEqual([...new Set(cellsOf(milestone))], ['governance-system/definition/procedure/milestone-method']);
     // Any other Work activity: method-operate, whole, every cell of both playbooks in phase order.

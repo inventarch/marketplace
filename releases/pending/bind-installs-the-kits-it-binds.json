@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Bind installs the kits it binds",
+  "summary": "kit.mjs bind now refuses a kit the repository lock does not install, on a preview too and with --key, and writes nothing; --install installs it first. For the kits `@inventarch/public-kits` carries, --install runs `ia install --package @inventarch/public-kits@<version> --apply --yes` (a workspace with no lock gets a language-only lock and a restore first), which needs npm and the registry; any other kit installs as kit.mjs add does. The refusal names the remedy for the kit: the package route for the kits the package carries, kit.mjs add for the rest. The session start names every bound kit the lock does not install. The bundled kits' guidance now teaches `kit.mjs bind <kit> --install --apply` as the way to install and bind a kit, and says a bound kit the lock does not install is refused with `IA-CORE-KIT-NOT-INSTALLED`: the `ia-authoring` `convention` and `playbook`, the `ia-authoring-record` installed-kits `convention`, the `ia-kb` `IA-CORE-NO-METHOD` remedy and `case` records, and the `ia-method` README.",
+  "plugins": [
+    "ia"
+  ]
+}

@@ -46,14 +46,16 @@ Installing the plugin also gives Claude Code the IA door: the plugin's launcher 
 
 ### 2. Set up a repository
 
-Run `/ia:init` in a repository: it offers `ia init` and binds the default kits. By hand, in a repository that is an IA workspace:
+Run `/ia:init` in a repository: it offers `ia init` and binds the default kits. By hand, run `ia init` first when the repository is not an IA workspace yet (through the plugin's `scripts/ia.mjs`, never an `ia` on PATH), then install and bind each kit:
 
 ```sh
 node "<plugin root>/scripts/kit.mjs" list
-node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-method-kit --apply
-node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-kb-kit --apply
-node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-authoring-kit --apply
+node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-method-kit --install --apply
+node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-kb-kit --install --apply
+node "<plugin root>/scripts/kit.mjs" bind inventarch/ia-authoring-kit --install --apply
 ```
+
+`bind` refuses a kit the repository's lock does not install, on a preview too; `--install` installs it first. For the three default kits that runs `ia install --package @inventarch/public-kits@<version> --apply --yes` (the version is in the plugin's `config/public-kits.json`), which installs all three at once, so it needs npm and the registry; the first call in a workspace with no lock seeds one and restores it. Any other kit installs the way `kit.mjs add` does.
 
 Every `kit.mjs` verb previews unless you pass `--apply`. `upgrade`, `repin` and `rebind` move a repository to a new kit release; `add --from <folder or archive>` installs a kit into `<IA home>/kits/<kit>/<version>/`. A kit that depends on another kit (its `.ia/release.json` names it) installs only once that kit is found: carried by the plugin, already in `<IA home>/kits`, or next to it in the same folder. Add the dependency first; adoption then vendors both.
 
@@ -233,7 +235,7 @@ A pull request that changes a file the plugin ships adds a release note (`node t
 
 ## ✅ Contributing and verification
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in [docs/roadmap.md](docs/roadmap.md). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.5.0, and lefthook installs this repository's Git hooks. CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in [docs/roadmap.md](docs/roadmap.md). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.5.0, and lefthook installs this repository's Git hooks. `npm run kits:install` then installs the three kits this repository's own lanes run (see CONTRIBUTING.md). CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
 
 | Command | What it checks |
 | --- | --- |

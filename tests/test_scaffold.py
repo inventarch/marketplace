@@ -616,6 +616,12 @@ class ScaffoldTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'document without a record'):
             validate(self.root)
 
+    def test_installed_kit_state_is_not_a_document_without_a_record(self):
+        # Ignored by Git: npm run kits:install writes kit assets under .ia/distributions/ and vendor/ia/.
+        self.plant('.ia/distributions/store/abc/assets/note.md', '# Installed kit asset\n')
+        self.plant('vendor/ia/note.md', '# Vendored\n')
+        validate(self.root)
+
     def test_skill_without_trigger_refuses(self):
         folder = self.root / 'plugins/ia/skills/no-trigger'
         folder.mkdir()

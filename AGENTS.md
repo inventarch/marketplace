@@ -27,7 +27,7 @@ A Git install copies a plugin's whole folder, `tests/` included. `tools/validate
 
 ## Gates
 
-`npm ci` at the root installs the gates' tools and, through lefthook's postinstall, this repository's Git hooks (decision `public-local-gates`). `LEFTHOOK=0` skips them for one command; CI still runs the same checks.
+`npm ci` at the root installs the gates' tools and, through lefthook's postinstall, this repository's Git hooks (decision `public-local-gates`). `LEFTHOOK=0` skips them for one command; CI still runs the same checks. `npm run kits:install` then installs the three kits into this checkout's ignored lock and `vendor/ia/`, which this repository's own lanes need from IA 3.6.0 (decision `public-cli-3-6-0-own-lock`).
 
 ```
 python tools/validate.py

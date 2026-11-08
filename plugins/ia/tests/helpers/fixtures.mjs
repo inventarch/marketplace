@@ -23,7 +23,7 @@ export function sandbox(t, prefix = 'ia-core-') {
   return dir;
 }
 
-const FAKE_CLI = `import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+const FAKE_CLI = `import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 const args = process.argv.slice(2);
 const value = name => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
@@ -31,6 +31,29 @@ const root = value('--root') ?? process.cwd();
 const print = v => process.stdout.write(JSON.stringify(v) + '\\n');
 const command = args[0];
 if (command === '--version') { process.stdout.write(VERSION + '\\n'); process.exit(0); }
+appendFileSync(LOG, JSON.stringify(args) + '\\n');
+if (command === 'install' && args.includes('--package')) {
+  const spec = value('--package');
+  const lockPath = join(root, '.ia', 'distributions.lock.json');
+  const refuse = (code, message, exit) => { print({ version: 1, ok: false, code, message, exit }); process.exit(exit); };
+  if (INSTALL === 'hang') { setInterval(() => {}, 1000); await new Promise(() => {}); }
+  else {
+    if (!existsSync(lockPath)) refuse('IA-DB-SOURCE-UNAVAILABLE', 'Distribution contract-invalid: Missing/self locked dependency', 1);
+    if (INSTALL === 'notfound') refuse('IA-CLI-KITS-PACKAGE-UNAVAILABLE', 'The kits package ' + spec + ' is unavailable: npm error code E404', 3);
+    if (INSTALL === 'mutatefail') { const moved = JSON.parse(readFileSync(lockPath, 'utf8')); moved.entries = [{ kind: 'package', name: 'x', version: '0.0.0', kits: [] }]; writeFileSync(lockPath, JSON.stringify(moved)); refuse('IA-DIST-CONFLICT', 'failed after the lock changed', 3); }
+    if (INSTALL === 'refuse') refuse('IA-DIST-CONFLICT', 'inventarch/language: ranges conflict', 3);
+    if (INSTALL !== 'norow') {
+      const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
+      const at = spec.lastIndexOf('@');
+      lock.entries = [...(lock.entries ?? []), { kind: 'package', name: spec.slice(0, at), version: spec.slice(at + 1), integrity: 'sha512-' + 'A'.repeat(86) + '==', kits: PACKAGE_KITS.map(k => ({ ...k, manifest: 'f'.repeat(64) })) }];
+      writeFileSync(lockPath, JSON.stringify(lock));
+      mkdirSync(join(root, '.ia', 'distributions'), { recursive: true });
+      writeFileSync(join(root, '.ia', 'distributions', 'active.json'), '{"installed":true}');
+    }
+    print({ version: 1, applied: { status: 'installed' }, summary: PACKAGE_KITS.length + ' added' });
+    process.exit(0);
+  }
+}
 if (command === 'restore' && UNAVAILABLE) {
   print({ version: 1, ok: false, code: 'IA-DIST-ARTIFACT-UNAVAILABLE', message: 'The default registry is not available', exit: 4 });
   process.exit(4);
@@ -88,14 +111,24 @@ process.exit(2);
 // base (IA-DIST-CONFLICT, exit 3; CLI 3.2.2 and 3.3.0 against the default
 // registry, 2026-10-22). restoreConflict: its restore refuses with a conflict that
 // is not about the base it ships (IA-DIST-CONFLICT, ranges conflict, exit 3).
-export function fakeCli(dir, version = '3.5.0', { restoreUnavailable = false, restoreDelisted = false, restoreConflict = false } = {}) {
+// install --package <name>@<version>: refuses without a lock (IA-DB-SOURCE-UNAVAILABLE) as the CLI does, else adds a lock
+// `entries` row { kind: 'package', name, version, integrity, kits } for packageKits ([{ id, version, archive }]) and answers
+// { applied: { status: 'installed' } }. install: 'ok' | 'notfound' (IA-CLI-KITS-PACKAGE-UNAVAILABLE, exit 3) | 'refuse'
+// (IA-DIST-CONFLICT, exit 3) | 'mutatefail' (changes the lock, then exits 3) | 'norow' (installed, but no row written) | 'hang' (never exits). Every call after --version is
+// appended to <cli folder>/calls.log; cliCalls(main) reads it.
+export function fakeCli(dir, version = '3.5.0', { restoreUnavailable = false, restoreDelisted = false, restoreConflict = false, install = 'ok', packageKits = [] } = {}) {
   const pkg = join(dir, 'fake-cli');
   mkdirSync(join(pkg, 'dist'), { recursive: true });
   writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@inventarch/cli', version, bin: { ia: 'dist/main.js' } }));
   const main = join(pkg, 'dist', 'main.js');
-  writeFileSync(main, `const VERSION = ${JSON.stringify(version)};\nconst UNAVAILABLE = ${restoreUnavailable};\nconst DELISTED = ${restoreDelisted};\nconst CONFLICT = ${restoreConflict};\n` + FAKE_CLI);
+  writeFileSync(main, `const VERSION = ${JSON.stringify(version)};\nconst UNAVAILABLE = ${restoreUnavailable};\nconst DELISTED = ${restoreDelisted};\nconst CONFLICT = ${restoreConflict};\nconst INSTALL = ${JSON.stringify(install)};\nconst PACKAGE_KITS = ${JSON.stringify(packageKits)};\nconst LOG = ${JSON.stringify(join(pkg, 'calls.log'))};\n` + FAKE_CLI);
   writeFileSync(join(pkg, 'dist', 'package.json'), '{"type":"module"}');
   return main;
+}
+
+// The stand-in's calls after --version, as argument lists, oldest first.
+export function cliCalls(main) {
+  try { return readFileSync(join(main, '..', '..', 'calls.log'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)); } catch { return []; }
 }
 
 const text = (v, kind = 'string') => ({ kind, text: v });
@@ -204,8 +237,18 @@ export function declareAssets(dir, paths) {
   writeFileSync(path, JSON.stringify(descriptor, null, 2) + '\n');
 }
 
-// A repository that is an IA workspace, with optional bindings and lock.
+// The lock rows that install every kit a bindings object names, at the version and archive the kit's own
+// releases.json gives when it is found in `kitsDirs`, else a placeholder: a repository that binds a kit installs it.
+export function installLock(bindings) {
+  const ids = [...new Set([...Object.values(bindings.bindings ?? {}).flat(), ...Object.values(bindings.defaults ?? {})].map(b => b.kit))];
+  return { engine: '0.1.0', formatVersion: 1, packages: ids.map(id => ({ id, version: '0.1.0', archive: createHash('sha256').update(id).digest('hex') })) };
+}
+
+// A repository that is an IA workspace, with optional bindings and lock. A repository with bindings and no lock
+// installs the kits those bindings name (a bound kit the lock does not install is refused, which tests that mean it
+// say with lock: null); one with no bindings has no lock unless one is given.
 export function makeRepo(dir, { bindings, lock } = {}) {
+  if (bindings && lock === undefined) lock = installLock(bindings);
   mkdirSync(join(dir, '.ia', 'src'), { recursive: true });
   mkdirSync(join(dir, '.git'), { recursive: true });
   writeFileSync(join(dir, '.ia', 'src', 'workspace.ia'), '#! ia 1.0\n\n@workspace repo\n  meaning\n    says "A repository."\n');

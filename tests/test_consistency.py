@@ -174,6 +174,13 @@ class ConsistencyTests(unittest.TestCase):
         self.write('.ia/work/scratch.md', 'no final newline')
         self.assertEqual(check(self.root), [])
 
+    def test_vendored_kit_archives_in_a_copy_are_not_checked(self):
+        # npm run kits:install vendors gzip archives under vendor/ia/, which .gitignore keeps out.
+        path = self.root / 'vendor' / 'ia' / 'kit.ia.tgz'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(bytes([0x1F, 0x8B, 0x08, 0x00, 0xFF, 0xFE]))
+        self.assertEqual(check(self.root), [])
+
     def test_link_leaving_the_repository_refuses(self):
         self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nSee [elsewhere](../../kb/README.md).\n')
         self.assertProblem(r'docs/roadmap\.md:\d+: link leaves the repository')
