@@ -69,7 +69,7 @@ jobs:
           if [ -n "$number" ]; then
             gh pr edit "$number" --title "Release $RELEASE_TITLE" --body-file "$RUNNER_TEMP/release-body.md"
           else
-            gh pr create --head release/next --base main --title "Release $RELEASE_TITLE" --body-file "$RUNNER_TEMP/release-body.md"
+            gh pr create --draft --head release/next --base main --title "Release $RELEASE_TITLE" --body-file "$RUNNER_TEMP/release-body.md"
           fi
           # Pushes and pull requests made with this workflow's token start no other workflow; a dispatch does. Gates
           # on the release head reports the checks main's ruleset requires.
