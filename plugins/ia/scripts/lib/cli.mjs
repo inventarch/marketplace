@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 // The CLI the kits' releases were packed with; adoption needs exactly this one.
-export const PINNED = '3.5.0';
+export const PINNED = '3.6.0';
 
 export class CliError extends Error {
   constructor(message, code = 'IA-CORE-CLI') { super(message); this.code = code; }
@@ -42,8 +42,9 @@ function installed(root) {
     if (!existsSync(pkgFile)) continue;
     const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
     if (pkg.name !== '@inventarch/cli') throw new CliError(`${pkgFile} names ${pkg.name ?? 'no package'}, not @inventarch/cli: reinstall @inventarch/cli@${PINNED} or set IA_CLI_PATH`, 'IA-CORE-CLI-MISSING');
-    const bin = typeof pkg.bin === 'string' ? pkg.bin : pkg.bin?.ia ?? 'dist/main.js';
-    const main = join(dirname(pkgFile), bin);
+    // From 3.6.0 `bin` is the hand-off launcher (dist/bin.js); `main` is the CLI itself, and the qualified runtime admits only it.
+    const entry = typeof pkg.main === 'string' ? pkg.main : typeof pkg.bin === 'string' ? pkg.bin : pkg.bin?.ia ?? 'dist/main.js';
+    const main = join(dirname(pkgFile), entry);
     if (!existsSync(main)) throw new CliError(`the installed @inventarch/cli ${pkg.version ?? ''} has no entry ${main}: reinstall it or set IA_CLI_PATH`, 'IA-CORE-CLI-MISSING');
     return { argv: [process.execPath, main], version: pkg.version, source: dirname(pkgFile) };
   }
@@ -86,11 +87,14 @@ export function resolveCli(root, { cliPath, env = process.env, platform = proces
 }
 
 // Runs `ia <args> --root <root>`; with json, appends --json and parses stdout.
+// IA_NO_HANDOFF=1 keeps the chosen CLI the one that runs: from 3.6.0 the CLI
+// otherwise hands its command to the repository's installed CLI (decision
+// public-cli-3-6-0-handoff).
 export function runIa(root, args, { json = true, cli, timeoutMs = 180_000 } = {}) {
   const resolved = cli ?? resolveCli(root);
   const [command, ...prefix] = resolved.argv;
   const argv = [...prefix, ...args, '--root', root, ...(json ? ['--json'] : [])];
-  const ran = spawnSync(command, argv, { cwd: root, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 * 1024 * 1024, windowsHide: true });
+  const ran = spawnSync(command, argv, { cwd: root, env: { ...process.env, IA_NO_HANDOFF: '1' }, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 * 1024 * 1024, windowsHide: true });
   if (ran.error) throw new CliError(`ia ${args[0]} did not run: ${ran.error.message}`);
   const result = { code: ran.status, stdout: ran.stdout, stderr: ran.stderr, cli: resolved };
   if (json) {

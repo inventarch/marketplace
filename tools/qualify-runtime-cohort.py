@@ -13,7 +13,7 @@ import tarfile
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'plugins/ia/config/qualified-runtime-3.5.0.json'
+OUT = ROOT / 'plugins/ia/config/qualified-runtime-3.6.0.json'
 
 
 def canonical(value):
@@ -36,7 +36,7 @@ def main():
             continue
         pin = lock['packages']['node_modules/' + name]
         if name.startswith('@inventarch/'):
-            assert pin['version'] == '3.5.0'
+            assert pin['version'] == '3.6.0'
         assert pin['resolved'].startswith('https://registry.npmjs.org/')
         archive = artifacts / (name.replace('@', '').replace('/', '-') + '-' + pin['version'] + '.tgz')
         if archive.exists():

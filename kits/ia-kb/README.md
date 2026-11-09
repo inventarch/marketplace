@@ -4,7 +4,7 @@ A KB method as an IA kit, and the default method of the ia plugin's Knowledge la
 
 Guidance only: it installs reusable expertise, not an organisation's corpus or access grants; it grants no authority and installs no hook. Its four declared checks run through the core's checker runner, including a task's own workspace-relative locator manifest and the workspace's decision lifecycle (see Gates as checks). Language base `inventarch/language ^3.2.0`. Licensed Apache-2.0.
 
-Version 0.9.1 re-cuts 0.9.0, the first public release, on @inventarch/cli 3.5.0. Organisation-wide custody of knowledge across many repositories (cross-repository references kept centrally, reconciliation, participant and vocabulary upkeep) is available with an InventArch subscription; this kit covers a single KB or source repository.
+Version 0.9.4 re-cuts 0.9.0, the first public release, on @inventarch/cli 3.6.0. Organisation-wide custody of knowledge across many repositories (cross-repository references kept centrally, reconciliation, participant and vocabulary upkeep) is available with an InventArch subscription; this kit covers a single KB or source repository.
 
 ## Layout
 
@@ -61,11 +61,11 @@ The example's `anchor.ia` sits under `assets/`, outside `.ia/src`, so it is neve
 | `kb-gate-runner` | `kb-gate-runner-profile` | `ia-kb-checker-mandate` (Observation, Verification, Execution) | `kb-gates` (its checks are the four gates) | checker |
 | `kb-curator` | `kb-curator-profile` (40 steps) | `ia-kb-worker-mandate` (all moves, own worktree, assigned paths) | `kb-maintain-document`, `kb-bind-document` | worker |
 
-The core's registered agents stay `reader`, `checker` and `worker`; the host runs a profile as one of them with the packet, whose `role.brief` is the profile's text and whose `references` carry the profile's mandate (`when: role`). The writer boundaries, the single-writer rule, the not-evaluated rule and the reviewer's independence are in the profiles' text (so `role.brief` carries them), in `@convention kb-role-briefs`, and in the five laws, which `references` lists (`when: always`) wherever the kit's tests resolve it: at the restored kit root and, in a repository that adopted the kit, at the workspace seat and at a `@spec` seat. `kb-check` itself is composed by no profile: the agent running the stage is its role, and it delegates the declared gates to the gate runner.
+The core's registered agents stay `reader`, `checker` and `worker`; the host runs a profile as one of them with the packet, whose `role.brief` is the profile's text and whose `references` carry the profile's mandate (`when: role`). The writer boundaries, the single-writer rule, the not-evaluated rule and the reviewer's independence are in the profiles' text (so `role.brief` carries them), in `@convention kb-role-briefs`, and in the five laws, which `references` lists (`when: always`) wherever the kit's tests resolve it: in a repository that installed the kit, at the workspace seat and at a `@spec` seat. `kb-check` itself is composed by no profile: the agent running the stage is its role, and it delegates the declared gates to the gate runner.
 
 ## Recommended bindings
 
-The core ships no bindings. A repository that keeps its knowledge the KB way binds the kit in its `.ia/bindings.json` (`bind.mjs recommend inventarch/ia-kb-kit` writes the same keys), from the repository:
+The core ships no bindings. A repository that keeps its knowledge the KB way binds the kit in its `.ia/bindings.json`. The repository's lock must install the kit first: a key bound to a kit the lock does not install is refused with `IA-CORE-KIT-NOT-INSTALLED`. From the repository, `kit.mjs bind inventarch/ia-kb-kit --install --apply` installs the kit and writes the same keys; the lines below bind them one by one once the kit is installed:
 
 ```
 node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set 'knowledge.*' inventarch/ia-kb-kit kb-knowledge
@@ -79,7 +79,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set knowledge.migrate inventarch/i
 node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set knowledge.review inventarch/ia-kb-kit kb-review
 ```
 
-`delivery.json` declares every capability that has a playbook whole, so each key delivers all sixteen cells of its playbook, phases in order, read by identity (`source: "playbook"`), whatever `ia position` picks at the scope key or the seat. The kit's opt-in tests resolve every key from the restored kit root and, after `kit.mjs adopt`, in an IA workspace holding a `@spec`, both at the workspace seat and with `--seat` at that `@spec`, and each time get:
+`delivery.json` declares every capability that has a playbook whole, so each key delivers all sixteen cells of its playbook, phases in order, read by identity (`source: "playbook"`), whatever `ia position` picks at the scope key or the seat. The kit's opt-in tests first see an uninstalled kit refused with `IA-CORE-KIT-NOT-INSTALLED`, then resolve every key, after `kit.mjs adopt`, in an IA workspace holding a `@spec`, both at the workspace seat and with `--seat` at that `@spec`, and each time get:
 
 | Key | Capability | Instructions | `role.profile` (mandate, `when: role`) | `evidence.required` |
 | --- | --- | --- | --- | --- |
@@ -92,7 +92,7 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set knowledge.review inventarch/ia
 | `knowledge.migrate` | `kb-migrate` | 16 cells of `kb-migrate` | none | `kb-check-validate` |
 | `knowledge.review` | `kb-review` | 16 cells of `kb-review` | `kb-reviewer-profile` (`ia-kb-reader-mandate`) | none |
 
-Every packet lists the five laws in `references` (`when: always`). Where a capability composes `kb-check-validate`, `missing` holds the core's `enforcement` entry: run the check only through `scripts/check.mjs`. Pass `--seat <the document's @spec identity>` for document work in a repository that adopted the kit; from a restored root the resolver applies no seat.
+Every packet lists the five laws in `references` (`when: always`). Where a capability composes `kb-check-validate`, `missing` holds the core's `enforcement` entry: run the check only through `scripts/check.mjs`. Pass `--seat <the document's @spec identity>` for document work in a repository that installed the kit.
 
 `find`, `explain` and `maintain` are the core Knowledge entry point's own activities, and `packet` and `reconcile`, which have no key of their own, resolve to the `kb-knowledge` procedure. `place`, `bind`, `check`, `migrate` and `review` are activities the entry's table does not list: the resolver accepts any `knowledge.<activity>` key and gives it the entry's default scope key (context / orient), and the router's cells name the activity of each stage, so an agent resolves the stage it chose. Without the exact keys, `knowledge.*` alone still works: every activity resolves to the router.
 
@@ -117,6 +117,6 @@ ia validate --root <copy> --json            # expects status admitted, zero erro
 ia pack --descriptor .ia/release.json --force --root <copy> --json
 ```
 
-`plugins/ia/tests/kit-kb.test.mjs` runs the structural checks, the locator checker, the decision checker and the core's runner without a CLI (the decision checker reads a stand-in's records) and, with `IA_CORE_TEST_CLI=<path to @inventarch/cli dist/main.js>`, the restore and validate above, the unknown-evaluator refusal, `kb-check-validate` and `kb-check-decisions` through the runner, the delivery of every recommended binding (restored, and adopted at the workspace seat and a `@spec` seat), and a repack that must equal the recorded release. `plugins/ia/tests/kit-kb-ingestion.test.mjs` adopts the kit into a fresh workspace with the repository's pinned CLI and checks a task's own locator manifest through the runner. The recorded release's `sources` digest covers `.ia/`, the assets, `checks.json` and `delivery.json`, so any edit needs a repack, and a recorded release is never rewritten once published, so changed records need a new version in `.ia/release.json`.
+`plugins/ia/tests/kit-kb.test.mjs` runs the structural checks, the locator checker, the decision checker and the core's runner without a CLI (the decision checker reads a stand-in's records) and, with `IA_CORE_TEST_CLI=<path to @inventarch/cli dist/main.js>`, the restore and validate above, the unknown-evaluator refusal, `kb-check-validate` and `kb-check-decisions` through the runner, the refusal of a bound kit the lock does not install and the delivery of every recommended binding (adopted, at the workspace seat and a `@spec` seat), and a repack that must equal the recorded release. `plugins/ia/tests/kit-kb-ingestion.test.mjs` adopts the kit into a fresh workspace with the repository's pinned CLI and checks a task's own locator manifest through the runner. The recorded release's `sources` digest covers `.ia/`, the assets, `checks.json` and `delivery.json`, so any edit needs a repack, and a recorded release is never rewritten once published, so changed records need a new version in `.ia/release.json`.
 
 `source.commit` records the source baseline used for this version. The archive and sources digests pin the candidate bytes; they do not assert that the candidate is published.

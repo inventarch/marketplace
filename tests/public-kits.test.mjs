@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { readReleases, sourcesDigest } from '../plugins/ia/scripts/lib/kit.mjs';
-import { archiveManifest, build, builtProblems, manifestProblems, packageClaim, packageMain, PACKAGE_DIR } from '../tools/public-kits.mjs';
+import { archiveManifest, build, builtProblems, manifestProblems, packageClaim, packageMain, PACKAGE_DIR, PLUGIN_CONFIG } from '../tools/public-kits.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CLI = process.env.IA_CORE_TEST_CLI;
@@ -21,7 +21,7 @@ const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 function copy(t) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), 'public-kits-')));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
-  for (const rel of ['plugins/ia/config/kits', 'kits/index.json', 'LICENSE', 'NOTICE', `${PACKAGE_DIR}/package.json`, `${PACKAGE_DIR}/README.md`]) cpSync(join(ROOT, rel), join(dir, rel), { recursive: true });
+  for (const rel of ['plugins/ia/config/kits', 'plugins/ia/config/public-kits.json', 'kits/index.json', 'LICENSE', 'NOTICE', `${PACKAGE_DIR}/package.json`, `${PACKAGE_DIR}/README.md`]) cpSync(join(ROOT, rel), join(dir, rel), { recursive: true });
   return dir;
 }
 const run = (root, ...argv) => { let out = '', err = ''; const status = packageMain(argv, root, t => { out += t; }, t => { err += t; }); return { status, out, err }; };
@@ -60,6 +60,19 @@ test('package --check refuses a stale claim, a changed field and a declared scri
   writeFileSync(join(root, 'plugins/ia/config/kits/ia-kb/.ia/release.json'), readFileSync(join(root, 'plugins/ia/config/kits/ia-kb/.ia/release.json'), 'utf8') + '\n');
   assert.throws(() => packageClaim(root), /ia-kb is not its recorded release/);
   assert.equal(run(root, '--check').status, 1);
+});
+
+test('the core config/public-kits.json is the package name and version, and package --check refuses drift or a missing file', t => {
+  assert.deepEqual(JSON.parse(readFileSync(join(ROOT, PLUGIN_CONFIG), 'utf8')), { package: '@inventarch/public-kits', version: JSON.parse(readFileSync(join(ROOT, PACKAGE_DIR, 'package.json'), 'utf8')).version });
+  const root = copy(t);
+  const path = join(root, PLUGIN_CONFIG);
+  assert.equal(run(root, '--check').status, 0);
+  writeFileSync(path, JSON.stringify({ package: '@inventarch/public-kits', version: '9.9.9' }, null, 2) + '\n');
+  assert.match(run(root, '--check').err, /public-kits\.json is not @inventarch\/public-kits@1\.0\.\d+/);
+  writeFileSync(path, JSON.stringify({ package: '@inventarch/public-kits', version: JSON.parse(readFileSync(join(root, PACKAGE_DIR, 'package.json'), 'utf8')).version, kits: {} }, null, 2) + '\n');
+  assert.equal(run(root, '--check').status, 1, 'a field beyond the package and version is drift');
+  rmSync(path);
+  assert.match(run(root, '--check').err, /public-kits\.json is missing/);
 });
 
 test('package --check refuses runtime sidecars omitted from release assets', t => {

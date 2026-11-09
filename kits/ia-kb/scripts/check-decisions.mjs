@@ -24,6 +24,9 @@ import { fileURLToPath } from 'node:url';
 export const FORMAT = 'ia.kb.decision-lifecycle.v1';
 // What a made decision names, in the order of the schema's fields.
 export const ACCEPTANCE = ['decision.decider', 'decision.choice', 'decision.rationale'];
+// The CLI's environment: IA_NO_HANDOFF=1 keeps the given command the CLI that runs, since from IA 3.6.0 a CLI otherwise
+// hands its command to the repository's installed one.
+const handoffOff = () => ({ ...process.env, IA_NO_HANDOFF: '1' });
 
 // The text of one section field, such as work.status, of a record as ia records returns it.
 function text(record, path) {
@@ -87,7 +90,7 @@ function refusal(ran, reply) {
 // well, but leaves out the records validation refuses, so a decision IA refuses would read as no decision: a refused
 // workspace is never judged. It asks for errors only: --json lists at most 50 findings, which warnings could fill.
 function readAdmission(command, root) {
-  const ran = spawnSync(command[0], [...command.slice(1), 'validate', '--root', root, '--severity', 'error', '--json'], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, windowsHide: true });
+  const ran = spawnSync(command[0], [...command.slice(1), 'validate', '--root', root, '--severity', 'error', '--json'], { cwd: root, env: handoffOff(), encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, windowsHide: true });
   let reply;
   try { reply = JSON.parse(ran.stdout); } catch { reply = undefined; }
   if (reply?.status === 'admitted') return;
@@ -102,7 +105,7 @@ function readAdmission(command, root) {
 
 // The admitted snapshot of the workspace at `root`, read by `command`, the words that run the IA CLI.
 function readRecords(command, root) {
-  const ran = spawnSync(command[0], [...command.slice(1), 'records', '--root', root, '--params', '{}'], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, windowsHide: true });
+  const ran = spawnSync(command[0], [...command.slice(1), 'records', '--root', root, '--params', '{}'], { cwd: root, env: handoffOff(), encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, windowsHide: true });
   let reply;
   try { reply = JSON.parse(ran.stdout); } catch { reply = undefined; }
   if (!ran.error && ran.status === 0 && reply?.ok === true && Array.isArray(reply.result?.records)) return reply.result;

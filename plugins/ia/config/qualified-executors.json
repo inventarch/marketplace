@@ -73,7 +73,7 @@
       "modules": [
         {
           "path": "config/kits/ia-kb/scripts/check-decisions.mjs",
-          "sha256": "d3b45a227be354da4d1b8a3bb93126d3235eb903b7a824403f885b043eb9bfc7",
+          "sha256": "a3e26673dfe027f28e69177488db7c04903e566cade84a880ffb2c4db2772cf2",
           "imports": [
             "node:child_process",
             "node:fs",
@@ -109,7 +109,7 @@
       "modules": [
         {
           "path": "config/kits/ia-authoring/scripts/field-lint.mjs",
-          "sha256": "4e4eb2ba484f876796180a1b55699ff87ac4189af86acb26952d2af94f006f9f",
+          "sha256": "90de5bf661527f01c9fe96aa202df2282f57df8e65e77d67120b6d658aca008f",
           "imports": [
             "node:fs",
             "./lib/scratch.mjs",
@@ -119,7 +119,7 @@
         },
         {
           "path": "config/kits/ia-authoring/scripts/lib/scratch.mjs",
-          "sha256": "b05467f3d2497e03ee0d1e2708bd3402904f23433d48974a38ba06d8d082ffb7",
+          "sha256": "cc38308fc1f65eebd3d1e1492b7d390e279cf19a14c67ffea7bb466392468cea",
           "imports": [
             "node:assert/strict",
             "node:child_process",
@@ -139,7 +139,7 @@
           "selection": "IA_CLI_PATH forced to attested entry; npx disabled"
         }
       ],
-      "review": "Carried from the field-lint helper qualified before the public cut: the same argv, cwd and subprocesses. Its capture helper is now the kit's own scripts/lib/scratch.mjs (the copy-workspace, CLI-resolution and capture code the core's helper and lib/cli.mjs held), so no module lies outside the kit folder; the helper pins 3.5.0."
+      "review": "Carried from the field-lint helper qualified before the public cut: the same argv, cwd and subprocesses. Its capture helper is now the kit's own scripts/lib/scratch.mjs (the copy-workspace, CLI-resolution and capture code the core's helper and lib/cli.mjs held), so no module lies outside the kit folder; the helper pins 3.6.0 and starts the CLI with IA_NO_HANDOFF=1, so the attested entry is the one that runs."
     }
   }
 }

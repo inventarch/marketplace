@@ -101,7 +101,7 @@
     says "The core resolves a kit from its own config/kits, then from <IA home>/kits/<kit>/<version>/, filled by scripts/kit.mjs add --from <folder or archive> today and by the InventArch API later. The user verbs are list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; the maintainer verbs are pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply. kits/index.json broadcasts each kit's latest release and the binding keys it offers."
   work
     title "Look kits up in the plugin, then in the IA home"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-10-30"
     ended "2026-10-30"
@@ -389,7 +389,7 @@
     says "Exactly @inventarch/cli 3.5.0 (language base inventarch/language 3.2.0, archive 7b36e4b4, as bundled by 3.5.0); every changed kit is packed with it; the core's launchers, the IA door pin (@inventarch/mcp-door 3.5.0), closure modules and qualified runtime cohort name it. ia-method 0.7.1, ia-kb 0.9.1 and ia-authoring 0.1.1 are the re-cut on it, because recorded releases are immutable."
   work
     title "Pin @inventarch/cli 3.5.0"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-11-01"
     ended "2026-11-01"
@@ -436,7 +436,7 @@
 
 @decision public-release-notes
   meaning
-    says "A pull request that changes a plugin's shipped files adds a release note, releases/pending/<id>.json (format inventarch-marketplace.release-note.v1: bump patch, minor, major or none, a title, a summary and the plugins it names), with node tools/release.mjs note, and never bumps the plugin by hand; consistency --base refuses a shipped change unless the plugin's version rose or a note new or changed since the base names it, and release.mjs check, a gate, refuses a malformed note. The release pull request workflow, started only by an operator's dispatch from main, runs release.mjs version --write (the highest bump among each plugin's notes; both manifests, sources.lock.json pluginVersion and the CHANGELOG entry; releases/changesets/<plugin>-<version>.json; the consumed notes removed) and selection.py --write with GITHUB_TOKEN and no dependency install, force-pushes release/next, opens or updates its pull request and dispatches Gates on it. Merging it with a merge commit starts the release workflow, which waits for Gates on that main commit and then creates the <plugin>-v<version> tag and GitHub release. Kit releases keep their own two-commit flow, and publishing @inventarch/public-kits stays its own dispatch."
+    says "A pull request that changes a plugin's shipped files adds a release note, releases/pending/<id>.json (format inventarch-marketplace.release-note.v1: bump patch, minor, major or none, a title, a summary and the plugins it names), with node tools/release.mjs note, and never bumps the plugin by hand; consistency --base refuses a shipped change unless the plugin's version rose or a note new or changed since the base names it, and release.mjs check, a gate, refuses a malformed note. The release pull request workflow, started only by an operator's dispatch from main, runs release.mjs version --write (the highest bump among each plugin's notes; both manifests, sources.lock.json pluginVersion and the CHANGELOG entry; releases/changesets/<plugin>-<version>.json; the consumed notes removed) and selection.py --write with GITHUB_TOKEN and no dependency install, force-pushes release/next, opens its pull request as a draft or updates the existing pull request without changing its readiness, and dispatches Gates on it. Merging it with a merge commit starts the release workflow, which waits for Gates on that main commit and then creates the <plugin>-v<version> tag and GitHub release. Kit releases keep their own two-commit flow, and publishing @inventarch/public-kits stays its own dispatch."
   work
     title "Release plugins from pending notes through an operator-started release pull request"
     status made
@@ -447,7 +447,7 @@
   decision
     question "How does a change to a plugin reach a released version, and who starts a release?"
     decider "Operator"
-    choice "A pull request that changes a plugin's shipped files adds a release note, releases/pending/<id>.json (format inventarch-marketplace.release-note.v1: bump patch, minor, major or none, a title, a summary and the plugins it names), with node tools/release.mjs note, and never bumps the plugin by hand; consistency --base refuses a shipped change unless the plugin's version rose or a note new or changed since the base names it, and release.mjs check, a gate, refuses a malformed note. The release pull request workflow, started only by an operator's dispatch from main, runs release.mjs version --write (the highest bump among each plugin's notes; both manifests, sources.lock.json pluginVersion and the CHANGELOG entry; releases/changesets/<plugin>-<version>.json; the consumed notes removed) and selection.py --write with GITHUB_TOKEN and no dependency install, force-pushes release/next, opens or updates its pull request and dispatches Gates on it. Merging it with a merge commit starts the release workflow, which waits for Gates on that main commit and then creates the <plugin>-v<version> tag and GitHub release. Kit releases keep their own two-commit flow, and publishing @inventarch/public-kits stays its own dispatch."
+    choice "A pull request that changes a plugin's shipped files adds a release note, releases/pending/<id>.json (format inventarch-marketplace.release-note.v1: bump patch, minor, major or none, a title, a summary and the plugins it names), with node tools/release.mjs note, and never bumps the plugin by hand; consistency --base refuses a shipped change unless the plugin's version rose or a note new or changed since the base names it, and release.mjs check, a gate, refuses a malformed note. The release pull request workflow, started only by an operator's dispatch from main, runs release.mjs version --write (the highest bump among each plugin's notes; both manifests, sources.lock.json pluginVersion and the CHANGELOG entry; releases/changesets/<plugin>-<version>.json; the consumed notes removed) and selection.py --write with GITHUB_TOKEN and no dependency install, force-pushes release/next, opens its pull request as a draft or updates the existing pull request without changing its readiness, and dispatches Gates on it. Merging it with a merge commit starts the release workflow, which waits for Gates on that main commit and then creates the <plugin>-v<version> tag and GitHub release. Kit releases keep their own two-commit flow, and publishing @inventarch/public-kits stays its own dispatch."
     rationale "The operator asked for the public repository to release the way inventarch/ia does, with changesets (2026-11-01). Bumping in every pull request made parallel pull requests collide on the version and let a merged change ship unreleased when its bump was forgotten, as the upkeep spike did; a note per change and one release pull request remove both. The release starts only on dispatch, as the inventarch/ia ruling on release automation chose, and the push to release/next and the release pull request stay on the workflow's own token until the dedicated release credential of issue 3 lands. A note pending at the base does not count for a later change, so every shipped change is described by the pull request that made it."
 
 @decision public-main-rulesets
@@ -501,3 +501,211 @@
     rationale "With the connector bundled, the offer no longer teaches a command; it points at the sign-in. Calling the API to learn whether the user is signed in would break the no-network rule and would not help a first-time user; reading the host's credentials file would break the public-core-hooks promise that the hook reads no credentials, so a sign-in through the connector is not detected and the pointer stays one line that may be ignored. This supersedes public-account-offer. Options considered: (1) Keep the single IA door and tell the user to run claude mcp add by hand; (2) Point at the sign-in the bundled connector already offers; (3) Detect the sign-in by calling the API. Chosen: (2)."
   relationships
     supersedes @decision public-account-offer
+
+# The IA 3.6.0 migration (2026-11-08). Release N migrates on the 3.5.x pins; release N+1 moves to 3.6.0.
+
+@decision public-cli-3-6-0
+  meaning
+    says "Exactly @inventarch/cli 3.6.0 and @inventarch/mcp-door 3.6.0 from release N+1 (language base inventarch/language 3.2.0, archive 7b36e4b4, unchanged from 3.5.0); every kit is re-cut with it, and the core's launchers, closure modules and qualified runtime cohort name it. Release N first migrates users onto installed kits on the 3.5.x pins (public-cli-3-6-0-door-pin)."
+  work
+    title "Pin @inventarch/cli 3.6.0"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Which IA CLI do the catalogue and its kits target after the 3.6.0 release?"
+    decider "Operator"
+    choice "Exactly @inventarch/cli 3.6.0 and @inventarch/mcp-door 3.6.0 from release N+1, after release N migrates users onto installed kits on the 3.5.x pins."
+    rationale "One exact CLI keeps every packed archive reproducible. It takes effect with release N+1, when the pins task records that it supersedes public-cli-3-5-0; @inventarch/cli 3.5.0 stays in force through release N."
+  relationships
+    supersedes @decision public-cli-3-5-0
+
+@decision public-cli-3-6-0-door-pin
+  meaning
+    says "Two releases. Release N ships the migration (public-cli-3-6-0-bind E, public-cli-3-6-0-install-route B) on the 3.5.x CLI and door pins. Release N+1 moves the CLI, the door and the re-cut kits to 3.6.0."
+  work
+    title "The IA door pin and the release sequence"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Does the plugin move CLI, door and re-cut kits to 3.6.0 in one release, hold the door at 3.5.1 under a separate pin, or ship the migration on 3.5.x first and move to 3.6.0 in the next release?"
+    options ["A one release: CLI, door and re-cut kits move to 3.6.0 together with the migration", "B separate door pin held at 3.5.1 while the CLI moves to 3.6.0", "C migrate first on 3.5.x in release N, move CLI, door and kits to 3.6.0 in release N+1"]
+    decider "Operator"
+    choice "C migrate first on 3.5.x in release N, move CLI, door and kits to 3.6.0 in release N+1"
+    rationale "Two releases let repositories install their kits while the 3.5.x door still serves them. The 3.6.0 door accepts a lock row for a kit at any version, and the @inventarch/public-kits package route works with CLI 3.5.0, so a repository that installs in release N keeps working at release N+1."
+
+@decision public-cli-3-6-0-bind
+  meaning
+    says "kit.mjs bind refuses IA-CORE-KIT-NOT-INSTALLED and writes nothing when the lock does not install the kit, unless --install is passed. --install, and the refusal's remedy, use public-cli-3-6-0-install-route's route: seed a language-only lock when the workspace has none, then ia install --package @inventarch/public-kits@<v>, and fall back to kit.mjs add only for a kit the package does not carry."
+  work
+    title "kit.mjs bind when the lock does not install the kit"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "When the repository's lock does not install the kit, does kit.mjs bind install it first, refuse naming kit.mjs add, write the keys with a warning, behave as today, or refuse unless --install is passed?"
+    options ["A bind installs the kit first, then writes the keys", "B bind refuses IA-CORE-KIT-NOT-INSTALLED naming kit.mjs add and writes nothing", "C bind writes the keys and returns notInstalled with the add step", "D bind unchanged; only docs and the refusal row change", "E bind installs only with --install, otherwise refuses as B"]
+    decider "Operator"
+    choice "E bind installs only with --install, otherwise refuses as B"
+    rationale "A refusal that names the exact remedy is the least surprising default, and --install keeps a one-command setup for those who ask for it. The remedy uses the package route the docs lead with. A workspace with sources but no lock cannot take that route with the CLI alone, so the plugin seeds a language-only lock first; this was verified on CLI 3.5.0 and 3.6.0."
+
+@decision public-cli-3-6-0-install-route
+  meaning
+    says "The quick start leads with the @inventarch/public-kits package. The plugin seeds a language-only lock where a workspace has none (ia init for a new one), then runs ia install --package @inventarch/public-kits@<v> --apply --yes, then kit.mjs bind."
+  work
+    title "The default kit install route"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Which install route does the plugin's quick start lead with: the vendored kit.mjs add, the @inventarch/public-kits package, or both with the vendored route first?"
+    options ["A vendored kit.mjs add then bind", "B ia init, ia install --package @inventarch/public-kits, then bind", "C both documented, vendored first"]
+    decider "Operator"
+    choice "B ia init, ia install --package @inventarch/public-kits, then bind"
+    rationale "One lock entry carries the three public kits, with no vendored bytes in the repository. The obligations are accepted: the plugin reads package entries, the operator publishes the package in each release before the docs name it, and the plugin seeds the language lock where a workspace has none."
+
+@decision public-cli-3-6-0-own-lock
+  meaning
+    says "The marketplace keeps .ia/distributions.lock.json ignored; CONTRIBUTING and the setup run kit.mjs add <kit> . --apply for the three kits, and .gitignore gains vendor/ia/."
+  work
+    title "How this repository installs its own kits"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "How does the marketplace repository satisfy door 3.6.0 for its own bound lanes: commit its lock with vendor/ia, install locally per contributor, commit a public-kits package entry, drop its bindings, or commit the lock without vendor/ia?"
+    options ["A commit the lock and vendor/ia; moving it at a release is optional", "B lock stays ignored; contributor setup runs kit.mjs add for the three kits", "C commit a lock with one @inventarch/public-kits package entry", "D remove the marketplace's .ia/bindings.json", "E commit the lock only; vendor/ia is added to .gitignore"]
+    decider "Maintainers"
+    choice "B lock stays ignored; contributor setup runs kit.mjs add for the three kits"
+    rationale "It keeps decision public-kits-package (no copy of the kits' bytes in history), and the lanes run the carried kits either way. A committed lock without its store or vendor archives was measured not to open the workspace at all: the 3.6.0 door returns IA-CORE-ROOT-UNAVAILABLE, and ia restore and ia validate refuse. So committing the lock on its own was ruled out."
+
+@decision public-cli-3-6-0-plugin-bump
+  meaning
+    says "Release N+1, the one that moves to 3.6.0, takes a minor bump. With release N at 1.4.0 (public-cli-3-6-0-release-n-bump B), that is 1.5.0."
+  work
+    title "The ia plugin version bump for release N+1"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Which bump does the ia plugin release that moves to 3.6.0 take: minor (1.5.0) or major (2.0.0)?"
+    options ["A minor, 1.5.0", "B major, 2.0.0"]
+    decider "Operator"
+    choice "A minor, 1.5.0"
+    rationale "The new door refuses a kit the repository binds but does not install, and the plugin's session start names the remedy, so the change is guided. Release N is itself a minor (public-cli-3-6-0-release-n-bump), so this release is 1.5.0."
+
+@decision public-cli-3-6-0-kit-level
+  meaning
+    says "Each kit re-cut in this migration is a patch on that kit's latest release at the time of the stamp. The expected numbers are ia-method 0.7.3, ia-kb 0.9.4 and ia-authoring 0.1.4; if another release of a kit lands first (PR #26 proposes ia-method 0.8.0), the patch follows it (ia-method 0.8.1)."
+  work
+    title "The level of each kit re-cut"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "At what level are the three kits re-cut on 3.6.0: patch for all, by content, or minor for all?"
+    options ["A patch for all three (0.7.3, 0.9.4, 0.1.4)", "B by content: minor where records change meaning, patch otherwise", "C minor for all three"]
+    decider "Maintainers"
+    choice "A patch for all three (0.7.3, 0.9.4, 0.1.4)"
+    rationale "A re-cut that only follows the CLI is a patch, as it was at 3.5.0. The install-guidance changes bring the kits into line with IA 3.6.0's rule and add no capability, and the release notes name them. The level was chosen, not the numbers: a release of a kit that lands first moves the patch with it. A kit whose archive is unchanged is not re-cut: in release N ia-method stays at 0.7.2, because only its README changed, which is outside its archive. At 3.6.0 the pinned CLI changes, so all three kits are re-cut on it (consistency requires each latest release to be packed with the pin); ia-method is 0.7.3."
+
+@decision public-cli-3-6-0-handoff
+  meaning
+    says "Every spawn of a resolved CLI sets IA_NO_HANDOFF=1 in the child environment: runIa, ia.mjs, the ia-authoring kit's scratch.mjs, the closure runtime, method-check and the gate tools."
+  work
+    title "Guarding the chosen CLI against hand-off"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Where does the plugin set IA_NO_HANDOFF=1: on every spawn of a resolved CLI, only where exact bytes are attested, nowhere but verify the version after resolving, or nowhere?"
+    options ["A every spawn of a resolved CLI", "B only the attested paths (closure runtime, packRelease, restore)", "C nowhere; verify ia --version against cli.version and refuse a mismatch", "D nowhere; document"]
+    decider "Maintainers"
+    choice "A every spawn of a resolved CLI"
+    rationale "CLI 3.6.0 hands a typed command to the repository's installed CLI unless IA_NO_HANDOFF=1 is set. Setting it wherever the plugin chose a CLI keeps the attested exact-CLI path and the reported cli.version true. The variable has no effect on a 3.5.x CLI."
+
+@decision public-cli-3-6-0-default-workspace
+  meaning
+    says "When no consumer workspace is named, the closure path takes IA's repository default only when it is one of the admitted workspaces that root a distribution this repository authors, and refuses (unambiguous) otherwise; a repository that authors no distribution takes the default."
+  work
+    title "The closure path default workspace"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "When no consumer workspace is named, does the closure path adopt IA's repository default, keep refusing when several workspaces root the distribution, or adopt the default only when it is one of the distribution's roots?"
+    options ["A adopt IA's repository default and change the test", "B keep refusing when more than one admitted workspace roots the distribution", "C adopt IA's default only when it is a distribution root; refuse otherwise"]
+    decider "Maintainers"
+    choice "C adopt IA's default only when it is a distribution root; refuse otherwise"
+    rationale "Since IA 3.5.1 the unique workspace in .ia/src/workspace.ia is the repository default. Taking it only when it is one of the workspaces that root a distribution this repository authors keeps the guarantee that a packaged composition is never chosen by accident, and it agrees with IA whenever the default is one of them."
+
+@decision public-cli-3-6-0-resolver
+  meaning
+    says "scripts/resolve.mjs and lib/qualified-resolve.mjs refuse IA-CORE-KIT-NOT-INSTALLED with the door's message and error.kit, before retaining or writing anything, as door 3.6.0 does."
+  work
+    title "The plugin resolver and the lock requirement"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Does the plugin's own resolver refuse a bound kit the lock does not install, as door 3.6.0 does, or stay permissive?"
+    options ["A resolve.mjs and qualified-resolve.mjs refuse IA-CORE-KIT-NOT-INSTALLED with the door's message and error.kit, before retaining or writing anything", "B resolve.mjs stays permissive and is documented as differing from the door"]
+    decider "Maintainers"
+    choice "A resolve.mjs and qualified-resolve.mjs refuse IA-CORE-KIT-NOT-INSTALLED with the door's message and error.kit, before retaining or writing anything"
+    rationale "The session start sends hosts that lack the door's tools through resolve.mjs. A permissive resolver would serve them packets the 3.6.0 door refuses. This plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N."
+
+@decision public-cli-3-6-0-release-n-bump
+  meaning
+    says "Release N, the migration on 3.5.x, takes a minor bump to 1.4.0, so release N+1, the move to 3.6.0, is 1.5.0."
+  work
+    title "The ia plugin version bump for release N"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Which bump does release N, the migration on 3.5.x, take: patch (1.3.1, keeping N+1 at 1.4.0) or minor (1.4.0, making N+1 1.5.0)?"
+    options ["A patch, 1.3.1", "B minor, 1.4.0 (N+1 becomes 1.5.0)"]
+    decider "Operator"
+    choice "B minor, 1.4.0 (N+1 becomes 1.5.0)"
+    rationale "Release N changes kit.mjs bind, which now refuses without --install, and leads the docs with the package route. That makes it a minor release, 1.4.0, so release N+1 is 1.5.0."
+
+@decision public-kit-lookup-installed
+  meaning
+    says "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it too."
+  work
+    title "Run a bound kit only when the repository installs it"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-08"
+    ended "2026-11-08"
+    source "docs/decisions.md"
+  decision
+    question "Where does the core find a kit, and which kit may a bound key run?"
+    decider "Maintainers"
+    choice "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it too."
+    rationale "IA 3.6.0's door refuses IA-CORE-KIT-NOT-INSTALLED for a bound kit the lock does not install, so a carried or IA-home copy no longer stands in for a bound key. The plugin's own resolver applies the same rule, so that the two routes agree."
+  relationships
+    supersedes @decision public-kit-lookup

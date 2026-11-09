@@ -1,7 +1,7 @@
 version: 2
 updates:
   # The gates' tools through the root lockfile. @inventarch/* is pinned exactly in sources.lock.json, and a new IA
-  # release moves every pin together (decision public-cli-3-5-0), so Dependabot leaves it alone.
+  # release moves every pin together (decision public-cli-3-6-0), so Dependabot leaves it alone.
   - package-ecosystem: npm
     directory: /
     schedule:

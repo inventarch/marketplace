@@ -11,7 +11,7 @@ import { test } from 'node:test';
 import { sourcesDigest } from '../scripts/lib/kit.mjs';
 import { installTarget } from '../scripts/lib/kit-ops.mjs';
 import { kitRecordNames } from '../scripts/lib/records.mjs';
-import { envFor, fakeCli, makeKit, makeRepo, run, sandbox } from './helpers/fixtures.mjs';
+import { envFor, fakeCli, installLock, makeKit, makeRepo, run, sandbox } from './helpers/fixtures.mjs';
 
 const first = value => (Array.isArray(value) ? value[0] : value);
 
@@ -138,7 +138,8 @@ test('bind recommends a kit\'s keys and writes only with --apply; one key can be
   const alpha = released(makeKit(s.kitsDir, { folder: 'alpha', id: 'inventarch/alpha-kit', capability: 'alpha-operate' }));
   writeFileSync(join(alpha.dir, 'bindings.json'), JSON.stringify({ format: 1, recommend: { 'work.*': { capability: 'alpha-operate' } } }) + '\n');
   released(alpha);
-  const repo = makeRepo(join(s.dir, 'repo'));
+  // A binding to a kit runs only while the lock installs it, so the repository's lock installs alpha (decision public-cli-3-6-0-bind).
+  const repo = makeRepo(join(s.dir, 'repo'), { lock: installLock({ bindings: { 'work.*': { kit: alpha.id } } }) });
   assert.deepEqual(run('kit.mjs', ['list'], s.env).json.kits[0].surfaced, ['ia-work'], 'work.* reads ia-work');
   writeFileSync(join(alpha.dir, 'bindings.json'), JSON.stringify({ format: 1, recommend: { 'work.*': { capability: 'alpha-operate' }, 'work.brainstorm': { capability: 'alpha-operate' } } }) + '\n');
   assert.deepEqual(run('kit.mjs', ['list'], s.env).json.kits[0].surfaced, ['ia-work', 'ia-work:brainstorm'], 'a binding key re-spelled, whichever kit supplies it');
@@ -154,6 +155,28 @@ test('bind recommends a kit\'s keys and writes only with --apply; one key can be
   assert.equal(refused.json.error.code, 'IA-CORE-BIND-UNDECLARED');
   const one = run('kit.mjs', ['bind', alpha.id, repo, '--key', 'work.plan', '--capability', 'alpha-operate', '--apply'], s.env);
   assert.equal(one.json.applied, true, one.stdout);
+});
+
+test('bind refuses a kit the lock does not install, on a preview and on --apply, with a key or without, and writes nothing', t => {
+  const s = setup(t);
+  const alpha = released(makeKit(s.kitsDir, { folder: 'alpha', id: 'inventarch/alpha-kit', capability: 'alpha-operate' }));
+  writeFileSync(join(alpha.dir, 'bindings.json'), JSON.stringify({ format: 1, recommend: { 'work.*': { capability: 'alpha-operate' } } }) + '\n');
+  released(alpha);
+  const repo = makeRepo(join(s.dir, 'repo'), { lock: { engine: '0.1.0', formatVersion: 1, packages: [{ id: 'inventarch/language', version: '3.2.0', archive: 'b'.repeat(64) }] } });
+  const lockBefore = readFileSync(join(repo, '.ia', 'distributions.lock.json'), 'utf8');
+  for (const args of [[], ['--apply'], ['--key', 'work.plan', '--capability', 'alpha-operate'], ['--key', 'work.plan', '--capability', 'alpha-operate', '--apply']]) {
+    const refused = run('kit.mjs', ['bind', alpha.id, repo, ...args], s.env);
+    assert.equal(refused.status, 1, refused.stdout);
+    assert.equal(refused.json.error.code, 'IA-CORE-KIT-NOT-INSTALLED', refused.stdout);
+    assert.equal(refused.json.error.kit, alpha.id);
+    assert.match(refused.json.error.message, new RegExp(`run kit\\.mjs bind ${alpha.id} --install --apply`), 'the remedy names the install route');
+    assert.equal(existsSync(join(repo, '.ia', 'bindings.json')), false, args.join(' '));
+  }
+  assert.equal(readFileSync(join(repo, '.ia', 'distributions.lock.json'), 'utf8'), lockBefore);
+  // No workspace: refused as well, never a preview of keys that could not run.
+  const none = run('kit.mjs', ['bind', alpha.id, join(s.dir, 'not-a-repo')], s.env);
+  assert.equal(none.json.error.code, 'IA-CORE-KIT-NOT-INSTALLED', none.stdout);
+  assert.match(none.json.error.message, /run ia init first/);
 });
 
 test('rebind moves keys to another kit only when the target has the capability, and previews unless --apply', t => {

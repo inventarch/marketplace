@@ -2,6 +2,10 @@
 
 `@inventarch/public-kits` carries the three kits the `ia` plugin bundles (`ia-method`, `ia-kb`, `ia-authoring`) to a bare IA door or workspace as one npm package (decision `public-kits-package`; contracts C7 and C7b). npm is transport only: a repository records the package as one entry in its `.ia/distributions.lock.json`, and the IA engine expands each kit from its IA archive into `.ia/distributions/store/`, as an ordinary installed release.
 
+## How a repository installs it
+
+The core's `kit.mjs bind <kit> --install --apply` runs `ia install --package @inventarch/public-kits@<version> --apply --yes` for a kit this package carries (decision `public-cli-3-6-0-install-route`). `plugins/ia/config/public-kits.json` holds the package name and the `version`, and `node tools/kit.mjs package --write` keeps it equal to `packages/public-kits/package.json`'s `version` (`package --check` refuses drift); the kits the package carries are the kits the plugin bundles. The version must be published to npm before a plugin that names it ships: a release pull request merges only once `npm view @inventarch/public-kits@<version>` answers. A workspace with no lock is first given a language-only lock (taken from a bundled kit's own) and restored. A lock that already holds one of these kits as a direct package row is refused (`IA-CORE-INSTALL-CONFLICT`), because the package entry would sit behind that row: install the kit the direct way instead, as the lock's other kits are, with `kit.mjs add <id> --apply`. While such a row exists, the refusals and the session start name `kit.mjs add`.
+
 ## What it holds
 
 `packages/public-kits/package.json` is committed. Its `version` is the package's own semver, set by hand. Every other byte is generated, and `ia.kits` is the claim a lock entry repeats:
@@ -17,7 +21,7 @@ The built files sit beside it:
 
 | Path | From |
 |---|---|
-| `archives/<archive>.ia.tgz` | The kit's recorded release, packed again with the pinned `@inventarch/cli` 3.5.0 (`packRelease`). The build refuses bytes whose sha256 is not the recorded `archive`. |
+| `archives/<archive>.ia.tgz` | The kit's recorded release, packed again with the pinned `@inventarch/cli` 3.6.0 (`packRelease`). The build refuses bytes whose sha256 is not the recorded `archive`. |
 | `archives/<archive>.distribution.json` | That archive's manifest. Its sha256 is the recorded `manifest`. |
 | `kits/<folder>/` | `plugins/ia/config/kits/<folder>/`, byte for byte. |
 | `index.json` | `kits/index.json`. |

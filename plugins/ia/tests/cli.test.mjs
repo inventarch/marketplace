@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { delimiter, join, relative } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { CliError, npxCli, PINNED, resolveCli, searchFolders } from '../scripts/lib/cli.mjs';
+import { CliError, npxCli, PINNED, resolveCli, runIa, searchFolders } from '../scripts/lib/cli.mjs';
 
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url));
 const TAIL = ['-y', '-p', `@inventarch/cli@${PINNED}`, '--', 'ia'];
@@ -60,6 +60,20 @@ test('an install that is not @inventarch/cli, or has no entry, is refused, never
   // Another package's package.json gives no version.
   writeFileSync(join(flat, 'package.json'), JSON.stringify({ name: 'something-else', version: '9.9.9' }));
   assert.equal(resolveCli(dir, { env: { IA_CLI_PATH: join(flat, 'main.js') } }).version, undefined);
+});
+
+test('an install with main dist/main.js and bin.ia dist/bin.js (3.6.0) runs main, not the hand-off launcher', t => {
+  const dir = tree(t);
+  mkdirSync(join(dir, '.git'));
+  const pkg = join(dir, 'node_modules', '@inventarch', 'cli');
+  mkdirSync(join(pkg, 'dist'), { recursive: true });
+  writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@inventarch/cli', version: PINNED, main: './dist/main.js', bin: { ia: './dist/bin.js' } }));
+  writeFileSync(join(pkg, 'dist', 'main.js'), '');
+  writeFileSync(join(pkg, 'dist', 'bin.js'), '');
+  const local = resolveCli(dir, { env: {} });
+  assert.equal(local.argv[0], process.execPath);
+  assert.equal(local.argv[1], join(pkg, 'dist', 'main.js'));
+  assert.equal(local.version, PINNED);
 });
 
 test('the repository install is found from a subfolder, and nothing above .git is searched', t => {
@@ -134,4 +148,24 @@ test('no shipped core file runs an ia on PATH, an unpinned CLI through npx, or a
     assert.doesNotMatch(body, /shell:\s*true/, `${file} spawns through a shell`);
     assert.ok(!body.includes('\r'), `${file} has CR bytes`);
   }
+});
+
+// public-cli-3-6-0-handoff: the CLI runIa chose is the one that runs. A fake CLI never hands off, so this proves only
+// the child's argv and environment; the real hand-off path is judged by the native suite on 3.6.0.
+test('runIa runs the IA_CLI_PATH entry with IA_NO_HANDOFF=1 while the repository installs another @inventarch/cli', t => {
+  const dir = tree(t);
+  mkdirSync(join(dir, '.git'));
+  installCli(dir, '3.5.0');
+  const chosen = installCli(join(dir, 'chosen'), PINNED);
+  writeFileSync(chosen, "process.stdout.write(JSON.stringify({ entry: process.argv[1], args: process.argv.slice(2), handoff: process.env.IA_NO_HANDOFF ?? null }));");
+  const saved = process.env.IA_CLI_PATH;
+  process.env.IA_CLI_PATH = chosen;
+  t.after(() => { if (saved === undefined) delete process.env.IA_CLI_PATH; else process.env.IA_CLI_PATH = saved; });
+  const ran = runIa(dir, ['validate']);
+  assert.equal(ran.code, 0, ran.stderr);
+  assert.equal(ran.cli.source, 'IA_CLI_PATH');
+  assert.equal(ran.cli.version, PINNED);
+  assert.equal(realpathSync.native(ran.json.entry), realpathSync.native(chosen));
+  assert.deepEqual(ran.json.args, ['validate', '--root', dir, '--json']);
+  assert.equal(ran.json.handoff, '1');
 });

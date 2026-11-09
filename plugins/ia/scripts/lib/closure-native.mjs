@@ -86,9 +86,20 @@ export async function inspectMethodGraph({ root, descriptor, nativeManifest, imp
   });
 }
 
+// With no workspace named, the subject is IA's repository default (from IA 3.5.1 the unique workspace in
+// .ia/src/workspace.ia), unless a distribution this repository authors packages workspaces: then the default must be
+// one of those packaged roots, so a packaged composition is never chosen by accident (public-cli-3-6-0-default-workspace
+// C). Adopted distributions (the language base, installed kits) package their own roots, never this repository's.
+function defaultWorkspace(reader, records, list) {
+  const seat = reader.resolveSeat('').seat;
+  const roots = new Set(records.filter(record => record.discriminator === 'distribution' && record.provenance === 'workspace')
+    .flatMap(record => list(record, 'distribution', 'records')).filter(identity => reader.get(identity)?.discriminator === 'workspace'));
+  return !roots.size || roots.has(seat) ? seat : undefined;
+}
+
 export async function resolveConsumerSubject({ root, workspaceIdentity, importNative }) {
   return opened(root, importNative, ({ reader, records, list, requirements, systemRow, findings }) => {
-    const identity = workspaceIdentity ?? reader.resolveSeat('').seat;
+    const identity = workspaceIdentity ?? defaultWorkspace(reader, records, list);
     const workspace = identity && reader.get(identity);
     if (!workspace || workspace.discriminator !== 'workspace') fail('Select an unambiguous admitted consumer native workspace');
     const selected = new Set(list(workspace, 'composition', 'systems')), pending = [...selected];

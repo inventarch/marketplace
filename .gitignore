@@ -8,6 +8,8 @@ review-private/
 .ia/work/
 .ia/distributions/
 .ia/distributions.lock.json
+# The kits `npm run kits:install` vendors for this checkout (decision public-cli-3-6-0-own-lock).
+vendor/ia/
 node_modules/
 .qualification/
 # The @inventarch/public-kits build (node tools/kit.mjs package --build): generated from plugins/ia/config/kits and

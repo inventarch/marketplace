@@ -103,6 +103,7 @@ export function refuse(error) {
   const body = { error: { code, message: error.message } };
   if (error.candidates) body.error.candidates = error.candidates;
   if (error.key) body.error.key = error.key;
+  if (error.code === 'IA-CORE-KIT-NOT-INSTALLED' && error.kit) body.error.kit = error.kit;
   printJson(body);
   return code === 'IA-CORE-USAGE' ? 2 : 1;
 }

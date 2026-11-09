@@ -145,14 +145,14 @@ test('kit.mjs root refuses a CLI of an older major than the one the release was 
   const old = run('kit.mjs', ['root', a.id], envFor({ cli: fakeCli(join(dir, 'old'), '2.0.0'), kitsDir, temp: join(dir, 'temp') }));
   assert.equal(old.status, 1, old.stdout + old.stderr);
   assert.equal(old.json.error.code, 'IA-CORE-CLI-UNSUPPORTED');
-  assert.match(old.json.error.message, /packed with @inventarch\/cli 3.5.0/);
+  assert.match(old.json.error.message, /packed with @inventarch\/cli 3.6.0/);
   assert.match(old.json.error.message, /resolves 2\.0\.0/);
   assert.deepEqual(readdirSync(join(dir, 'temp')).filter(n => n.startsWith('inventarch-core-')).flatMap(n => readdirSync(join(dir, 'temp', n))), [], 'nothing is restored');
   const same = run('kit.mjs', ['root', a.id], envFor({ cli: fakeCli(join(dir, 'same'), '3.0.0'), kitsDir, temp: join(dir, 'temp') }));
   assert.equal(same.status, 0, same.stdout + same.stderr);
 });
 
-// Within a major a CLI restores only the language base it ships (CLI 3.5.0, 3.4.0 and 3.3.0 ship language 3.2.0, 3.2.2 ships 3.1.2),
+// Within a major a CLI restores only the language base it ships (CLI 3.6.0, 3.5.0, 3.4.0 and 3.3.0 ship language 3.2.0, 3.2.2 ships 3.1.2),
 // and asks a registry for any other, which refuses as unavailable or, from the default registry, as no longer listing
 // that base: root turns either refusal into the pin to use.
 test('kit.mjs root refuses a CLI of the same major that does not ship the language base the kit locks', t => {
@@ -163,13 +163,13 @@ test('kit.mjs root refuses a CLI of the same major that does not ship the langua
     assert.equal(other.json.error.code, 'IA-CORE-CLI-UNSUPPORTED', refusal);
     assert.match(other.json.error.message, /locks inventarch\/language 3\.2\.0, which this repository's CLI does not ship/);
     assert.match(other.json.error.message, /resolves 3\.2\.2/);
-    assert.match(other.json.error.message, /Pin @inventarch\/cli 3.5.0/);
+    assert.match(other.json.error.message, /Pin @inventarch\/cli 3.6.0/);
     assert.deepEqual(readdirSync(join(dir, 'temp')).filter(n => n.startsWith('inventarch-core-')).flatMap(n => readdirSync(join(dir, 'temp', n))), [], 'no partial copy is left');
   }
   // With the CLI the release was packed with, the base is one it ships, so either refusal is a real missing artifact:
   // it is reported as the restore's own failure, never as advice to pin the version already running. So is a conflict
   // that is not the registry delisting the base, whatever the CLI.
-  for (const [version, refusal, code] of [['3.5.0', 'restoreUnavailable', 'IA-DIST-ARTIFACT-UNAVAILABLE'], ['3.5.0', 'restoreDelisted', 'IA-DIST-CONFLICT'], ['3.2.2', 'restoreConflict', 'IA-DIST-CONFLICT']]) {
+  for (const [version, refusal, code] of [['3.6.0', 'restoreUnavailable', 'IA-DIST-ARTIFACT-UNAVAILABLE'], ['3.6.0', 'restoreDelisted', 'IA-DIST-CONFLICT'], ['3.2.2', 'restoreConflict', 'IA-DIST-CONFLICT']]) {
     const reported = run('kit.mjs', ['root', a.id], envFor({ cli: fakeCli(join(dir, `${refusal}-${version}`), version, { [refusal]: true }), kitsDir, temp: join(dir, 'temp') }));
     assert.equal(reported.status, 1, reported.stdout + reported.stderr);
     assert.equal(reported.json.error.code, 'IA-CORE-KIT', `${refusal} with ${version}`);
