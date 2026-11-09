@@ -4,7 +4,7 @@ A KB method as an IA kit, and the default method of the ia plugin's Knowledge la
 
 Guidance only: it installs reusable expertise, not an organisation's corpus or access grants; it grants no authority and installs no hook. Its four declared checks run through the core's checker runner, including a task's own workspace-relative locator manifest and the workspace's decision lifecycle (see Gates as checks). Language base `inventarch/language ^3.2.0`. Licensed Apache-2.0.
 
-Version 0.9.1 re-cuts 0.9.0, the first public release, on @inventarch/cli 3.5.0. Organisation-wide custody of knowledge across many repositories (cross-repository references kept centrally, reconciliation, participant and vocabulary upkeep) is available with an InventArch subscription; this kit covers a single KB or source repository.
+Version 0.9.4 re-cuts 0.9.0, the first public release, on @inventarch/cli 3.6.0. Organisation-wide custody of knowledge across many repositories (cross-repository references kept centrally, reconciliation, participant and vocabulary upkeep) is available with an InventArch subscription; this kit covers a single KB or source repository.
 
 ## Layout
 

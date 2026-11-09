@@ -24,7 +24,7 @@ import { PHASES } from '../scripts/lib/workspace.mjs';
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url));
 const KIT = join(PLUGIN, 'config', 'kits', 'ia-method');
 const KIT_ID = 'inventarch/ia-method-kit';
-const VERSION = '0.7.2';
+const VERSION = '0.7.3';
 const SYSTEMS = join(KIT, '.ia', 'src', 'systems');
 const README = join(KIT, 'README.md');
 const WORK_SKILL = join(PLUGIN, 'skills', 'work', 'SKILL.md');
@@ -122,7 +122,7 @@ test('every kit source is an LF IA 1.0 file, the kit text carries no CR and no m
   assert.deepEqual(readdirSync(SYSTEMS), ['ia-method'], 'one system');
 });
 
-test('the descriptor is the public 0.7.2 release of one system, and the distribution ships that system', () => {
+test('the descriptor is the public 0.7.3 release of one system, and the distribution ships that system', () => {
   const descriptor = readDescriptor(KIT);
   assert.equal(descriptor.id, KIT_ID);
   assert.equal(descriptor.version, VERSION);
@@ -268,11 +268,11 @@ test('the recommended bindings and the whole-procedure delivery name kit records
   for (const name of ['method-operate', 'method-provisional-foundation']) assert.deepEqual([...new Set(declaredCells(name).map(c => c.address.split('#')[1].split('/')[0]))], PHASES);
 });
 
-test('the recorded release is 0.7.2 and lists the source records, with the sources digest and the CLI it was packed with (fails until the release is recorded)', () => {
+test('the recorded release is 0.7.3 and lists the source records, with the sources digest and the CLI it was packed with (fails until the release is recorded)', () => {
   const { kit: id, releases } = readReleases(KIT);
   const latest = releases.at(-1);
   assert.equal(id, KIT_ID);
-  assert.equal(latest.version, VERSION, 'record the 0.7.2 release');
+  assert.equal(latest.version, VERSION, 'record the 0.7.3 release');
   assert.equal(readDescriptor(KIT).version, latest.version);
   assert.deepEqual(releaseRecords(KIT, latest), kitRecordNames(KIT));
   assert.equal(latest.sources, sourcesDigest(KIT), 'the kit sources changed since the recorded release: bump the version in .ia/release.json and record the release');
@@ -382,7 +382,7 @@ test('real CLI: the CLI\'s public vocabulary is the 30 record words and 14 taxon
 test('real CLI: the sources repack to the recorded release (opt-in: IA_CORE_TEST_CLI; fails until the release is recorded)', { skip: SKIP }, async () => {
   const { resolveCli } = await import('../scripts/lib/cli.mjs');
   const cli = resolveCli(KIT, { env: { IA_CLI_PATH: CLI } });
-  assert.equal(kit().latest.version, VERSION, 'record the 0.7.2 release');
+  assert.equal(kit().latest.version, VERSION, 'record the 0.7.3 release');
   const built = packRelease(kit(), kit().latest, cli);
   built.cleanup();
 });

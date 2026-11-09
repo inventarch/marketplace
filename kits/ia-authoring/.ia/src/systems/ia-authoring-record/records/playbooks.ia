@@ -9,7 +9,7 @@
   cognition
     orient
       primary Attention
-      Attention means "Read the vocabulary first. ia vocabulary <word> --schema --json gives a shipped word's sections and fields, each marked required or not, with types and enums, and names its owning system. It reads only the catalogue shipped with the CLI (44 words in 3.1.1, 3.2.2, 3.3.0 and 3.4.0) and needs no workspace, so npx -y @inventarch/cli@3.5.0 vocabulary <word> --schema --json works anywhere. It takes no --root, and refuses a word the workspace mints (IA-CLI-USAGE Unknown word)."
+      Attention means "Read the vocabulary first. ia vocabulary <word> --schema --json gives a shipped word's sections and fields, each marked required or not, with types and enums, and names its owning system. It reads only the catalogue shipped with the CLI (44 words in 3.1.1, 3.2.2, 3.3.0 and 3.4.0) and needs no workspace, so npx -y @inventarch/cli@3.6.0 vocabulary <word> --schema --json works anywhere. It takes no --root, and refuses a word the workspace mints (IA-CLI-USAGE Unknown word)."
       Inference means "For a local word such as acme-component, read .ia/src/systems/<owner>/schemas/<word>.schema.ia and the owner's discriminators, and find its records with the door (ia_search)."
       Decision means "A system's system.ia gives the words it mints (discriminators) and the edges it consents to (edges, rows of <predicate> <targets> using <sources>). An edge needs a matching row in both endpoint owners' edges blocks, source first. No edges block means it refuses every edge to or from the words it mints (R2)."
       Learning means "Check the rule sheet for the rules already verified, each with its error code and fix."
@@ -74,7 +74,7 @@
     orient
       primary Attention
       Attention means "Follow the probing stage's cells in this packet (authoring-probing-the-ia-toolchain). Start from the rule sheet (the authoring-ia-rules-* conventions), the probe (the kit's scripts/probe.mjs, or by hand) and its examples (the kit's assets/probe-examples/)."
-      Inference means "ia vocabulary <word> --schema --json reads only the catalogue shipped with the CLI and needs no workspace (npx -y @inventarch/cli@3.5.0 vocabulary <word> --schema --json); when the session has the ia-workspace MCP server, its ia_vocabulary tool reads the same catalogue."
+      Inference means "ia vocabulary <word> --schema --json reads only the catalogue shipped with the CLI and needs no workspace (npx -y @inventarch/cli@3.6.0 vocabulary <word> --schema --json); when the session has the ia-workspace MCP server, its ia_vocabulary tool reads the same catalogue."
       Decision means "For a word the workspace mints, read its .ia/src/systems/<owner>/schemas/<word>.schema.ia instead."
       Learning means "You run as the core's worker because you write, but only probe files and copies in a scratch or temp directory you create."
     plan

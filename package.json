@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
-    "@inventarch/cli": "3.5.0",
+    "@inventarch/cli": "3.6.0",
     "lefthook": "2.1.16"
   },
   "engines": {

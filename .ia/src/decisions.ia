@@ -389,7 +389,7 @@
     says "Exactly @inventarch/cli 3.5.0 (language base inventarch/language 3.2.0, archive 7b36e4b4, as bundled by 3.5.0); every changed kit is packed with it; the core's launchers, the IA door pin (@inventarch/mcp-door 3.5.0), closure modules and qualified runtime cohort name it. ia-method 0.7.1, ia-kb 0.9.1 and ia-authoring 0.1.1 are the re-cut on it, because recorded releases are immutable."
   work
     title "Pin @inventarch/cli 3.5.0"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-11-01"
     ended "2026-11-01"
@@ -519,6 +519,8 @@
     decider "Operator"
     choice "Exactly @inventarch/cli 3.6.0 and @inventarch/mcp-door 3.6.0 from release N+1, after release N migrates users onto installed kits on the 3.5.x pins."
     rationale "One exact CLI keeps every packed archive reproducible. It takes effect with release N+1, when the pins task records that it supersedes public-cli-3-5-0; @inventarch/cli 3.5.0 stays in force through release N."
+  relationships
+    supersedes @decision public-cli-3-5-0
 
 @decision public-cli-3-6-0-door-pin
   meaning
@@ -599,15 +601,15 @@
     ended "2026-11-08"
     source "docs/decisions.md"
   decision
-    question "Which bump does the ia plugin release that moves to 3.6.0 take: minor (1.4.0) or major (2.0.0)?"
-    options ["A minor, 1.4.0", "B major, 2.0.0"]
+    question "Which bump does the ia plugin release that moves to 3.6.0 take: minor (1.5.0) or major (2.0.0)?"
+    options ["A minor, 1.5.0", "B major, 2.0.0"]
     decider "Operator"
-    choice "A minor, 1.4.0"
+    choice "A minor, 1.5.0"
     rationale "The new door refuses a kit the repository binds but does not install, and the plugin's session start names the remedy, so the change is guided. Release N is itself a minor (public-cli-3-6-0-release-n-bump), so this release is 1.5.0."
 
 @decision public-cli-3-6-0-kit-level
   meaning
-    says "Each kit re-cut in this migration is a patch on that kit's latest release at the time of the stamp. The expected numbers are ia-method 0.7.3, ia-kb 0.9.3 and ia-authoring 0.1.3; if another release of a kit lands first (PR #26 proposes ia-method 0.8.0), the patch follows it (ia-method 0.8.1)."
+    says "Each kit re-cut in this migration is a patch on that kit's latest release at the time of the stamp. The expected numbers are ia-method 0.7.3, ia-kb 0.9.4 and ia-authoring 0.1.4; if another release of a kit lands first (PR #26 proposes ia-method 0.8.0), the patch follows it (ia-method 0.8.1)."
   work
     title "The level of each kit re-cut"
     status made
@@ -617,10 +619,10 @@
     source "docs/decisions.md"
   decision
     question "At what level are the three kits re-cut on 3.6.0: patch for all, by content, or minor for all?"
-    options ["A patch for all three (0.7.3, 0.9.3, 0.1.3)", "B by content: minor where records change meaning, patch otherwise", "C minor for all three"]
+    options ["A patch for all three (0.7.3, 0.9.4, 0.1.4)", "B by content: minor where records change meaning, patch otherwise", "C minor for all three"]
     decider "Maintainers"
-    choice "A patch for all three (0.7.3, 0.9.3, 0.1.3)"
-    rationale "A re-cut that only follows the CLI is a patch, as it was at 3.5.0. The install-guidance changes bring the kits into line with IA 3.6.0's rule and add no capability, and the release notes name them. The level was chosen, not the numbers: a release of a kit that lands first moves the patch with it. A kit whose archive is unchanged is not re-cut: in release N ia-method stays at 0.7.2, because only its README changed, which is outside its archive."
+    choice "A patch for all three (0.7.3, 0.9.4, 0.1.4)"
+    rationale "A re-cut that only follows the CLI is a patch, as it was at 3.5.0. The install-guidance changes bring the kits into line with IA 3.6.0's rule and add no capability, and the release notes name them. The level was chosen, not the numbers: a release of a kit that lands first moves the patch with it. A kit whose archive is unchanged is not re-cut: in release N ia-method stays at 0.7.2, because only its README changed, which is outside its archive. At 3.6.0 the pinned CLI changes, so all three kits are re-cut on it (consistency requires each latest release to be packed with the pin); ia-method is 0.7.3."
 
 @decision public-cli-3-6-0-handoff
   meaning
@@ -641,7 +643,7 @@
 
 @decision public-cli-3-6-0-default-workspace
   meaning
-    says "When no consumer workspace is named, the closure path takes IA's repository default only when it is one of the admitted workspaces that root the distribution, and refuses (unambiguous) otherwise."
+    says "When no consumer workspace is named, the closure path takes IA's repository default only when it is one of the admitted workspaces that root a distribution this repository authors, and refuses (unambiguous) otherwise; a repository that authors no distribution takes the default."
   work
     title "The closure path default workspace"
     status made
@@ -654,7 +656,7 @@
     options ["A adopt IA's repository default and change the test", "B keep refusing when more than one admitted workspace roots the distribution", "C adopt IA's default only when it is a distribution root; refuse otherwise"]
     decider "Maintainers"
     choice "C adopt IA's default only when it is a distribution root; refuse otherwise"
-    rationale "Since IA 3.5.1 the unique workspace in .ia/src/workspace.ia is the repository default. Taking it only when it is one of the workspaces that root the distribution keeps the guarantee that a packaged composition is never chosen by accident, and it agrees with IA whenever the default is one of them."
+    rationale "Since IA 3.5.1 the unique workspace in .ia/src/workspace.ia is the repository default. Taking it only when it is one of the workspaces that root a distribution this repository authors keeps the guarantee that a packaged composition is never chosen by accident, and it agrees with IA whenever the default is one of them."
 
 @decision public-cli-3-6-0-resolver
   meaning
@@ -692,7 +694,7 @@
 
 @decision public-kit-lookup-installed
   meaning
-    says "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it from 3.6.0."
+    says "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it too."
   work
     title "Run a bound kit only when the repository installs it"
     status made
@@ -703,7 +705,7 @@
   decision
     question "Where does the core find a kit, and which kit may a bound key run?"
     decider "Maintainers"
-    choice "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it from 3.6.0."
+    choice "The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it too."
     rationale "IA 3.6.0's door refuses IA-CORE-KIT-NOT-INSTALLED for a bound kit the lock does not install, so a carried or IA-home copy no longer stands in for a bound key. The plugin's own resolver applies the same rule, so that the two routes agree."
   relationships
     supersedes @decision public-kit-lookup

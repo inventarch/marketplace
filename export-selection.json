@@ -13,7 +13,7 @@
     },
     {
       "path": "plugins/ia/.claude-plugin/plugin.json",
-      "sha256": "f60f8b83ffff973087e3f039070c4546b1cf267679c31839a06a99703bb8b475"
+      "sha256": "de1ec67ada69f04be0905b840c22a05f01bf0a76aa96b951f343c7ba0377fcd6"
     },
     {
       "path": "plugins/ia/.codex-mcp.json",
@@ -21,7 +21,7 @@
     },
     {
       "path": "plugins/ia/.codex-plugin/plugin.json",
-      "sha256": "b58eb6e35e4cd6521a43b09e154b103c2303f1617c11e4bb752f938f07e83274"
+      "sha256": "d0879edeb5012ec53c4d6a166ce4555374e5bd58ab1af0dafc3fa2b59a6a28d7"
     },
     {
       "path": "plugins/ia/.mcp.json",
@@ -29,15 +29,15 @@
     },
     {
       "path": "plugins/ia/CHANGELOG.md",
-      "sha256": "9bcb688b0e98af442aa33f681e9b86a193d258db7addc95b15c8a8c8a1023f9f"
+      "sha256": "d783a1decdf3d3c8a65b2f0afeffbf87466317a82a16fd2d90dfc174f4e086ef"
     },
     {
       "path": "plugins/ia/CODEX.md",
-      "sha256": "34d1e7b1bdb50c48093ef269f115d9f6b1b23f8070ed4933f9a0207e210e8011"
+      "sha256": "86c7eae5383b1e63eb17f2d97a6a5ff2935107407956d3fd762fae09d42471a8"
     },
     {
       "path": "plugins/ia/README.md",
-      "sha256": "4ac6b12c04d3643bd728b7dd1392991bb41bfaf7c90c239cb1f0a057b3decc88"
+      "sha256": "be6873557dbe7556492b4b139f7da0a734a121e945094675d40aff717ed01efd"
     },
     {
       "path": "plugins/ia/agents/checker.md",
@@ -65,7 +65,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/release.json",
-      "sha256": "17fc58972edf75567c827e2c04d4d6c84d881bdf0e1ec56217b327257d119b24"
+      "sha256": "34dfcf9b8be5ccd9b9f5ece802dc93c43a02305d4f1b8dc84960db4ed1ce2d33"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring/records/capabilities.ia",
@@ -73,7 +73,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring/records/conventions.ia",
-      "sha256": "443dd9327643932347987782708c908b01197fc7019cca34a4e5bf4f61172820"
+      "sha256": "c36923e0ead84e99be787f91cb29b7b66da1fbb4c2652f9fad6797ad2f142496"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring/records/distribution.ia",
@@ -145,7 +145,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring-record/records/conventions.ia",
-      "sha256": "ad8bd34e1bb306d0c6e2755863a16c6e071ca6de40cb30776e38d459b64586c8"
+      "sha256": "d0d51d61232cbb32ddff1e32bf5dbbfd67a7d0b1fd5f27458e73d18f177dde48"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring-record/records/laws.ia",
@@ -153,7 +153,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring-record/records/playbooks.ia",
-      "sha256": "3f35f99fa22db3e80618eeeb26559708e6b2c80cd3a41bb33e299dabf5866243"
+      "sha256": "4b51c96ce2842149137ad593dbe742161654bf9cc35e0afea1c91dd369cd9a9f"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/.ia/src/systems/ia-authoring-record/records/roles.ia",
@@ -169,7 +169,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/README.md",
-      "sha256": "efdf1f41ccc5d1b89a96d15149c9f12d8d1edd9b9e186fea84b782d613717327"
+      "sha256": "cc3d53a28107d3b646ce342d6f109851708899c6539bb66f0629a44bb306a39b"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/assets/probe-examples/admitted.ia",
@@ -212,8 +212,12 @@
       "sha256": "1d2203af10fd4cc8ce041198a665c8737a6f909d511900db4937cdbf8ce7e994"
     },
     {
+      "path": "plugins/ia/config/kits/ia-authoring/releases/0.1.4.json",
+      "sha256": "ad24e27ada25f49433ec3642de62e115071f2f07edf7c04b79bb39acfdafd641"
+    },
+    {
       "path": "plugins/ia/config/kits/ia-authoring/releases.json",
-      "sha256": "2c43ea228323a9ed059d347e97cffb419713c89e53091ca5377a02f115da7093"
+      "sha256": "07c21b4bef439ebca0872d121302ae69c60e6225129f4ef2ca24b3da887a4648"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/scripts/eval-triggers.mjs",
@@ -221,15 +225,15 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/scripts/field-lint.mjs",
-      "sha256": "4e4eb2ba484f876796180a1b55699ff87ac4189af86acb26952d2af94f006f9f"
+      "sha256": "90de5bf661527f01c9fe96aa202df2282f57df8e65e77d67120b6d658aca008f"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/scripts/lib/scratch.mjs",
-      "sha256": "b05467f3d2497e03ee0d1e2708bd3402904f23433d48974a38ba06d8d082ffb7"
+      "sha256": "cc38308fc1f65eebd3d1e1492b7d390e279cf19a14c67ffea7bb466392468cea"
     },
     {
       "path": "plugins/ia/config/kits/ia-authoring/scripts/probe.mjs",
-      "sha256": "0b449800f03b8d52b833a20a376ff20642388b9ac27b17f915c8a11c61ae7459"
+      "sha256": "bc26444c0298330f9908af9663010ac9451e27fdd6180f722fdc831995457580"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/distributions.lock.json",
@@ -237,7 +241,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/release.json",
-      "sha256": "2ba34187b82e5aed2fa23ec3070989d7af6950b70bf5b151b13d4b4ec461de26"
+      "sha256": "85828803bb3395b404fde30b32d30c08b1f43eac2e8c92c3745823dc761351c6"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/src/systems/ia-kb/records/capabilities.ia",
@@ -249,7 +253,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/src/systems/ia-kb/records/conventions.ia",
-      "sha256": "d3f3df88235e0faf9d7c2a8b11e8d83501b24eab5296c28b08d8225840857011"
+      "sha256": "595df0219bfcfc00cfcc70198b0ad8c1dae9253aa754166de573afd45386d1ef"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/src/systems/ia-kb/records/distribution.ia",
@@ -261,7 +265,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/src/systems/ia-kb/records/playbooks.ia",
-      "sha256": "fae080e9f93ad84f59cae8f4903b2e10c63b949ce67c66c88eccf85ce1a2e2d2"
+      "sha256": "3fe51a901d383dfc00287464f052f5aa8627c82e4a3c39ca7a82e94d7dfba910"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/.ia/src/systems/ia-kb/records/roles.ia",
@@ -277,7 +281,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/README.md",
-      "sha256": "1e315437e33b651c18e92c5e6b5a31e989e476715ece8a4a0bd6b5eaf06b62dc"
+      "sha256": "1974467a57cd21361f62b69eb1eb4e8ac749aff0e4bdf350761e57b665d08d1a"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/assets/examples/split-body/README.md",
@@ -368,12 +372,16 @@
       "sha256": "a51777d9f08cd11f4cb3b5d1a931b0a460a6526ca1f58ab2f56d6a7e52ddca3e"
     },
     {
+      "path": "plugins/ia/config/kits/ia-kb/releases/0.9.4.json",
+      "sha256": "d13c442a111ffbaddd1deb6ba18e6006e5a28d910fc88e80e12929a8f7c344e2"
+    },
+    {
       "path": "plugins/ia/config/kits/ia-kb/releases.json",
-      "sha256": "bbcc3f5dc4a69f8be36fd7c6564d86aa0c6692ff5573fe5148ae561bb593281a"
+      "sha256": "1a578ba38b6ce10646d329d1b8215ff1e7dba42cacbbe32455981e2c377433d1"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/scripts/check-decisions.mjs",
-      "sha256": "d3b45a227be354da4d1b8a3bb93126d3235eb903b7a824403f885b043eb9bfc7"
+      "sha256": "a3e26673dfe027f28e69177488db7c04903e566cade84a880ffb2c4db2772cf2"
     },
     {
       "path": "plugins/ia/config/kits/ia-kb/scripts/check-locators.mjs",
@@ -385,7 +393,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/release.json",
-      "sha256": "b81eeedfce510c331a0914e205665bc5f33293f5db1902068ed8c7f3ed985f31"
+      "sha256": "0adf0c22efb456e427538dd4cfdd7bdb985f7c9e632ba8304597f287ca3e5eda"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/capability.ia",
@@ -477,7 +485,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/README.md",
-      "sha256": "ae3277ee6e2ba543aa58222382c9a4a0baf6a90317b098a79cd8fe6b261a11cb"
+      "sha256": "d665a8d671d45cadc8a5d58bdec4c8149af7e357c2188e0574fa3bb1f19f8a4c"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/bindings.json",
@@ -524,8 +532,12 @@
       "sha256": "1377cc0a7cfba507040f61b2cab4e1dc454996134c8a82590eb44c282b2567b7"
     },
     {
+      "path": "plugins/ia/config/kits/ia-method/releases/0.7.3.json",
+      "sha256": "c3d9f40c56a4e20c48e677511ef201071feecbb774c1a29085469f93e29538b4"
+    },
+    {
       "path": "plugins/ia/config/kits/ia-method/releases.json",
-      "sha256": "ce2ab37c4837b125f61c208a7947e7d21bca294f0c2faa60ca57b09cba907f56"
+      "sha256": "6cd81c1ed54d8f82b9a8566db1dd07fe1390ee08402248fc99c6de00af04ad29"
     },
     {
       "path": "plugins/ia/config/method-qualification-ia-kb.json",
@@ -533,19 +545,19 @@
     },
     {
       "path": "plugins/ia/config/public-kits.json",
-      "sha256": "36518283a34a0ea2171d41b9fb156b1740d4007134ff53cad380224c65d68625"
+      "sha256": "8e954eb2036b835eb55a30acaf1f86b7ee69f205f8ddcc2045aab9df8317f9ba"
     },
     {
       "path": "plugins/ia/config/qualified-executors.json",
-      "sha256": "d3709031cafa4de6ee2940474f62510550895a0e713e57692445ad4f8adbf186"
+      "sha256": "1f61ed5430040b6d2bb407c92b08b855491804cb0fb02b4d3c0f71dc7d671bff"
     },
     {
       "path": "plugins/ia/config/qualified-process-tools.json",
       "sha256": "518d6941814c26e7c7cd59c890bc30094bb1b6d16fd84218d79f601d685042cd"
     },
     {
-      "path": "plugins/ia/config/qualified-runtime-3.5.0.json",
-      "sha256": "67d4c4ec3b6bb75cb8386266f17f3f5dea978d8713c51947559eda380443d509"
+      "path": "plugins/ia/config/qualified-runtime-3.6.0.json",
+      "sha256": "109eb33888143910d32bc56582a244ad27715e927717967c6db351de4aa967ae"
     },
     {
       "path": "plugins/ia/config/trusted-publishers.json",
@@ -597,7 +609,7 @@
     },
     {
       "path": "plugins/ia/scripts/ia.mjs",
-      "sha256": "43326d953f3717e7dd54076a520ad8ea47f75edcb677366cd83f3fd35f9974a4"
+      "sha256": "2ee19c7769c53412140f9ba88346d9150695a45999609c40a9f747baa15580ba"
     },
     {
       "path": "plugins/ia/scripts/kit-fetch.mjs",
@@ -629,7 +641,7 @@
     },
     {
       "path": "plugins/ia/scripts/lib/cli.mjs",
-      "sha256": "16bd896578987aee54a7488c20891ddf7fcbc1cb3fed55ea16fbfb78d5e7725c"
+      "sha256": "36dd152b0259730693e49c03d73d18a913e4cd14e0d7f4ebe7d0ce7ece52d043"
     },
     {
       "path": "plugins/ia/scripts/lib/closure-executors.mjs",
@@ -641,11 +653,11 @@
     },
     {
       "path": "plugins/ia/scripts/lib/closure-native.mjs",
-      "sha256": "12e47ad8d2f22a951f3010a1219315aa44004c8c16bd480dc5d36d09120d37d8"
+      "sha256": "b45991c9867ecfaa236b1749e4789954b22d8143307462817051db58fb20169d"
     },
     {
       "path": "plugins/ia/scripts/lib/closure-runtime.mjs",
-      "sha256": "1e5e4a0b95b10a6b39dab16290c7de6bdc8d6ae9ac295c5c074333432b21036c"
+      "sha256": "7fa30eea400532cea105e6a7b053daba54400accc63595252a9c5deae5f414f7"
     },
     {
       "path": "plugins/ia/scripts/lib/design-client.mjs",
@@ -661,7 +673,7 @@
     },
     {
       "path": "plugins/ia/scripts/lib/hygiene.mjs",
-      "sha256": "d0437d4daae72d474b19c1d25a4a0274466c80a0f96bdd2bea4886986b7f0cd4"
+      "sha256": "020fff779be2f753b39971e4025c87f5b7809c027c21132936b37784135d0adc"
     },
     {
       "path": "plugins/ia/scripts/lib/kit-ops.mjs",
@@ -677,7 +689,7 @@
     },
     {
       "path": "plugins/ia/scripts/lib/method-closure.mjs",
-      "sha256": "9ab34617ca10026f1f3425a3c296cc16858a027599aacbe1340fe7f1f8516f3e"
+      "sha256": "60ae1c53e4a878c0bb3f3ace0b62bf930f57f78d75c007cc21cc8d5d11a23d86"
     },
     {
       "path": "plugins/ia/scripts/lib/method-json.mjs",
@@ -729,7 +741,7 @@
     },
     {
       "path": "plugins/ia/scripts/lib/scratch.mjs",
-      "sha256": "c10093e16cedca14b12d40a9536ada6ca7956404d3effc7508d346ae5b2096f9"
+      "sha256": "d51281c9fe84260f5d88864ebea5c6dc4589f6959264628f3791971d7b9a48ab"
     },
     {
       "path": "plugins/ia/scripts/lib/trust.mjs",
@@ -761,11 +773,11 @@
     },
     {
       "path": "plugins/ia/skills/doctor/SKILL.md",
-      "sha256": "7bd86e60b7584ef8cefe2057b7bf8ba0713663853269d6c9aa209087070e4d27"
+      "sha256": "f4e37ed02f445e513a809ab603fe55e8ef69fac58c343081c36284444e747219"
     },
     {
       "path": "plugins/ia/skills/init/SKILL.md",
-      "sha256": "aea34c5b00590abfc9ba86832b2e7ec4ab42497370f9cdbeb4b4ee44c06cef4d"
+      "sha256": "7fb7077e476715f30951c852a34f9788140e8d2832f06edc07095b2d8d5c2796"
     },
     {
       "path": "plugins/ia/skills/knowledge/SKILL.md",

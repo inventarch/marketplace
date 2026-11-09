@@ -7,7 +7,7 @@ import test from 'node:test';
 import { attestRuntime } from '../scripts/lib/closure-runtime.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-const profile = JSON.parse(readFileSync(join(root, 'plugins/ia/config/qualified-runtime-3.5.0.json')));
+const profile = JSON.parse(readFileSync(join(root, 'plugins/ia/config/qualified-runtime-3.6.0.json')));
 const refused = { code: 'IA-CORE-RUNTIME-UNQUALIFIED' };
 
 test('exact published runtime bytes and dependency boundaries', async t => {
@@ -19,7 +19,7 @@ test('exact published runtime bytes and dependency boundaries', async t => {
       cpSync(join(root, 'node_modules', name), destination, { recursive: true });
     }
     const main = join(scratch, 'node_modules/@inventarch/cli/dist/main.js');
-    const cli = { main, version: '3.5.0' };
+    const cli = { main, version: '3.6.0' };
     await t.test('clean archive-qualified cohort can import public native API', async () => {
       const qualified = await attestRuntime(cli);
       assert.equal(qualified.identity.packages.length, 24);
@@ -44,7 +44,7 @@ test('exact published runtime bytes and dependency boundaries', async t => {
     await t.test('wrong CLI entry and npx argv refuse before native import', async () => {
       await assert.rejects(attestRuntime({ ...cli, version: '3.2.0' }), refused);
       await assert.rejects(attestRuntime({ ...cli, main: join(dirname(main), 'program.js') }), refused);
-      await assert.rejects(attestRuntime({ argv: [process.execPath, main, '--extra'], version: '3.5.0' }), refused);
+      await assert.rejects(attestRuntime({ argv: [process.execPath, main, '--extra'], version: '3.6.0' }), refused);
     });
     await t.test('post-attestation edits and new resolution shadows refuse', async () => {
       const qualified = await attestRuntime(cli);

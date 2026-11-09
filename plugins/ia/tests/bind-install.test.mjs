@@ -23,7 +23,7 @@ function setup(t, cliOptions = {}, { manifest = { package: '@inventarch/public-k
   const beta = makeKit(kitsDir, { folder: 'beta', id: 'inventarch/beta-kit', capability: 'beta-operate' });
   writeFileSync(join(alpha.dir, 'bindings.json'), JSON.stringify({ format: 1, recommend: { 'work.*': { capability: 'alpha-operate' } } }) + '\n');
   const packageKits = [alpha, beta].map(k => ({ id: k.id, version: k.version, archive: k.archive }));
-  const cli = fakeCli(dir, '3.5.0', { packageKits, ...cliOptions });
+  const cli = fakeCli(dir, '3.6.0', { packageKits, ...cliOptions });
   const manifestPath = join(dir, 'public-kits.json');
   if (manifest !== null) writeFileSync(manifestPath, typeof manifest === 'string' ? manifest : JSON.stringify(manifest));
   const env = { ...envFor({ cli, kitsDir, temp: dir, extra: { IA_CORE_PUBLIC_KITS: manifestPath } }), IA_HOME: home };
@@ -188,7 +188,7 @@ test('an install that does not exit on its own is uncertain: nothing is removed'
   const repo = makeRepo(join(s.dir, 'repo'));
   const env = { ...process.env, ...s.env };
   const kit = { id: s.alpha.id, origin: 'plugin', latest: null };
-  const cli = { argv: [process.execPath, s.cli], version: '3.5.0', source: 'test' };
+  const cli = { argv: [process.execPath, s.cli], version: '3.6.0', source: 'test' };
   assert.throws(() => installForBind(repo, kit, { apply: true, cli, env, installTimeoutMs: 1500 }), error => {
     assert.equal(error.code, 'IA-CORE-INSTALL-UNCERTAIN');
     assert.match(error.message, /ia install did not exit on its own/);
@@ -267,7 +267,7 @@ test('a CLI that cannot start ran nothing: the seeded lock is rolled back, with 
   const s = setup(t);
   const repo = makeRepo(join(s.dir, 'repo'));
   const kit = { id: s.alpha.id, origin: 'plugin', latest: null };
-  const cli = { argv: [join(s.dir, 'no-such-executable')], version: '3.5.0', source: 'test' };
+  const cli = { argv: [join(s.dir, 'no-such-executable')], version: '3.6.0', source: 'test' };
   assert.throws(() => installForBind(repo, kit, { apply: true, cli, env: { ...process.env, ...s.env } }), error => {
     assert.equal(error.code, 'IA-CORE-INSTALL-REFUSED');
     assert.match(error.message, /could not start/);

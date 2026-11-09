@@ -13,7 +13,7 @@ A Git install copies a plugin's whole folder, `tests/` included. `tools/validate
 
 - A plugin's entry skills are model-invocable: `ia`'s are its three lanes (`ENTRY_SKILLS` in `tools/validate.py`); any other plugin has one router named after it. At most four model-invocable skills per plugin; the rest set `disable-model-invocation: true` and are reached by path. Every description says what and when.
 - Agents need `model`, a "Use this agent when…" description and a `tools` allowlist (never a denylist).
-- Target exactly `@inventarch/cli` 3.5.0 and `inventarch/language` 3.2.0 (`sources.lock.json`, decision `public-cli-3-5-0`). Never use the `ia` on PATH; use the core's `scripts/ia.mjs` or `npx -y -p @inventarch/cli@3.5.0 -- ia`. IA refuses `ia init` inside its home `~/.ia`.
+- Target exactly `@inventarch/cli` 3.6.0 and `inventarch/language` 3.2.0 (`sources.lock.json`, decision `public-cli-3-6-0`). Never use the `ia` on PATH; use the core's `scripts/ia.mjs` or `npx -y -p @inventarch/cli@3.6.0 -- ia`. IA refuses `ia init` inside its home `~/.ia`.
 - No machine paths, credentials, tenant corpus, people's names or other organisations' material in any file.
 - Manifests: the Claude manifest carries `displayName`; the Codex manifest is the Claude one without it, plus `skills` and Codex's `interface` block (`public-codex-manifest-interface`). Every plugin ships a `CODEX.md`, and every skill opens with the `**Codex:**` bridge line to it. Every manifest and kit says `Apache-2.0` (`public-apache-license`).
 - Every change that ships adds a release note (`node tools/release.mjs note --plugin <name> --bump <patch|minor|major|none> --title … --summary …`, which writes `releases/pending/<id>.json`; decision `public-release-notes`). Never bump a plugin's version, `sources.lock.json` `pluginVersion` or its CHANGELOG by hand: the release pull request, which only an operator starts (`.github/workflows/release-pr.yml`), folds the notes into them and records `releases/changesets/<plugin>-<version>.json`; merging it tags `<plugin>-v<version>` (`.github/workflows/release.yml`). See [releases/README.md](releases/README.md).
@@ -27,7 +27,7 @@ A Git install copies a plugin's whole folder, `tests/` included. `tools/validate
 
 ## Gates
 
-`npm ci` at the root installs the gates' tools and, through lefthook's postinstall, this repository's Git hooks (decision `public-local-gates`). `LEFTHOOK=0` skips them for one command; CI still runs the same checks. `npm run kits:install` then installs the three kits into this checkout's ignored lock and `vendor/ia/`, which this repository's own lanes need from IA 3.6.0 (decision `public-cli-3-6-0-own-lock`).
+`npm ci` at the root installs the gates' tools and, through lefthook's postinstall, this repository's Git hooks (decision `public-local-gates`). `LEFTHOOK=0` skips them for one command; CI still runs the same checks. `npm run kits:install` then installs the three kits into this checkout's ignored lock and `vendor/ia/`, which this repository's own lanes need, because the IA door runs a bound kit only when the lock installs it (decision `public-cli-3-6-0-own-lock`).
 
 ```
 python tools/validate.py

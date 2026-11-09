@@ -1,6 +1,6 @@
 # 🧩 IA marketplace · the public InventArch plugin catalogue
 
-[![Gates](https://github.com/inventarch/marketplace/actions/workflows/gates.yml/badge.svg?branch=main)](https://github.com/inventarch/marketplace/actions/workflows/gates.yml) [![ia plugin](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Finventarch%2Fmarketplace%2Fmain%2Fplugins%2Fia%2F.claude-plugin%2Fplugin.json&query=%24.version&label=ia%20plugin)](plugins/ia/CHANGELOG.md) [![IA CLI](https://img.shields.io/badge/%40inventarch%2Fcli-3.5.0-blue)](sources.lock.json) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE) [![Node](https://img.shields.io/badge/node-22.x-brightgreen)](package.json) [![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%C2%B7%20Codex-8a63d2)](docs/hosts.md)
+[![Gates](https://github.com/inventarch/marketplace/actions/workflows/gates.yml/badge.svg?branch=main)](https://github.com/inventarch/marketplace/actions/workflows/gates.yml) [![ia plugin](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Finventarch%2Fmarketplace%2Fmain%2Fplugins%2Fia%2F.claude-plugin%2Fplugin.json&query=%24.version&label=ia%20plugin)](plugins/ia/CHANGELOG.md) [![IA CLI](https://img.shields.io/badge/%40inventarch%2Fcli-3.6.0-blue)](sources.lock.json) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE) [![Node](https://img.shields.io/badge/node-22.x-brightgreen)](package.json) [![Hosts](https://img.shields.io/badge/hosts-Claude%20Code%20%C2%B7%20Codex-8a63d2)](docs/hosts.md)
 
 > The **IA marketplace** is the plugin catalogue `inventarch` for Claude Code and Codex. It ships one plugin, **`ia`**, which gives a coding agent three lanes: Work, Knowledge and Delivery. Each lane delivers the method a repository binds as one packet the agent follows, instead of a prompt it improvises.
 >
@@ -42,7 +42,7 @@ codex plugin add ia@inventarch
 
 `codex plugin marketplace upgrade` refreshes the Git snapshot. If the plugin's version did not change, Codex keeps its cached copy: run `codex plugin remove` and then `codex plugin add`.
 
-Installing the plugin also gives Claude Code the IA door: the plugin's launcher (`scripts/door.mjs`, run with `node`) starts `npx -y @inventarch/mcp-door@3.5.0`, never through a shell (on Windows it runs npm's `npx-cli.js` with `node`), so the first session in a new environment needs network access to fetch it once.
+Installing the plugin also gives Claude Code the IA door: the plugin's launcher (`scripts/door.mjs`, run with `node`) starts `npx -y @inventarch/mcp-door@3.6.0`, never through a shell (on Windows it runs npm's `npx-cli.js` with `node`), so the first session in a new environment needs network access to fetch it once.
 
 ### 2. Set up a repository
 
@@ -149,13 +149,13 @@ A repository can carry its own way in, so that a clone works the same for everyo
    - Claude Code, `.mcp.json`:
 
      ```json
-     { "mcpServers": { "ia": { "command": "npx", "args": ["-y", "@inventarch/mcp-door@3.5.0"] } } }
+     { "mcpServers": { "ia": { "command": "npx", "args": ["-y", "@inventarch/mcp-door@3.6.0"] } } }
      ```
 
      On native Windows, Claude Code cannot start `npx` (a `.cmd` shim) directly; a repository whose people work there commits the `cmd /c` form instead:
 
      ```json
-     { "mcpServers": { "ia": { "command": "cmd", "args": ["/c", "npx", "-y", "@inventarch/mcp-door@3.5.0"] } } }
+     { "mcpServers": { "ia": { "command": "cmd", "args": ["/c", "npx", "-y", "@inventarch/mcp-door@3.6.0"] } } }
      ```
 
      With this plugin installed you need neither: its own door entry runs `node` on its launcher, which starts npx without a shell on Windows too.
@@ -165,22 +165,22 @@ A repository can carry its own way in, so that a clone works the same for everyo
      ```toml
      [mcp_servers.ia]
      command = "npx"
-     args = ["-y", "@inventarch/mcp-door@3.5.0"]
+     args = ["-y", "@inventarch/mcp-door@3.6.0"]
      ```
 
-     On Windows, use `command = "cmd"` and `args = ["/c", "npx", "-y", "@inventarch/mcp-door@3.5.0"]`.
+     On Windows, use `command = "cmd"` and `args = ["/c", "npx", "-y", "@inventarch/mcp-door@3.6.0"]`.
 
    - GitHub Copilot in VS Code, `.vscode/mcp.json`:
 
      ```json
-     { "servers": { "ia": { "type": "stdio", "command": "npx", "args": ["-y", "@inventarch/mcp-door@3.5.0"] } } }
+     { "servers": { "ia": { "type": "stdio", "command": "npx", "args": ["-y", "@inventarch/mcp-door@3.6.0"] } } }
      ```
 
      For the Copilot coding agent, add the same server under the repository's Copilot MCP configuration on GitHub. Copilot has no plugin and no hooks, so the door and the instruction block are its only way in: the lanes' names in the block are what it calls through the door.
 
 `ia init` and `ia host` (IA CLI) write these pieces for you once the framework release that commits them ships; until then, copy them by hand. With this plugin installed, Claude Code already has the door (the plugin ships it as its MCP server `ia`, whose tools are `mcp__plugin_ia_ia__<tool>`); a committed `.mcp.json` entry then adds a second copy under `mcp__ia__<tool>`, which is harmless, and is still what a teammate without the plugin, or another host, uses. The door finds the kits in `<IA home>/kits`; the plugin's own door also finds the kits it bundles.
 
-The 3.5.0 door serves `ia_session`, `ia_catalogue` and `ia_method`, and this plugin's lanes use only them (a door older than 3.5.0 does not serve them, so a committed entry should pin 3.5.0 or later).
+The 3.6.0 door serves `ia_session`, `ia_catalogue` and `ia_method`, and this plugin's lanes use only them (a door older than 3.5.0 does not serve them, so a committed entry should pin 3.5.0 or later).
 
 ---
 
@@ -235,7 +235,7 @@ A pull request that changes a file the plugin ships adds a release note (`node t
 
 ## ✅ Contributing and verification
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in [docs/roadmap.md](docs/roadmap.md). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.5.0, and lefthook installs this repository's Git hooks. `npm run kits:install` then installs the three kits this repository's own lanes run (see CONTRIBUTING.md). CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in [docs/roadmap.md](docs/roadmap.md). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.6.0, and lefthook installs this repository's Git hooks. `npm run kits:install` then installs the three kits this repository's own lanes run (see CONTRIBUTING.md). CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
 
 | Command | What it checks |
 | --- | --- |

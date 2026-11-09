@@ -2,6 +2,7 @@
 # Owners must be GitHub users or teams with write access to inventarch/marketplace.
 # InventArch owns this repository; the verified operator administers repository review, and the main-review ruleset
 # lets that operator's own pull requests merge without a second code-owner approval (decision public-main-rulesets).
+# Two code owners, so each one's pull requests can be approved by the other (owner ruling, 2026-11-08).
 # Later lines take precedence over earlier ones.
 
-* @crowncodes
+* @crowncodes @davidbordeleau

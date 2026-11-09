@@ -10,7 +10,8 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { copyWorkspace, readArtifact, resolveIa, scratchArtifact } from '../scripts/lib/scratch.mjs';
+import { copyWorkspace, invokeIa, readArtifact, resolveIa, scratchArtifact } from '../scripts/lib/scratch.mjs';
+import * as kitScratch from '../config/kits/ia-authoring/scripts/lib/scratch.mjs';
 import { sandbox } from './helpers/fixtures.mjs';
 
 function fixture(t) {
@@ -146,4 +147,17 @@ test('a broken workspace install keeps its own reason, never the no-CLI wording'
   assert.throws(() => resolveIa(root, undefined, { quiet: true }), e => e.code === 'IA-CORE-CLI-MISSING' && /names @someone\/else, not @inventarch\/cli/.test(e.message) && !/no IA CLI resolved/.test(e.message));
   writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@inventarch/cli', version: '3.3.0', bin: 'bin/gone.mjs' }));
   assert.throws(() => resolveIa(root, undefined, { quiet: true }), e => /has no entry .*gone\.mjs/.test(e.message));
+});
+
+// public-cli-3-6-0-handoff: the core's and the ia-authoring kit's invokeIa both start the CLI they resolved with
+// IA_NO_HANDOFF=1, also when the caller passes its own environment.
+test('invokeIa of the core and of the ia-authoring kit starts the CLI with IA_NO_HANDOFF=1', t => {
+  const dir = sandbox(t);
+  const fake = join(dir, 'fake-ia.mjs');
+  writeFileSync(fake, "process.stdout.write(JSON.stringify({ args: process.argv.slice(2), handoff: process.env.IA_NO_HANDOFF ?? null, marker: process.env.IA_TEST_MARKER ?? null }));");
+  const cli = { argv: [process.execPath, fake], version: '3.6.0', source: 'test' };
+  for (const [name, invoke] of [['core', invokeIa], ['ia-authoring kit', kitScratch.invokeIa]]) {
+    assert.deepEqual(JSON.parse(invoke(cli, ['capture'])), { args: ['capture'], handoff: '1', marker: null }, name);
+    assert.deepEqual(JSON.parse(invoke(cli, ['capture'], { env: { ...process.env, IA_TEST_MARKER: 'kept', IA_NO_HANDOFF: '0' } })), { args: ['capture'], handoff: '1', marker: 'kept' }, `${name}: a caller's env keeps its names, never a hand-off`);
+  }
 });

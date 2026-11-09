@@ -395,8 +395,8 @@ class ScaffoldTests(unittest.TestCase):
         def door(value): return value['mcpServers']['ia']
         def connector(value): return value['mcpServers']['inventarch']
         edits = {
-            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.5.0']),
-            'cmd /c npx': lambda v: door(v).update(command='cmd', args=['/c', 'npx', '-y', '@inventarch/mcp-door@3.5.0']),
+            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.6.0']),
+            'cmd /c npx': lambda v: door(v).update(command='cmd', args=['/c', 'npx', '-y', '@inventarch/mcp-door@3.6.0']),
             'other script': lambda v: door(v).update(args=['${CLAUDE_PLUGIN_ROOT}/scripts/resolve.mjs']),
             'extra argument': lambda v: door(v)['args'].append('--root'),
             'shell command': lambda v: door(v).update(command='bash'),
@@ -429,7 +429,7 @@ class ScaffoldTests(unittest.TestCase):
         def door(value): return value['mcpServers']['ia']
         edits = {
             'claude placeholder': lambda v: door(v).update(args=['${CLAUDE_PLUGIN_ROOT}/scripts/door.mjs']),
-            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.5.0']),
+            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.6.0']),
             'other script': lambda v: door(v).update(args=['./scripts/resolve.mjs']),
             'no cwd': lambda v: door(v).pop('cwd'),
             'second server': lambda v: v['mcpServers'].update(extra={'command': 'npx', 'args': ['-y', 'x']}),

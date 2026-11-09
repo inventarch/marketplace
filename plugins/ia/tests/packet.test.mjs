@@ -16,7 +16,7 @@ const base = () => ({
   requestedOperations: ['read'],
   runner: ['gate'],
   missing: [],
-  envelope: { host: 'claude-code', cliVersion: '3.5.0', kitRoot: '/tmp/kit', latencyMs: 12 },
+  envelope: { host: 'claude-code', cliVersion: '3.6.0', kitRoot: '/tmp/kit', latencyMs: 12 },
 });
 
 test('canonical JSON sorts keys recursively and drops undefined members', () => {

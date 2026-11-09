@@ -59,7 +59,7 @@ if (languageLock.packages.length !== 1) refuse(`${join(kitRoots[0], '.ia', 'dist
 function ia(workspace, home, verb) {
   return new Promise(done => {
     execFile(process.execPath, [entry, ...verb, '--root', workspace, '--json'],
-      { cwd: workspace, encoding: 'utf8', env: { ...process.env, IA_HOME: home }, maxBuffer: 64 * 1024 * 1024, timeout: 180_000, windowsHide: true },
+      { cwd: workspace, encoding: 'utf8', env: { ...process.env, IA_HOME: home, IA_NO_HANDOFF: '1' }, maxBuffer: 64 * 1024 * 1024, timeout: 180_000, windowsHide: true },
       (error, stdout, stderr) => {
         let json;
         try { json = JSON.parse(stdout); } catch { json = undefined; }

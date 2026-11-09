@@ -9,7 +9,7 @@
 //   node field-lint.mjs [--root <workspace>] [--cli <ia main.js>] [--artifact <snapshot.json>] [--json]
 //
 // Writes nothing in the workspace: it captures a temp copy. Without --cli or IA_CLI_PATH the workspace's own
-// node_modules/@inventarch/cli runs, else @inventarch/cli 3.5.0 through npx; never the `ia` on the PATH.
+// node_modules/@inventarch/cli runs, else @inventarch/cli 3.6.0 through npx; never the `ia` on the PATH.
 import fs from 'node:fs';
 import {scratchArtifact, readArtifact} from './lib/scratch.mjs';
 import path from 'node:path';

@@ -1,0 +1,551 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-authoring-kit",
+  "version": "0.1.4",
+  "archive": "9b3d110f098f604426fc6bee3aa470e909d7b2019b5a2bb3b191e935265933f6",
+  "records": [
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "agent",
+      "name": "catalogue-authoring-steward"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "capability",
+      "name": "catalogue-author"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "case",
+      "name": "cat-req-01-failure"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "case",
+      "name": "cat-req-01-success"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "check",
+      "name": "catalogue-validate"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "contract",
+      "name": "catalogue-authoring"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-agent-allowlist"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-author-is-not-reviewer"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-author-licence"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-codex-bridge"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-description-length"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-hidden-description"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-listing-budget"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-model-invocable-limit"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "convention",
+      "name": "catalogue-qualified-hooks"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "playbook",
+      "name": "catalogue-author"
+    },
+    {
+      "system": "ia-authoring-catalogue",
+      "word": "system",
+      "name": "ia-authoring-catalogue"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-authoring-steward"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-independent-reviewer"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-lowering-scribe"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-qualifier"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-round-trip-checker"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "agent",
+      "name": "host-trigger-evaluator"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "capability",
+      "name": "host-evaluate"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "capability",
+      "name": "host-lower"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "capability",
+      "name": "host-project"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "capability",
+      "name": "host-qualify"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-01-failure"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-01-success"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-02-failure"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-02-success"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-03-failure"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "case",
+      "name": "host-req-03-success"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "check",
+      "name": "host-fixed-point"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "check",
+      "name": "host-trigger-eval"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "check",
+      "name": "host-validate"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "contract",
+      "name": "host-authoring"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-capture"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-cases-are-records"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-complete-runs"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-modes"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-no-selective-reruns"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-results"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-reviewer-freezes"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-run-manifest"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-sessions"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "convention",
+      "name": "host-trigger-side-by-side"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "playbook",
+      "name": "host-evaluate"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "playbook",
+      "name": "host-lower"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "playbook",
+      "name": "host-project"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "playbook",
+      "name": "host-qualify"
+    },
+    {
+      "system": "ia-authoring-host",
+      "word": "system",
+      "name": "ia-authoring-host"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "agent-profile",
+      "name": "authoring-toolchain-prober-profile"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "agent",
+      "name": "authoring-toolchain-prober"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "agent",
+      "name": "ia-authoring-record-steward"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "capability",
+      "name": "authoring-probing-the-ia-toolchain"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "capability",
+      "name": "authoring-workspace-authoring"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-01-failure"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-01-success"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-02-failure"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-02-success"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-03-failure"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-03-success"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-04-failure"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-04-success"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-05-failure"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "case",
+      "name": "authoring-req-05-success"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "check",
+      "name": "authoring-field-lint"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "check",
+      "name": "authoring-workspace-validate"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "check",
+      "name": "ia-authoring-record-coverage"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "contract",
+      "name": "ia-authoring-record"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-concepts"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-current-authoring"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-how-to-author"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-model-delivery"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-model-ownership"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-model-sources"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-record-syntax"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-rules-checks-and-coverage"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-rules-ownership"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-rules-schemas-and-ids"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-toolchain-facts"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-ia-unchecked-by-admission"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-probe-by-hand"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-public-systems"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-toolchain"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "convention",
+      "name": "authoring-what-goes-where"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "law",
+      "name": "authoring-no-promotion"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "law",
+      "name": "authoring-probe-never-the-workspace"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "law",
+      "name": "authoring-run-before-claim"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "law",
+      "name": "authoring-stewards-write-their-folders"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "mandate",
+      "name": "authoring-worker-mandate"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "playbook",
+      "name": "authoring-probing-the-ia-toolchain"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "playbook",
+      "name": "authoring-toolchain-prober"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "playbook",
+      "name": "authoring-workspace-authoring"
+    },
+    {
+      "system": "ia-authoring-record",
+      "word": "system",
+      "name": "ia-authoring-record"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "agent",
+      "name": "ia-authoring-steward"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "capability",
+      "name": "authoring-deliver"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "convention",
+      "name": "authoring-activity-keys"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "convention",
+      "name": "authoring-host-notes"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "convention",
+      "name": "authoring-kit-install-and-bind"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "convention",
+      "name": "authoring-kit-tools"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "convention",
+      "name": "authoring-scope"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "distribution",
+      "name": "ia-authoring-distribution"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "playbook",
+      "name": "authoring-deliver"
+    },
+    {
+      "system": "ia-authoring",
+      "word": "system",
+      "name": "ia-authoring"
+    }
+  ],
+  "offers": {
+    "keys": [
+      "delivery.*",
+      "delivery.author",
+      "delivery.catalogue",
+      "delivery.host",
+      "delivery.host-evaluate",
+      "delivery.host-project",
+      "delivery.host-qualify",
+      "delivery.probe",
+      "delivery.workspace-authoring"
+    ]
+  }
+}

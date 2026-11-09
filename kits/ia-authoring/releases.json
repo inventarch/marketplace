@@ -1,7 +1,7 @@
 {
   "format": 2,
   "kit": "inventarch/ia-authoring-kit",
-  "latest": "0.1.3",
+  "latest": "0.1.4",
   "releases": [
     {
       "version": "0.1.0",
@@ -53,6 +53,19 @@
       "source": {
         "repository": "https://github.com/inventarch/marketplace.git",
         "commit": "c7f4194ef09cb23f42a80a03da01c4041a41f769"
+      }
+    },
+    {
+      "version": "0.1.4",
+      "archive": "9b3d110f098f604426fc6bee3aa470e909d7b2019b5a2bb3b191e935265933f6",
+      "manifest": "c023d23f4ef3568b348a75713fc28f3f41eb29d3251ff50a5fdfad7e9a08dc6c",
+      "sources": "a3d588c313b455a102d3096318baceac7eb318fd061fa5c68f492b7dbbc77e38",
+      "language": "inventarch/language ^3.2.0",
+      "cli": "@inventarch/cli 3.6.0",
+      "file": "releases/0.1.4.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "900da4e819766e7c93705888eb51491f1b49c1fd"
       }
     }
   ]

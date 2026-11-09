@@ -1,7 +1,7 @@
 {
   "format": 2,
   "kit": "inventarch/ia-kb-kit",
-  "latest": "0.9.3",
+  "latest": "0.9.4",
   "releases": [
     {
       "version": "0.1.0",
@@ -125,6 +125,19 @@
       "source": {
         "repository": "https://github.com/inventarch/marketplace.git",
         "commit": "c7f4194ef09cb23f42a80a03da01c4041a41f769"
+      }
+    },
+    {
+      "version": "0.9.4",
+      "archive": "52f0f188c0102a4f3ae392ab1c48c89234d01170126507b2caf23c764b95d398",
+      "manifest": "97fbc4a5786c32b6338c17847c6c57b26e3a928722103320aa5325538fad935b",
+      "sources": "dcbf1887581e49aec26cc45943ba20a40c2be86cff8da8bc42a22f24e732fba4",
+      "language": "inventarch/language ^3.2.0",
+      "cli": "@inventarch/cli 3.6.0",
+      "file": "releases/0.9.4.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "900da4e819766e7c93705888eb51491f1b49c1fd"
       }
     }
   ]

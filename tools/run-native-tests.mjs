@@ -16,7 +16,7 @@ function sourceSnapshot() {
 }
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 // The one CLI version the native lane qualifies; tools/consistency.py holds it to sources.lock.json.
-const CLI_VERSION = '3.5.0';
+const CLI_VERSION = '3.6.0';
 export function inspectCli(entry) {
   assert(entry, 'IA_CORE_TEST_CLI is required; use the installed @inventarch/cli/dist/main.js');
   const cli = resolve(entry);
@@ -24,7 +24,7 @@ export function inspectCli(entry) {
   const pkg = JSON.parse(readFileSync(join(dirname(cli), '..', 'package.json'), 'utf8'));
   assert.equal(pkg.name, '@inventarch/cli');
   assert.equal(pkg.version, CLI_VERSION, 'required native CLI version');
-  const reported = execFileSync(process.execPath, [cli, '--version'], { encoding: 'utf8', timeout: 30000 });
+  const reported = execFileSync(process.execPath, [cli, '--version'], { encoding: 'utf8', env: { ...process.env, IA_NO_HANDOFF: '1' }, timeout: 30000 });
   assert.match(reported, new RegExp(`\\b${CLI_VERSION.replaceAll('.', '\\.')}\\b`), 'the native CLI reports another version');
   return { entry: cli, version: pkg.version, entrySha256: digest(readFileSync(cli)) };
 }
@@ -99,6 +99,8 @@ export async function main(args = process.argv.slice(2)) {
   process.env.IA_GOVERNANCE_TEST_CLI = cli.entry;
   process.env.IA_CLI_PATH = cli.entry;
   process.env.IA_CORE_NO_NPX = '1';
+  // The qualified CLI is the one every test child runs: no hand-off to another install (public-cli-3-6-0-handoff).
+  process.env.IA_NO_HANDOFF = '1';
   // Retained method snapshots go to a scratch store, never the operator's ~/.ia/method-closures-v1.
   const closures = mkdtempSync(join(tmpdir(), 'ia-native-closures-'));
   process.env.IA_CORE_CLOSURES_DIR = closures;

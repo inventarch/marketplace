@@ -17,7 +17,7 @@ import { sandbox } from './helpers/fixtures.mjs';
 import { APP_ID, BASE_ID, recordPair, writePair } from './helpers/kit-pair.mjs';
 
 const CLI = process.env.IA_CORE_TEST_CLI;
-const SKIP = !CLI && 'set IA_CORE_TEST_CLI to an @inventarch/cli 3.5.0 dist/main.js';
+const SKIP = !CLI && 'set IA_CORE_TEST_CLI to an @inventarch/cli 3.6.0 dist/main.js';
 
 // Points the core at an empty plugin kit folder and, when given, an IA home.
 function isolate(t, dir, home) {
@@ -117,7 +117,7 @@ test('real CLI: fx-app restores and adopts with fx-base vendored, and the lock p
   const dir = sandbox(t, 'ia-core-deps-');
   isolate(t, dir);
   const cli = resolveCli(dir, { env: { IA_CLI_PATH: CLI } });
-  assert.equal(cli.version, '3.5.0');
+  assert.equal(cli.version, '3.6.0');
   const pair = recordPair(dir, cli);
   assert.deepEqual(pair.lock.packages.map(p => p.id).sort(), [BASE_ID, 'inventarch/language']);
   const app = findKit(APP_ID, pair.kits);

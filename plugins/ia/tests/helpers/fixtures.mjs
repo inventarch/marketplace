@@ -104,7 +104,7 @@ process.exit(2);
 `;
 
 // Writes the stand-in CLI and returns its path, with a package.json beside it
-// so lib/cli.mjs reads its version (the pinned 3.5.0 unless another is given).
+// so lib/cli.mjs reads its version (the pinned 3.6.0 unless another is given).
 // restoreUnavailable and restoreDelisted: its restore refuses as a real CLI does
 // for a language base it does not ship, when the registry cannot be reached
 // (IA-DIST-ARTIFACT-UNAVAILABLE, exit 4) or answers that it no longer lists that
@@ -116,7 +116,7 @@ process.exit(2);
 // { applied: { status: 'installed' } }. install: 'ok' | 'notfound' (IA-CLI-KITS-PACKAGE-UNAVAILABLE, exit 3) | 'refuse'
 // (IA-DIST-CONFLICT, exit 3) | 'mutatefail' (changes the lock, then exits 3) | 'norow' (installed, but no row written) | 'hang' (never exits). Every call after --version is
 // appended to <cli folder>/calls.log; cliCalls(main) reads it.
-export function fakeCli(dir, version = '3.5.0', { restoreUnavailable = false, restoreDelisted = false, restoreConflict = false, install = 'ok', packageKits = [] } = {}) {
+export function fakeCli(dir, version = '3.6.0', { restoreUnavailable = false, restoreDelisted = false, restoreConflict = false, install = 'ok', packageKits = [] } = {}) {
   const pkg = join(dir, 'fake-cli');
   mkdirSync(join(pkg, 'dist'), { recursive: true });
   writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@inventarch/cli', version, bin: { ia: 'dist/main.js' } }));
@@ -173,7 +173,7 @@ export function makeKit(kitsDir, o = {}) {
   writeFileSync(join(dir, '.ia', 'release.json'), JSON.stringify({ formatVersion: 1, id, version, distribution: `workspace-system/definition/distribution/${folder}-distribution`, engine: '^0.1.1', language: ['1.0'], dependencies: [{ id: 'inventarch/language', range: '^3.2.0', systems: [] }], assets: [], license: 'Apache-2.0', description: `Fake kit ${id}.` }, null, 2) + '\n');
   writeFileSync(join(dir, '.ia', 'distributions.lock.json'), JSON.stringify({ engine: '0.1.1', formatVersion: 1, packages: [{ archive: 'a'.repeat(64), dependencies: [], id: 'inventarch/language', location: 'sha256:' + 'a'.repeat(64), manifest: 'b'.repeat(64), version: '3.2.0' }], requests: [{ id: 'inventarch/language', range: '^3.2.0' }] }) + '\n');
   const archive = o.archive ?? (version.replace(/\D/g, '') + '0').padEnd(64, 'c');
-  writeFileSync(join(dir, 'releases.json'), JSON.stringify({ kit: id, releases: [{ version, archive, manifest: 'd'.repeat(64), sources: 'unverified', language: 'inventarch/language ^3.2.0', cli: '@inventarch/cli 3.5.0', records: [] }] }, null, 2) + '\n');
+  writeFileSync(join(dir, 'releases.json'), JSON.stringify({ kit: id, releases: [{ version, archive, manifest: 'd'.repeat(64), sources: 'unverified', language: 'inventarch/language ^3.2.0', cli: '@inventarch/cli 3.6.0', records: [] }] }, null, 2) + '\n');
   writeFileSync(join(dir, 'check-ok.mjs'), `process.stdout.write('check ' + process.env.IA_CORE_CHECK + ' ran in ' + process.cwd() + '\\n');\n`);
   writeFileSync(join(dir, 'check-fail.mjs'), `process.stderr.write('check failed\\n'); process.exit(4);\n`);
   const checksJson = { format: 1, checks: {} };

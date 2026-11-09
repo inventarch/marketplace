@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-authoring-kit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "distribution": "workspace-system/definition/distribution/ia-authoring-distribution",
   "engine": "^0.1.1",
   "language": [
@@ -68,8 +68,8 @@
   "description": "The IA authoring kit: author records of existing public IA words in a workspace and probe what IA admits; lower a Claude, Codex or Grok plugin into IA records, project it back, check the round trip, measure triggering and qualify it on its hosts; and bring a plugin inside a catalogue's house rules. The Delivery lane's default kit.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "c7f4194ef09cb23f42a80a03da01c4041a41f769",
+    "commit": "900da4e819766e7c93705888eb51491f1b49c1fd",
     "recipe": "ustar-v1",
-    "epoch": 1794161202
+    "epoch": 1794182161
   }
 }

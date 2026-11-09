@@ -1,0 +1,39 @@
+{
+  "format": "inventarch-marketplace.changeset.v1",
+  "plugin": "ia",
+  "version": "1.4.0",
+  "previous": "1.3.0",
+  "bump": "minor",
+  "notes": [
+    {
+      "id": "bind-installs-the-kits-it-binds",
+      "bump": "minor",
+      "title": "Bind installs the kits it binds",
+      "summary": "kit.mjs bind now refuses a kit the repository lock does not install, on a preview too and with --key, and writes nothing; --install installs it first. For the kits `@inventarch/public-kits` carries, --install runs `ia install --package @inventarch/public-kits@<version> --apply --yes` (a workspace with no lock gets a language-only lock and a restore first), which needs npm and the registry; any other kit installs as kit.mjs add does. The refusal names the remedy for the kit: the package route for the kits the package carries, kit.mjs add for the rest. The session start names every bound kit the lock does not install. The bundled kits' guidance now teaches `kit.mjs bind <kit> --install --apply` as the way to install and bind a kit, and says a bound kit the lock does not install is refused with `IA-CORE-KIT-NOT-INSTALLED`: the `ia-authoring` `convention` and `playbook`, the `ia-authoring-record` installed-kits `convention`, the `ia-kb` `IA-CORE-NO-METHOD` remedy and `case` records, and the `ia-method` README."
+    },
+    {
+      "id": "bound-execution-requires-an-installed-kit",
+      "bump": "minor",
+      "title": "Bound execution requires an installed kit",
+      "summary": "resolve.mjs and check.mjs now refuse a kit the repository binds but its own lock does not install, with IA-CORE-KIT-NOT-INSTALLED, before anything is retained, restored, written or run. This holds for the ordinary and the qualified routes (--qualified, --qualified-input), and a copy the plugin carries, the IA home holds or a task pin retained never stands in for the lock. A kit row of an npm package carrier in the lock's entries counts as installed, as it does for the IA runtime; a pin older than the installed version keeps running from its retained bytes. The refusal also carries the kit's canonical id as `error.kit`, and a binding written with a kit's folder name (such as `ia-authoring`) is guarded as the kit it names. --kit with no binding and the unbound resolve outside a workspace are unchanged."
+    },
+    {
+      "id": "install-bound-kits-before-ia-3-6-0",
+      "bump": "minor",
+      "title": "Install your bound kits before the IA 3.6.0 release",
+      "summary": "The next release of the `ia` plugin moves to IA 3.6.0, whose door runs a kit the repository binds only when the repository's own `.ia/distributions.lock.json` installs it. Run `kit.mjs bind <kit> --install --apply` now for each kit you bind (the session start names any that are missing); a repository that installs on this release keeps working at the next. The bundled `ia-authoring` 0.1.3 and `ia-kb` 0.9.3 are patch re-cuts whose guidance teaches that route; `ia-method` stays at 0.7.2, because its archive is unchanged and only its README text changed."
+    },
+    {
+      "id": "retain-workflow-metadata-in-installed-kit-archives",
+      "bump": "patch",
+      "title": "Retain workflow metadata in installed kit archives",
+      "summary": "Public kit archives now include binding recommendations, full-procedure delivery settings and check metadata so CLI-only setup can discover and use the same workflows as the plugin."
+    },
+    {
+      "id": "the-session-bootstrap-no-longer-routes-every",
+      "bump": "minor",
+      "title": "The session bootstrap no longer routes every request through a lane",
+      "summary": "The SessionStart context says reading, building, testing, editing and submitting a change need no binding, plugin, door or private access, routes through the lanes only when a task needs a method, and refuses only the operation that needs one. It carries a one-line ia-bootstrap marker and a sentence naming what needs a bound method or private authority, both kept however long the bindings, the notices or the plugin path are (the whole context stays within 2,500 characters), and names a locked kit the plugin does not carry."
+    }
+  ]
+}

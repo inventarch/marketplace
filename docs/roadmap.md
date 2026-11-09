@@ -19,6 +19,7 @@ Open work for the public catalogue. Each item is a `@task` in `.ia/src/work.ia`,
 | Give Codex the InventArch account connector once its documented plugin MCP config is shown to take a remote HTTP server with the API's pre-registered OAuth client (client id claude-code, callback port 43822) and tools/smoke-codex.mjs can sign in and list kit_offerings. Until then the Codex manifest names only the door (.codex-mcp.json) and Codex users add the server with codex mcp add (decision public-account-connector). | proposed | `codex-account-connector` |
 | claude plugin validate warns that plugins/ia/.claude-plugin/plugin.json has no privacyPolicyUrl now that the core bundles a remote connector. This repository has no privacy policy page to point at: publish one (on inventarch.com) and add privacyPolicyUrl to the Claude manifest. | proposed | `plugin-privacy-policy-url` |
 | In a real Claude Code session: the plugin's inventarch server appears in /mcp and signs in with client id claude-code on callback port 43822; kit_offerings and kit_download answer under mcp__plugin_ia_inventarch__*; and a downloaded archive is a kit folder tarball that kit.mjs add --from accepts (its releases.json at the root or in its one folder). Record the observed kit_offerings shape in ia:init section 6. | proposed | `qualify-account-connector` |
+| Guard `bind.mjs set` and `recommend` against a kit the lock does not install; the resolver guard catches it at resolve time. | proposed | `cli-3-6-0-bind-mjs-guard` |
 
 ## The IA 3.6.0 migration (plan `cli-3-6-0-migration`)
 
@@ -35,24 +36,23 @@ Release N migrates users onto installed kits on the 3.5.x pins; release N+1 move
 | Release notes for release N. | closed | `cli-3-6-0-release-notes-n` |
 | Re-cut the kits for release N. | closed | `cli-3-6-0-kit-stamp-n` |
 | Host gates for release N. | closed | `cli-3-6-0-host-gates-n` |
-| Release N and publish the kits; `@inventarch/public-kits@<the version in plugins/ia/config/public-kits.json>` is on npm (`npm view`) before the release pull request merges. | open | `cli-3-6-0-release-n` |
+| Release N and publish the kits; `@inventarch/public-kits@<the version in plugins/ia/config/public-kits.json>` is on npm (`npm view`) before the release pull request merges. | closed | `cli-3-6-0-release-n` |
 | Resolver parity with door 3.6.0. | closed | `cli-3-6-0-resolver-parity` |
-| Guard `bind.mjs set` and `recommend` against a kit the lock does not install; the resolver guard catches it at resolve time. | proposed | `cli-3-6-0-bind-mjs-guard` |
 
 ### Release N+1: 3.6.0 sources merged (`cli-3-6-0-sources`)
 
 | Task | Standing | Record |
 |---|---|---|
-| Move the pins and cohort to 3.6.0. | open | `cli-3-6-0-pins` |
-| Guard the chosen CLI against hand-off. | open | `cli-3-6-0-handoff-guard` |
-| Closure default workspace under 3.6.0. | open | `cli-3-6-0-default-workspace` |
-| Change the kits' toolchain to 3.6.0. | open | `cli-3-6-0-kit-sources` |
-| Release notes for 3.6.0. | open | `cli-3-6-0-release-notes` |
+| Move the pins and cohort to 3.6.0. | closed | `cli-3-6-0-pins` |
+| Guard the chosen CLI against hand-off. | closed | `cli-3-6-0-handoff-guard` |
+| Closure default workspace under 3.6.0. | closed | `cli-3-6-0-default-workspace` |
+| Change the kits' toolchain to 3.6.0. | closed | `cli-3-6-0-kit-sources` |
+| Release notes for 3.6.0. | closed | `cli-3-6-0-release-notes` |
 
 ### Release N+1: 3.6.0 released and qualified (`cli-3-6-0-released`)
 
 | Task | Standing | Record |
 |---|---|---|
-| Re-cut the kits on 3.6.0. | open | `cli-3-6-0-kit-stamp` |
-| Host gates for 3.6.0. | open | `cli-3-6-0-host-gates` |
-| Release N+1 and publish the kits. | open | `cli-3-6-0-release-and-publish` |
+| Re-cut the kits on 3.6.0. | closed | `cli-3-6-0-kit-stamp` |
+| Host gates for 3.6.0. | closed | `cli-3-6-0-host-gates` |
+| Release N+1 and publish the kits. | closed | `cli-3-6-0-release-and-publish` |

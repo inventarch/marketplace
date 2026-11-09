@@ -211,10 +211,21 @@ test('an untrusted kit\'s check is refused with IA-CORE-KIT-UNTRUSTED and runs n
 
 test('childEnv keeps the allowlist, drops everything else and every credential-like name, and folds case on Windows', () => {
   const env = { PATH: '/bin', HOME: '/h', LANG: 'C', LC_ALL: 'C', IA_HOME: '/ia', IA_GOVERNANCE_STATE_DIR: '/s', IA_API_TOKEN: 'secret', GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'safe.directory', GIT_CONFIG_VALUE_0: '*', CLAUDE_PID: '42', AWS_SECRET_ACCESS_KEY: 'secret', GITHUB_TOKEN: 'secret', INVENTARCH_ACCESS_TOKEN: 'secret', NODE_OPTIONS: '--require evil.js', NODE_PATH: '/evil', CLAUDE_CODE_OAUTH_TOKEN: 'secret', SOMETHING: 'x' };
-  assert.deepEqual(Object.keys(childEnv(env, {}, { platform: 'linux' })).sort(), ['CLAUDE_PID', 'GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_0', 'GIT_CONFIG_VALUE_0', 'HOME', 'IA_GOVERNANCE_STATE_DIR', 'IA_HOME', 'LANG', 'LC_ALL', 'PATH']);
+  assert.deepEqual(Object.keys(childEnv(env, {}, { platform: 'linux' })).sort(), ['CLAUDE_PID', 'GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_0', 'GIT_CONFIG_VALUE_0', 'HOME', 'IA_GOVERNANCE_STATE_DIR', 'IA_HOME', 'IA_NO_HANDOFF', 'LANG', 'LC_ALL', 'PATH']);
   assert.equal(childEnv({ path: '/bin' }, {}, { platform: 'linux' }).path, undefined, 'POSIX names are exact');
   const windows = childEnv({ Path: 'C:\\bin', SYSTEMROOT: 'C:\\Windows', ComSpec: 'cmd', ia_home: 'x', UserProfile: 'C:\\u', Secret: 'x' }, { IA_HOME: 'C:\\ia' }, { platform: 'win32' });
-  assert.deepEqual(windows, { Path: 'C:\\bin', SYSTEMROOT: 'C:\\Windows', ComSpec: 'cmd', UserProfile: 'C:\\u', IA_HOME: 'C:\\ia' }, 'an override replaces any spelling of its name');
+  assert.deepEqual(windows, { Path: 'C:\\bin', SYSTEMROOT: 'C:\\Windows', ComSpec: 'cmd', UserProfile: 'C:\\u', IA_NO_HANDOFF: '1', IA_HOME: 'C:\\ia' }, 'an override replaces any spelling of its name');
+});
+
+// public-cli-3-6-0-handoff: an ia a child starts runs the CLI it was given, never the repository's installed one.
+test('childEnv sets IA_NO_HANDOFF=1 by default, over the parent environment, and an explicit override still wins', () => {
+  for (const platform of ['linux', 'win32']) {
+    assert.equal(childEnv({ PATH: '/bin' }, {}, { platform }).IA_NO_HANDOFF, '1', platform);
+    assert.equal(childEnv({ PATH: '/bin', IA_NO_HANDOFF: '0' }, {}, { platform }).IA_NO_HANDOFF, '1', `${platform}: the parent's value does not pass`);
+    assert.equal(childEnv({ PATH: '/bin' }, { IA_NO_HANDOFF: '0' }, { platform }).IA_NO_HANDOFF, '0', `${platform}: an override wins`);
+    assert.equal(Object.hasOwn(childEnv({ PATH: '/bin', IA_NO_HANDOFF: '1' }, { IA_NO_HANDOFF: null }, { platform }), 'IA_NO_HANDOFF'), false, `${platform}: a null override removes it`);
+  }
+  assert.deepEqual(childEnv({ ia_no_handoff: '0' }, {}, { platform: 'win32' }), { IA_NO_HANDOFF: '1' }, 'the default replaces any spelling of its name on Windows');
 });
 
 test('a handler, an on-write command and a check each see only the allowlisted environment', t => {
@@ -237,6 +248,7 @@ process.stdout.write('{}\\n');`;
     for (const leaked of ['IA_TEST_SECRET_SENTINEL_TOKEN', 'MY_SERVICE_PASSWORD', 'UNRELATED_SETTING', 'NODE_OPTIONS']) assert.ok(!seen.includes(leaked), `${name} saw ${leaked}`);
     assert.ok(seen.some(n => n.toUpperCase() === 'PATH'), `${name} keeps PATH`);
     assert.ok(seen.includes('IA_VISIBLE'), `${name} keeps IA_*`);
+    assert.ok(seen.includes('IA_NO_HANDOFF'), `${name} gets IA_NO_HANDOFF`);
   }
   assert.ok(JSON.parse(readFileSync(join(k.dir, 'env-handler.json'), 'utf8')).includes('IA_KIT_ROOT'));
   assert.ok(JSON.parse(readFileSync(join(k.dir, 'env-check.json'), 'utf8')).includes('IA_CORE_CHECK'));

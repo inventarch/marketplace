@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "minor",
-  "title": "The session bootstrap no longer routes every request through a lane",
-  "summary": "The SessionStart context says reading, building, testing, editing and submitting a change need no binding, plugin, door or private access, routes through the lanes only when a task needs a method, and refuses only the operation that needs one. It carries a one-line ia-bootstrap marker and a sentence naming what needs a bound method or private authority, both kept however long the bindings, the notices or the plugin path are (the whole context stays within 2,500 characters), and names a locked kit the plugin does not carry.",
-  "plugins": [
-    "ia"
-  ]
-}

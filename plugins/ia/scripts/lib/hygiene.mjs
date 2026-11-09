@@ -8,7 +8,9 @@
 // flooding the hook.
 //   - childEnv: the environment is an allowlist, not the parent's whole
 //     environment. NODE_OPTIONS and NODE_PATH never pass, so nothing preloads
-//     into the child.
+//     into the child. IA_NO_HANDOFF=1 is set by default (decision
+//     public-cli-3-6-0-handoff), so an ia a child starts never hands its
+//     command to another installed CLI; a caller's override still wins.
 //   - runChild: on its deadline the child's whole process tree is killed (a
 //     POSIX process group, or taskkill /T on Windows), and each of stdout and
 //     stderr keeps at most OUTPUT_CAP bytes, the rest dropped.
@@ -47,7 +49,9 @@ export const ENV_PREFIXES = [/^LC_/i, /^GIT_CONFIG_(?:KEY|VALUE)_\d+$/i, /^IA_/i
 // A name that looks like a credential never passes, even by prefix.
 const SECRET = /TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_?KEY|PRIVATE_?KEY/i;
 
-// The environment for one child: the allowed names from env, then overrides.
+// The environment for one child: the allowed names from env, then
+// IA_NO_HANDOFF=1, then overrides.
+export const NO_HANDOFF = Object.freeze({ IA_NO_HANDOFF: '1' });
 export function childEnv(env = process.env, overrides = {}, { platform = process.platform } = {}) {
   const fold = platform === 'win32' ? name => name.toUpperCase() : name => name;
   const names = new Set(ENV_NAMES.map(fold));
@@ -59,7 +63,7 @@ export function childEnv(env = process.env, overrides = {}, { platform = process
     if (!byName && SECRET.test(name)) continue;
     out[name] = String(value);
   }
-  for (const [name, value] of Object.entries(overrides)) {
+  for (const [name, value] of [...Object.entries(NO_HANDOFF), ...Object.entries(overrides)]) {
     for (const key of Object.keys(out)) if (fold(key) === fold(name)) delete out[key];
     if (value !== undefined && value !== null) out[name] = String(value);
   }
