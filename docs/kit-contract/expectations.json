@@ -1,0 +1,1634 @@
+{
+  "format": 1,
+  "standing": "proposed",
+  "contracts": [
+    {
+      "kind": "contract",
+      "id": "kit-conformance-contract",
+      "says": "Requires exact complete attributable kit assessments without transferring execution, disclosure or publication authority.",
+      "owner": "ia-authoring-record",
+      "version": "0.1.0",
+      "requirements": [
+        {
+          "id": "REQ-KAC-01",
+          "says": "A candidate cannot conform while required content, dependency, support asset or declared relationship target is unavailable or substituted.",
+          "cases": [
+            {
+              "id": "kac-01-case1-complete",
+              "kind": "success",
+              "grammarCase": 1,
+              "variantId": "case1-complete",
+              "given": "Grammar case 1, variant complete. Exact complete public payload, requirement imports, pins and every applicable outcome are present.",
+              "request": "Assess this candidate.",
+              "expected": "Conform only when every required variant and obligation has matching satisfied evidence; kit name creates no exemption.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case2-missing-dependency",
+              "kind": "refusal",
+              "grammarCase": 2,
+              "variantId": "case2-missing-dependency",
+              "given": "Grammar case 2, variant missing-dependency. An exact dependency is missing, while another local version exists.",
+              "request": "Resolve closure.",
+              "expected": "Identify the missing pin and refuse substitution or conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case25-support-present",
+              "kind": "success",
+              "grammarCase": 25,
+              "variantId": "case25-support-present",
+              "given": "Grammar case 25, variant support-present. Every declared support asset is available at its exact identity.",
+              "request": "Resolve closure.",
+              "expected": "Include all exact support assets and their identities.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case25-support-absent",
+              "kind": "refusal",
+              "grammarCase": 25,
+              "variantId": "case25-support-absent",
+              "given": "Grammar case 25, variant support-absent. A required support asset is missing.",
+              "request": "Find a nearby file by folder search.",
+              "expected": "Reject fallback and identify the absent exact asset.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case27-repaired-new-input",
+              "kind": "resumption",
+              "grammarCase": 27,
+              "variantId": "case27-repaired-new-input",
+              "given": "Grammar case 27, variant repaired-new-input. A refused candidate is repaired, changing its identity.",
+              "request": "Assess the repaired candidate.",
+              "expected": "Create a newly attributable assessment; retain the old refusal under its original identity.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case31-required-edges",
+              "kind": "success",
+              "grammarCase": 31,
+              "variantId": "case31-required-edges",
+              "given": "Grammar case 31, variant required-edges. Method requirements derive specific stage, prerequisite, route and grounding edges with exact targets.",
+              "request": "Resolve required edges.",
+              "expected": "All and only necessary edge obligations resolve to their intended targets.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case31-missing-edge",
+              "kind": "refusal",
+              "grammarCase": 31,
+              "variantId": "case31-missing-edge",
+              "given": "Grammar case 31, variant missing-edge. A derived required edge is missing or its exact target dangles.",
+              "request": "Qualify structure.",
+              "expected": "Identify and refuse the missing or dangling obligation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-01-case31-unrelated-no-edge",
+              "kind": "success",
+              "grammarCase": 31,
+              "variantId": "case31-unrelated-no-edge",
+              "given": "Grammar case 31, variant unrelated-no-edge. A record has no stage or routing obligation requiring an extra edge.",
+              "request": "Qualify it without arbitrary edges.",
+              "expected": "Do not invent an edge requirement or falsely refuse the candidate.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-02",
+          "says": "Every applicable baseline and extension obligation must be satisfied, and every exposed request surface reconciled with a qualified supported profile or explicit refusal evidence.",
+          "cases": [
+            {
+              "id": "kac-02-case1-complete",
+              "kind": "success",
+              "grammarCase": 1,
+              "variantId": "case1-complete",
+              "given": "Grammar case 1, variant complete. Exact complete public payload, requirement imports, pins and every applicable outcome are present.",
+              "request": "Assess this candidate.",
+              "expected": "Conform only when every required variant and obligation has matching satisfied evidence; kit name creates no exemption.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case6-unknown-extension",
+              "kind": "refusal",
+              "grammarCase": 6,
+              "variantId": "case6-unknown-extension",
+              "given": "Grammar case 6, variant unknown-extension. An extension names an unknown predicate or semantics version.",
+              "request": "Aggregate known passing requirements only.",
+              "expected": "Record unsupported unresolved standing and prevent conformance; do not run a fallback script.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case7-justified-universal",
+              "kind": "success",
+              "grammarCase": 7,
+              "variantId": "case7-justified-universal",
+              "given": "Grammar case 7, variant justified-universal. A rule has independently reviewed universal justification and a contract-defined oracle across its whole domain.",
+              "request": "Evaluate each domain partition.",
+              "expected": "Deliver the universal obligation everywhere required and retain evidence of justification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case8-unjustified-universal",
+              "kind": "refusal",
+              "grammarCase": 8,
+              "variantId": "case8-unjustified-universal",
+              "given": "Grammar case 8, variant unjustified-universal. A governance record lacks both activation and explicit universal justification.",
+              "request": "Treat absent activation as sufficient intention.",
+              "expected": "Identify the record and missing justification; no positive conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case24-weaken-baseline",
+              "kind": "refusal",
+              "grammarCase": 24,
+              "variantId": "case24-weaken-baseline",
+              "given": "Grammar case 24, variant weaken-baseline. A private declarative extension waives or overrides a mandatory public requirement.",
+              "request": "Aggregate the extension.",
+              "expected": "Reject the conflict; extra rules cannot weaken the baseline.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case25-support-present",
+              "kind": "success",
+              "grammarCase": 25,
+              "variantId": "case25-support-present",
+              "given": "Grammar case 25, variant support-present. Every declared support asset is available at its exact identity.",
+              "request": "Resolve closure.",
+              "expected": "Include all exact support assets and their identities.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case25-support-absent",
+              "kind": "refusal",
+              "grammarCase": 25,
+              "variantId": "case25-support-absent",
+              "given": "Grammar case 25, variant support-absent. A required support asset is missing.",
+              "request": "Find a nearby file by folder search.",
+              "expected": "Reject fallback and identify the absent exact asset.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case31-required-edges",
+              "kind": "success",
+              "grammarCase": 31,
+              "variantId": "case31-required-edges",
+              "given": "Grammar case 31, variant required-edges. Method requirements derive specific stage, prerequisite, route and grounding edges with exact targets.",
+              "request": "Resolve required edges.",
+              "expected": "All and only necessary edge obligations resolve to their intended targets.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case31-missing-edge",
+              "kind": "refusal",
+              "grammarCase": 31,
+              "variantId": "case31-missing-edge",
+              "given": "Grammar case 31, variant missing-edge. A derived required edge is missing or its exact target dangles.",
+              "request": "Qualify structure.",
+              "expected": "Identify and refuse the missing or dangling obligation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case31-unrelated-no-edge",
+              "kind": "success",
+              "grammarCase": 31,
+              "variantId": "case31-unrelated-no-edge",
+              "given": "Grammar case 31, variant unrelated-no-edge. A record has no stage or routing obligation requiring an extra edge.",
+              "request": "Qualify it without arbitrary edges.",
+              "expected": "Do not invent an edge requirement or falsely refuse the candidate.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case32-routing-correct",
+              "kind": "success",
+              "grammarCase": 32,
+              "variantId": "case32-routing-correct",
+              "given": "Grammar case 32, variant routing-correct. Explicit phase, primitive and predicates match the intended activity.",
+              "request": "Exercise the declared route.",
+              "expected": "Actual entry behavior matches the reviewed activity oracle.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case32-routing-missing",
+              "kind": "refusal",
+              "grammarCase": 32,
+              "variantId": "case32-routing-missing",
+              "given": "Grammar case 32, variant routing-missing. A required routing declaration is absent.",
+              "request": "Infer a route from its folder.",
+              "expected": "Refuse the affected profile; folder location supplies no route.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case32-routing-contradictory",
+              "kind": "refusal",
+              "grammarCase": 32,
+              "variantId": "case32-routing-contradictory",
+              "given": "Grammar case 32, variant routing-contradictory. Declared routing contradicts the intended activity or another required declaration.",
+              "request": "Qualify the profile.",
+              "expected": "Identify the contradiction and refuse conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case33-public-and-private-shapes",
+              "kind": "success",
+              "grammarCase": 33,
+              "variantId": "case33-public-and-private-shapes",
+              "given": "Grammar case 33, variant public-and-private-shapes. Public structural baseline is independently usable; a private naming/seat extension cites and strengthens it.",
+              "request": "Assess with generic pinned predicates locally.",
+              "expected": "Satisfy both without making private data a public prerequisite.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case33-private-only-structure",
+              "kind": "refusal",
+              "grammarCase": 33,
+              "variantId": "case33-private-only-structure",
+              "given": "Grammar case 33, variant private-only-structure. Public conformance can be established only by inaccessible private structure rules.",
+              "request": "Claim public qualification.",
+              "expected": "Reject the dependency; do not silently omit structure checks.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case35-omitted-route",
+              "kind": "refusal",
+              "grammarCase": 35,
+              "variantId": "case35-omitted-route",
+              "given": "Grammar case 35, variant omitted-route. Discovery finds two exposed routes but only one is represented in profile domains.",
+              "request": "Aggregate the passing declared route.",
+              "expected": "The uncovered route prevents positive conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case35-unsupported-proved",
+              "kind": "success",
+              "grammarCase": 35,
+              "variantId": "case35-unsupported-proved",
+              "given": "Grammar case 35, variant unsupported-proved. A request is intentionally unsupported and its executable boundary has a matching refusal test.",
+              "request": "Reconcile the request surface.",
+              "expected": "Retain the explicit unsupported boundary and evidence; do not pretend the request is supported.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-02-case35-unsupported-unproved",
+              "kind": "refusal",
+              "grammarCase": 35,
+              "variantId": "case35-unsupported-unproved",
+              "given": "Grammar case 35, variant unsupported-unproved. A profile labels a real route unsupported but the executable boundary has no demonstrated refusal.",
+              "request": "Omit the route from assessment.",
+              "expected": "Reject the omission; a data label is not refusal behavior.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-03",
+          "says": "Selective delivery must match independent expected rules and effective clauses across supported request partitions, including missing context, collisions and equivalent entry points. Oracle policy sources, author/reviewer identities, reviewed content digest and approval provenance are required; public tier-one expectations cannot be overridden.",
+          "cases": [
+            {
+              "id": "kac-03-case7-justified-universal",
+              "kind": "success",
+              "grammarCase": 7,
+              "variantId": "case7-justified-universal",
+              "given": "Grammar case 7, variant justified-universal. A rule has independently reviewed universal justification and a contract-defined oracle across its whole domain.",
+              "request": "Evaluate each domain partition.",
+              "expected": "Deliver the universal obligation everywhere required and retain evidence of justification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case9-write-and-read",
+              "kind": "success",
+              "grammarCase": 9,
+              "variantId": "case9-write-and-read",
+              "given": "Grammar case 9, variant write-and-read. A pinned independent oracle requires the rule for a KB write and excludes it for an unrelated read.",
+              "request": "Exercise both requests at actual propagated coordinates.",
+              "expected": "Include for the write and exclude for the read, irrespective of token savings.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case10-missing-caller-context",
+              "kind": "refusal",
+              "grammarCase": 10,
+              "variantId": "case10-missing-caller-context",
+              "given": "Grammar case 10, variant missing-caller-context. The caller omits a coordinate required to establish selection.",
+              "request": "Treat broad conservative retention as proof.",
+              "expected": "Remain unresolved; missing wiring is not evidence of exclusion or semantic impossibility.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case11-distinct-subjects",
+              "kind": "success",
+              "grammarCase": 11,
+              "variantId": "case11-distinct-subjects",
+              "given": "Grammar case 11, variant distinct-subjects. Two words share a category but supported resolved subjects distinguish their obligations.",
+              "request": "Invoke both through the actual pinned consumer.",
+              "expected": "Each receives its independently expected rule set; declaration alone does not count.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case12-unexpressible-distinction",
+              "kind": "escalation",
+              "grammarCase": 12,
+              "variantId": "case12-unexpressible-distinction",
+              "given": "Grammar case 12, variant unexpressible-distinction. Fully populated supported coordinates and subjects cannot express different required obligations.",
+              "request": "Qualify the profile.",
+              "expected": "Remain unresolved and record the smallest IA owner proposal; never guess an alias.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case13-equivalent-entries",
+              "kind": "success",
+              "grammarCase": 13,
+              "variantId": "case13-equivalent-entries",
+              "given": "Grammar case 13, variant equivalent-entries. Equivalent work has equal semantic inputs and authority through Work and Delivery entries.",
+              "request": "Exercise both entries.",
+              "expected": "Both receive equivalent applicable governance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case14-weak-entry",
+              "kind": "refusal",
+              "grammarCase": 14,
+              "variantId": "case14-weak-entry",
+              "given": "Grammar case 14, variant weak-entry. One equivalent entry omits a required rule while another passes.",
+              "request": "Qualify using the passing entry.",
+              "expected": "Reject the weak entry and aggregate; one route cannot stand for another.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case15-general-and-specific",
+              "kind": "success",
+              "grammarCase": 15,
+              "variantId": "case15-general-and-specific",
+              "given": "Grammar case 15, variant general-and-specific. General obligations and uniquely most-specific conditioned clauses match independent expected values.",
+              "request": "Resolve effective clauses.",
+              "expected": "Preserve general obligations and select the unique applicable variant.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case15-missing-clause-value",
+              "kind": "refusal",
+              "grammarCase": 15,
+              "variantId": "case15-missing-clause-value",
+              "given": "Grammar case 15, variant missing-clause-value. A selector retains a rule but a conditioned clause lacks its required matching value.",
+              "request": "Treat retained rule as proof of clause truth.",
+              "expected": "Reject that inference and report the independently expected missing-value behavior.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case15-clause-tie",
+              "kind": "refusal",
+              "grammarCase": 15,
+              "variantId": "case15-clause-tie",
+              "given": "Grammar case 15, variant clause-tie. Same-key applicable clauses tie at maximum specificity.",
+              "request": "Silently choose one.",
+              "expected": "Report ambiguity and refuse successful qualification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case32-routing-correct",
+              "kind": "success",
+              "grammarCase": 32,
+              "variantId": "case32-routing-correct",
+              "given": "Grammar case 32, variant routing-correct. Explicit phase, primitive and predicates match the intended activity.",
+              "request": "Exercise the declared route.",
+              "expected": "Actual entry behavior matches the reviewed activity oracle.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case32-routing-missing",
+              "kind": "refusal",
+              "grammarCase": 32,
+              "variantId": "case32-routing-missing",
+              "given": "Grammar case 32, variant routing-missing. A required routing declaration is absent.",
+              "request": "Infer a route from its folder.",
+              "expected": "Refuse the affected profile; folder location supplies no route.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case32-routing-contradictory",
+              "kind": "refusal",
+              "grammarCase": 32,
+              "variantId": "case32-routing-contradictory",
+              "given": "Grammar case 32, variant routing-contradictory. Declared routing contradicts the intended activity or another required declaration.",
+              "request": "Qualify the profile.",
+              "expected": "Identify the contradiction and refuse conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case35-omitted-route",
+              "kind": "refusal",
+              "grammarCase": 35,
+              "variantId": "case35-omitted-route",
+              "given": "Grammar case 35, variant omitted-route. Discovery finds two exposed routes but only one is represented in profile domains.",
+              "request": "Aggregate the passing declared route.",
+              "expected": "The uncovered route prevents positive conformance.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case35-unsupported-proved",
+              "kind": "success",
+              "grammarCase": 35,
+              "variantId": "case35-unsupported-proved",
+              "given": "Grammar case 35, variant unsupported-proved. A request is intentionally unsupported and its executable boundary has a matching refusal test.",
+              "request": "Reconcile the request surface.",
+              "expected": "Retain the explicit unsupported boundary and evidence; do not pretend the request is supported.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case35-unsupported-unproved",
+              "kind": "refusal",
+              "grammarCase": 35,
+              "variantId": "case35-unsupported-unproved",
+              "given": "Grammar case 35, variant unsupported-unproved. A profile labels a real route unsupported but the executable boundary has no demonstrated refusal.",
+              "request": "Omit the route from assessment.",
+              "expected": "Reject the omission; a data label is not refusal behavior.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-oracle-independent",
+              "kind": "success",
+              "given": "The oracle references reviewed policy intent, immutable public tier-one expectations and its author/reviewer identities; reviewer is independent of the activation/checker authoring run.",
+              "request": "Evaluate the actual selection.",
+              "expected": "Bind oracle content digest, requirements and independent approval to outcomes; candidate-authored activation cannot set its own expected truth.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-oracle-self-derived",
+              "kind": "refusal",
+              "given": "Expected selections are generated from the activation/output under test or lack an independent reviewer and policy basis.",
+              "request": "Call the oracle independent.",
+              "expected": "Refuse conformance, even if actual and expected output agree.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-public-oracle-contradiction",
+              "kind": "refusal",
+              "given": "An otherwise reviewed private oracle suppresses a public tier-one any-KB-write obligation at an applicable phase.",
+              "request": "Override the public contract oracle with candidate data.",
+              "expected": "Refuse the contradiction; private expectations cannot weaken canonical public requirements.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-oracle-relabelled-review",
+              "kind": "refusal",
+              "given": "The candidate claims reviewer run-B, but trusted workflow approval provenance attributes the review to activation-author run-A or cannot authenticate a distinct reviewing run.",
+              "request": "Accept the oracle based on its reviewer string and digest.",
+              "expected": "Refuse self-authored or unverifiable review. The trusted job checks its external authenticated workflow/repository approval record, reviewer/run identity and reviewed digest; candidate-supplied labels cannot establish independence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-03-case10-dropped-rule",
+              "kind": "refusal",
+              "given": "Grammar case10 variant dropped-rule. A caller omits a required coordinate and the implementation drops a potentially applicable required rule instead of retaining uncertain standing.",
+              "request": "Treat exclusion as selective-delivery proof.",
+              "expected": "Refuse the missing-context qualification and identify the incorrectly dropped obligation.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-04",
+          "says": "Apply the system-owned execution invariant to every payload entry classified executable, with exact canonical catalogue CAT-04 covering its declared asset and handler subset. Unlisted root scripts and dormant unowned bytes cannot escape classification; placement and transition retain their canonical owners.",
+          "cases": [
+            {
+              "id": "kac-04-case16-selection-not-access",
+              "kind": "refusal",
+              "grammarCase": 16,
+              "variantId": "case16-selection-not-access",
+              "given": "Grammar case 16, variant selection-not-access. Capability selection succeeds but data access is not authorized.",
+              "request": "Invoke with the unauthorized data.",
+              "expected": "The execution/access boundary refuses; selection grants no permission.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case17-owned-path",
+              "kind": "success",
+              "grammarCase": 17,
+              "variantId": "case17-owned-path",
+              "given": "Grammar case 17, variant owned-path. The runtime-selected execution profile, owner, identities and invocation path are qualified.",
+              "request": "Resolve and invoke.",
+              "expected": "Actual authorized execution produces attributable results through the selected owned path.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case18-dormant-loose-bytes",
+              "kind": "refusal",
+              "grammarCase": 18,
+              "variantId": "case18-dormant-loose-bytes",
+              "given": "Grammar case 18, variant dormant-loose-bytes. Candidate contains executable bytes outside an admitted owned execution path, even though no test invokes them.",
+              "request": "Qualify the package inventory.",
+              "expected": "Reject the bytes under the system-owned execution invariant; dormancy or tests-folder placement is no exemption.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case18-loose-invocation",
+              "kind": "refusal",
+              "grammarCase": 18,
+              "variantId": "case18-loose-invocation",
+              "given": "Grammar case 18, variant loose-invocation. A hook invokes a loose module outside the executing system.",
+              "request": "Qualify the exposed hook.",
+              "expected": "Refuse the invocation path and candidate under canonical placement policy.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case19-adopted-words",
+              "kind": "success",
+              "grammarCase": 19,
+              "variantId": "case19-adopted-words",
+              "given": "Grammar case 19, variant adopted-words. Records use exact public word owners and admitted direct public dependencies.",
+              "request": "Author and qualify instances.",
+              "expected": "Preserve unique vocabulary ownership without a commercial wrapper owner.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case20-duplicate-word",
+              "kind": "refusal",
+              "grammarCase": 20,
+              "variantId": "case20-duplicate-word",
+              "given": "Grammar case 20, variant duplicate-word. A candidate re-registers an adopted word or aliases it to evade its owner.",
+              "request": "Qualify ownership.",
+              "expected": "Refuse conflicting vocabulary ownership.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case34-checker-bootstrap",
+              "kind": "success",
+              "grammarCase": 34,
+              "variantId": "case34-checker-bootstrap",
+              "given": "Grammar case 34, variant checker-bootstrap. An exact first-checker candidate has independently reviewed bootstrap evidence under the same applicable requirements.",
+              "request": "Qualify that candidate before acceptance.",
+              "expected": "No predecessor release is required, but no first-release waiver or self-approval is accepted.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-case34-checker-self-badge",
+              "kind": "refusal",
+              "grammarCase": 34,
+              "variantId": "case34-checker-self-badge",
+              "given": "Grammar case 34, variant checker-self-badge. The first checker supplies only a self-issued positive badge or omits its owned invocation proof.",
+              "request": "Claim bootstrap success.",
+              "expected": "Refuse missing evidence and preserve unresolved qualification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-04-unlisted-root-script",
+              "kind": "refusal",
+              "given": "An unlisted tools/sync.mjs executable sits at the kit root outside any owned implementation manifest, even though every declared script asset meets CAT-04.",
+              "request": "Assess the complete materialized payload.",
+              "expected": "Refuse under the system-owned execution invariant; declaration omission cannot exclude bytes from assessment.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-05",
+          "says": "Evidence binds exact candidate, contract, checker, evaluator and relevant execution inputs; interruption or changed inputs cannot inherit unsupported success. Final archive and sidecar bytes must match the frozen payload, with exact pin identities independently derived and authenticated same-job result provenance.",
+          "cases": [
+            {
+              "id": "kac-05-case1-complete",
+              "kind": "success",
+              "grammarCase": 1,
+              "variantId": "case1-complete",
+              "given": "Grammar case 1, variant complete. Exact complete public payload, requirement imports, pins and every applicable outcome are present.",
+              "request": "Assess this candidate.",
+              "expected": "Conform only when every required variant and obligation has matching satisfied evidence; kit name creates no exemption.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case3-same-label-mutation",
+              "kind": "refusal",
+              "grammarCase": 3,
+              "variantId": "case3-same-label-mutation",
+              "given": "Grammar case 3, variant same-label-mutation. Assessed bytes A and packaged bytes B differ while all version labels match.",
+              "request": "Verify the final package with A evidence.",
+              "expected": "Reject B; equal labels cannot establish byte identity.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case4-changed-contract",
+              "kind": "refusal",
+              "grammarCase": 4,
+              "variantId": "case4-changed-contract",
+              "given": "Grammar case 4, variant changed-contract. Contract digest changed while candidate and checker labels did not.",
+              "request": "Reuse the old result.",
+              "expected": "Reject reuse and retain old evidence under its original tuple.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case4-changed-checker",
+              "kind": "refusal",
+              "grammarCase": 4,
+              "variantId": "case4-changed-checker",
+              "given": "Grammar case 4, variant changed-checker. Checker implementation digest changed while its version label did not.",
+              "request": "Reuse the old result.",
+              "expected": "Reject reuse and require assessment by the actual pinned implementation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case5-separate-pipelines",
+              "kind": "success",
+              "grammarCase": 5,
+              "variantId": "case5-separate-pipelines",
+              "given": "Grammar case 5, variant separate-pipelines. Public and private jobs use the same exact public checker/contract and their own trusted execution and publication credentials.",
+              "request": "Assess each exact final payload within its own custody.",
+              "expected": "Both obtain separately attributable results without sharing private bytes or publication authority.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case26-same-input-continuation",
+              "kind": "resumption",
+              "grammarCase": 26,
+              "variantId": "case26-same-input-continuation",
+              "given": "Grammar case 26, variant same-input-continuation. An interrupted attempt has preserved incomplete evidence and unchanged inputs with qualified continuation semantics.",
+              "request": "Resume the attempt.",
+              "expected": "Retain previous provenance and report success only after every remaining obligation completes.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case26-interrupted-positive",
+              "kind": "refusal",
+              "grammarCase": 26,
+              "variantId": "case26-interrupted-positive",
+              "given": "Grammar case 26, variant interrupted-positive. Evaluation stopped with some outcomes unavailable.",
+              "request": "Summarize it as completed success.",
+              "expected": "Refuse the positive aggregate and preserve incomplete standing.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-case27-repaired-new-input",
+              "kind": "resumption",
+              "grammarCase": 27,
+              "variantId": "case27-repaired-new-input",
+              "given": "Grammar case 27, variant repaired-new-input. A refused candidate is repaired, changing its identity.",
+              "request": "Assess the repaired candidate.",
+              "expected": "Create a newly attributable assessment; retain the old refusal under its original identity.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-packed-sidecar-change",
+              "kind": "refusal",
+              "given": "Preflight source identity matches but packing adds or changes a runtime module, archive entry, generated file or sidecar outside the frozen payload manifest.",
+              "request": "Compare final bytes using the shared checker verification operation.",
+              "expected": "Reject the package; every released artifact and transformation must match the assessed payload.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-forged-result",
+              "kind": "refusal",
+              "given": "A copied result file has its candidate digest edited to match new bytes, or its checker/oracle/provenance fields are self-asserted.",
+              "request": "Use it as publication evidence.",
+              "expected": "Refuse: the trusted job derives actual pins and bytes independently and accepts only its authenticated checker invocation result.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-05-final-bytes",
+              "kind": "success",
+              "given": "A preflight-approved frozen payload is packed without publication; the shared verifier derives final archive/sidecar hashes and verifies every entry against the payload and allowed packaging metadata.",
+              "request": "Seal the assessment in the same trusted job.",
+              "expected": "Bind final artifact hashes and payload identity to the complete result; subsequent mutation invalidates it.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-06",
+          "says": "Public conformance has no private prerequisite; proprietary validation and reporting preserve custody and do not infer source-transfer rights from invocation. No private-content or locator egress may repair missing local closure.",
+          "cases": [
+            {
+              "id": "kac-06-case5-separate-pipelines",
+              "kind": "success",
+              "grammarCase": 5,
+              "variantId": "case5-separate-pipelines",
+              "given": "Grammar case 5, variant separate-pipelines. Public and private jobs use the same exact public checker/contract and their own trusted execution and publication credentials.",
+              "request": "Assess each exact final payload within its own custody.",
+              "expected": "Both obtain separately attributable results without sharing private bytes or publication authority.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-case21-hosted-custody",
+              "kind": "success",
+              "grammarCase": 21,
+              "variantId": "case21-hosted-custody",
+              "given": "Grammar case 21, variant hosted-custody. Private hosted recipe and full closure remain publisher-controlled.",
+              "request": "Validate locally and return an authorized bounded result.",
+              "expected": "Private methodology stays in custody; invocation never grants source-transfer rights.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-case22-private-public-prerequisite",
+              "kind": "refusal",
+              "grammarCase": 22,
+              "variantId": "case22-private-public-prerequisite",
+              "given": "Grammar case 22, variant private-public-prerequisite. General public conformance requires a private example-kit rule or identity list.",
+              "request": "Assess as a public consumer.",
+              "expected": "Reject this baseline dependency; organisation publication screening remains a separate private-context obligation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-case23-report-leak",
+              "kind": "refusal",
+              "grammarCase": 23,
+              "variantId": "case23-report-leak",
+              "given": "Grammar case 23, variant report-leak. Proposed report exposes private recipe text or sensitive locators to an unauthorized audience.",
+              "request": "Render or disclose it.",
+              "expected": "Refuse disclosure and retain detailed evidence privately.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-case33-public-and-private-shapes",
+              "kind": "success",
+              "grammarCase": 33,
+              "variantId": "case33-public-and-private-shapes",
+              "given": "Grammar case 33, variant public-and-private-shapes. Public structural baseline is independently usable; a private naming/seat extension cites and strengthens it.",
+              "request": "Assess with generic pinned predicates locally.",
+              "expected": "Satisfy both without making private data a public prerequisite.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-case33-private-only-structure",
+              "kind": "refusal",
+              "grammarCase": 33,
+              "variantId": "case33-private-only-structure",
+              "given": "Grammar case 33, variant private-only-structure. Public conformance can be established only by inaccessible private structure rules.",
+              "request": "Claim public qualification.",
+              "expected": "Reject the dependency; do not silently omit structure checks.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-06-no-egress",
+              "kind": "refusal",
+              "given": "A missing private dependency would require querying an external registry with sensitive coordinates, or a checker attempts telemetry/egress with private content.",
+              "request": "Resolve the private closure.",
+              "expected": "Refuse unavailable local input and block unauthorized egress; no network request reveals private locators.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-07",
+          "says": "Verify this candidate against its relevant exact authorized release-history snapshot using publicly exported canonical catalogue CAT-02 immutability. Missing required history is unresolved; programme inventory is not a public candidate prerequisite.",
+          "cases": [
+            {
+              "id": "kac-07-case28-new-coordinates",
+              "kind": "success",
+              "grammarCase": 28,
+              "variantId": "case28-new-coordinates",
+              "given": "Grammar case 28, variant new-coordinates. A conforming replacement and exact authorized history snapshot show unused proposed coordinates.",
+              "request": "Verify release continuity.",
+              "expected": "Apply canonical CAT-02 immutability and retain old releases; urgency never changes candidate requirements.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-07-case29-history-rewrite",
+              "kind": "refusal",
+              "grammarCase": 29,
+              "variantId": "case29-history-rewrite",
+              "given": "Grammar case 29, variant history-rewrite. Changed archive bytes are proposed under an already recorded coordinate.",
+              "request": "Verify release continuity.",
+              "expected": "Reject under canonical CAT-02 and preserve the published history.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-07-case34-checker-bootstrap",
+              "kind": "success",
+              "grammarCase": 34,
+              "variantId": "case34-checker-bootstrap",
+              "given": "Grammar case 34, variant checker-bootstrap. An exact first-checker candidate has independently reviewed bootstrap evidence under the same applicable requirements.",
+              "request": "Qualify that candidate before acceptance.",
+              "expected": "No predecessor release is required, but no first-release waiver or self-approval is accepted.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-07-case34-checker-self-badge",
+              "kind": "refusal",
+              "grammarCase": 34,
+              "variantId": "case34-checker-self-badge",
+              "given": "Grammar case 34, variant checker-self-badge. The first checker supplies only a self-issued positive badge or omits its owned invocation proof.",
+              "request": "Claim bootstrap success.",
+              "expected": "Refuse missing evidence and preserve unresolved qualification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-07-history-absent",
+              "kind": "refusal",
+              "given": "Release-history input is missing or inconsistent for the candidate publication domain.",
+              "request": "Treat it as an empty new-release history.",
+              "expected": "Remain unresolved; absence is not proof that coordinates are unused.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KAC-08",
+          "says": "Lowering preserves all four named content, input, programme and execution contracts and every pinned case identity/context; programme qualification proves audit behavior using controlled fixtures and register-read interfaces, not completion of the whole migration. The independently reviewed public expectation baseline names all four contracts and every expected case/context, and is frozen before native lowering or implementation. For first adoption, private design cards are provenance only: independently review and publish the complete public expectation baseline before comparing the lowered candidate. After first adoption, derive expectations from the published public contract records plus a reviewed versioned delta, never the candidate output. Qualification identities bind only publicly available source/baseline/delta digests; private provenance is optional and never required to reproduce or audit public qualification. Missing contracts cannot erase their own expected checks. This governs qualification of the shared contract/checker definition and its lowering; ordinary kit callers consume its accepted public qualification identity bound to their checker/contract pin rather than supplying private framework design sources. The public baseline is an explicitly reviewed public projection, never a verbatim publication of this private design worktree. Public contract text, cases, provenance links and qualification identities use generic or synthetic labels and public identifiers only. Private programme bindings, issue references, accountable identities and inventory stay in private instances. The authorized publisher performs existing CAT-06 private-identity screening before baseline publication; its sensitive identity list remains local, not a public checker dependency. Independent review verifies that replacing private labels preserves all four contract identities and every requirement, case/context and expected behavior; redaction cannot drop or weaken a case. Missing safe publication evidence refuses the public baseline. Native drafts for public adoption are lowered from the exact reviewed public projection, never directly from private design cards. The authorized publisher applies CAT-06 screening to both that baseline and the resulting lowered records/final public artifacts; passing the earlier projection screen does not exempt generated output.",
+          "cases": [
+            {
+              "id": "kac-08-complete-lowering",
+              "kind": "success",
+              "given": "Qualified native draft closure contains kit-conformance-contract, kit-conformance-input-contract, kit-migration-programme-contract and kit-conformance-execution-contract with every named case and context. Before lowering, an independently reviewed complete public expectation baseline was published and frozen by public digests; later revisions use public contract records plus a reviewed versioned delta.",
+              "request": "Compare pinned design variant manifest to actual admitted native closure.",
+              "expected": "All requirements and case IDs survive; no programme contract is dropped merely because a system card names one primary contract.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-contract-dropped",
+              "kind": "refusal",
+              "given": "Lowering follows only the primary system.contract pointer and omits input/programme contracts, cases or their scope. A manifest generated only from that lossy native output appears locally complete.",
+              "request": "Claim complete native qualification.",
+              "expected": "Refuse missing contract/case/context identities; structural admission alone cannot replace manifest equivalence. Compare against the independently frozen public expectation baseline and reviewed public delta; never regenerate expectations from output under test.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-ordinary-public-caller",
+              "kind": "success",
+              "given": "An ordinary kit uses an eligible accepted public checker/contract release with attributable complete definition-qualification evidence, but has no private framework design worktree.",
+              "request": "Assess the ordinary candidate.",
+              "expected": "Use the authenticated published definition-qualification identity as a dependency; do not demand private design sources or rerun framework authoring qualification in the consumer workspace.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-unqualified-definition",
+              "kind": "refusal",
+              "given": "An ordinary consumer supplies a purported shared definition-qualification identity not bound to its actual accepted checker/contract release.",
+              "request": "Waive the underlying definition qualification.",
+              "expected": "Refuse the missing or mismatched dependency; ordinary caller context is not an exemption from qualified shared definitions.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-private-qualification-prerequisite",
+              "kind": "refusal",
+              "given": "A first or subsequent public contract/checker qualification requires private design files or non-public digests to derive expectations, reproduce checks or audit its qualification identity.",
+              "request": "Treat private provenance as the authoritative public prerequisite.",
+              "expected": "Refuse; publish and independently review a complete public expectation baseline before first lowering. Later qualifications use published public contract records plus reviewed versioned deltas; qualification identity names only public digests.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-private-baseline-identifier",
+              "kind": "refusal",
+              "given": "The proposed public expectation baseline or qualification identity contains a private issue, actor, workspace, kit identifier, provenance locator or inventory entry, or sanitization drops/weakens a required case.",
+              "request": "Publish the baseline for shared qualification.",
+              "expected": "Refuse publication. Keep private bindings in authorized instances; independently verify a complete behavior-preserving public projection and authorized publisher CAT-06 evidence before publication.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kac-08-private-identifier-in-lowered-output",
+              "kind": "refusal",
+              "given": "A reviewed public baseline contains no private identifiers, but lowering or packaging inserts a private source locator or other private identifier into generated records, provenance or a final public artifact.",
+              "request": "Accept the generated public release using only the earlier baseline screening evidence.",
+              "expected": "Refuse publication; authorized-publisher CAT-06 screening must cover the exact lowered records and final public artifact digests. Earlier baseline screening cannot authorize subsequently introduced private material.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "contract",
+      "id": "kit-conformance-input-contract",
+      "says": "Preserves qualification-input, review-provenance and declarative-predicate semantics as lowerable requirements with explicit cases.",
+      "owner": "ia-authoring-record",
+      "version": "0.1.0",
+      "requirements": [
+        {
+          "id": "REQ-KACI-01",
+          "says": "Each pinned declarative predicate has complete typed operands and a readable selected scope; unknown operands, malformed values or unsupported semantics are unresolved, while valid observed absence is interpreted by explicit presence semantics.",
+          "cases": [
+            {
+              "id": "kaci-01-field-equality-success",
+              "kind": "success",
+              "given": "A selected existing field has the declared typed value.",
+              "request": "Evaluate the pinned field-equality predicate.",
+              "expected": "Equality is satisfied; a different typed value violates it.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-field-equality-missing",
+              "kind": "refusal",
+              "given": "The field-equality predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-field-equality-malformed",
+              "kind": "refusal",
+              "given": "The field-equality predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-field-equality-violated",
+              "kind": "refusal",
+              "given": "All field-equality inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-identifier-pattern-success",
+              "kind": "success",
+              "given": "A present identifier matches a supported pinned pattern.",
+              "request": "Evaluate the pinned identifier-pattern predicate.",
+              "expected": "The match satisfies; a nonmatching identifier violates.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-identifier-pattern-missing",
+              "kind": "refusal",
+              "given": "The identifier-pattern predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-identifier-pattern-malformed",
+              "kind": "refusal",
+              "given": "The identifier-pattern predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-identifier-pattern-violated",
+              "kind": "refusal",
+              "given": "All identifier-pattern inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-membership-success",
+              "kind": "success",
+              "given": "A present typed value belongs to the explicit finite allowed set.",
+              "request": "Evaluate the pinned membership predicate.",
+              "expected": "Membership satisfies; an absent member violates.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-membership-missing",
+              "kind": "refusal",
+              "given": "The membership predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-membership-malformed",
+              "kind": "refusal",
+              "given": "The membership predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-membership-violated",
+              "kind": "refusal",
+              "given": "All membership inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-cardinality-success",
+              "kind": "success",
+              "given": "A readable selected set has count within explicit bounds.",
+              "request": "Evaluate the pinned cardinality predicate.",
+              "expected": "In-range count satisfies; below or above bounds violates.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-cardinality-missing",
+              "kind": "refusal",
+              "given": "The cardinality predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-cardinality-malformed",
+              "kind": "refusal",
+              "given": "The cardinality predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-cardinality-violated",
+              "kind": "refusal",
+              "given": "All cardinality inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-required-presence-success",
+              "kind": "success",
+              "given": "A valid selector over readable complete scope finds the required record or asset.",
+              "request": "Evaluate the pinned required-presence predicate.",
+              "expected": "Presence satisfies; known absence violates.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-required-presence-missing",
+              "kind": "refusal",
+              "given": "The required-presence predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-required-presence-malformed",
+              "kind": "refusal",
+              "given": "The required-presence predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-required-presence-violated",
+              "kind": "refusal",
+              "given": "All required-presence inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-forbidden-presence-success",
+              "kind": "success",
+              "given": "A valid selector over readable complete scope finds no forbidden record or asset.",
+              "request": "Evaluate the pinned forbidden-presence predicate.",
+              "expected": "Known absence satisfies; present forbidden content violates.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-forbidden-presence-missing",
+              "kind": "refusal",
+              "given": "The forbidden-presence predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-forbidden-presence-malformed",
+              "kind": "refusal",
+              "given": "The forbidden-presence predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-forbidden-presence-violated",
+              "kind": "refusal",
+              "given": "All forbidden-presence inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-reference-success",
+              "kind": "success",
+              "given": "A present reference resolves to its exact expected identity within selected scope.",
+              "request": "Evaluate the pinned reference predicate.",
+              "expected": "Exact scoped resolution satisfies; missing or substituted targets refuse qualification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-reference-missing",
+              "kind": "refusal",
+              "given": "The reference predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-reference-malformed",
+              "kind": "refusal",
+              "given": "The reference predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-reference-violated",
+              "kind": "refusal",
+              "given": "All reference inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-composition-success",
+              "kind": "success",
+              "given": "The selected workspace composition contains every explicitly required system/source and each reference is in scope.",
+              "request": "Evaluate the pinned composition predicate.",
+              "expected": "Complete composition satisfies; missing members or out-of-scope references violate.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-composition-missing",
+              "kind": "refusal",
+              "given": "The composition predicate lacks a required operand or its selected scope/value cannot be read; this is not a valid observed empty set.",
+              "request": "Treat missing input as an automatic pass.",
+              "expected": "Return unresolved with the missing operand or scope; do not confuse unreadable data with known absence.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-composition-malformed",
+              "kind": "refusal",
+              "given": "The composition predicate has malformed operand types, unsupported pattern/semantics or inconsistent bounds.",
+              "request": "Evaluate using permissive coercion.",
+              "expected": "Refuse malformed/unsupported semantics without coercion or fallback private code.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-01-composition-violated",
+              "kind": "refusal",
+              "given": "All composition inputs are valid and observable but its required condition is false.",
+              "request": "Report a satisfied result.",
+              "expected": "Return violated standing, not satisfied or ignored.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KACI-02",
+          "says": "Review approvals are authenticated external workflow/repository records bound to reviewer/run identity, reviewed content digest and policy basis, and cannot be established by candidate-authored labels.",
+          "cases": [
+            {
+              "id": "kaci-02-external-review",
+              "kind": "success",
+              "given": "The trusted job reads an authenticated approval record from its authorized repository/workflow service, naming a distinct review execution context and exact oracle/fixture content digest.",
+              "request": "Verify review provenance.",
+              "expected": "Accept provenance only after identity, scope, approved digest and independence checks; it grants no publication authority.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kaci-02-self-asserted-review",
+              "kind": "refusal",
+              "given": "Only candidate JSON supplies purported reviewer identity, approval or policy-source digest, or it differs from the authenticated external record.",
+              "request": "Use the labels as proof.",
+              "expected": "Refuse absent, spoofed or mismatched approval provenance.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "contract",
+      "id": "kit-migration-programme-contract",
+      "says": "Defines a separate authorized programme audit for complete tracked kit migration without burdening independent public candidate assessments.",
+      "owner": "ia-authoring-record",
+      "version": "0.1.0",
+      "requirements": [
+        {
+          "id": "REQ-KACP-01",
+          "says": "The authorized migration programme reconciles its complete authorized inventory to owners, issues, dependencies and completion evidence, including declared blocker priorities and required first-group lowering obligations.",
+          "cases": [
+            {
+              "id": "kacp-case30-complete",
+              "kind": "success",
+              "given": "Grammar case30 inverse. The programme operator supplies a complete authorized inventory and matching tracked entries for public, proprietary, hosted, source and in-host kits.",
+              "request": "Audit the programme, separately from any release candidate.",
+              "expected": "Every observed kit has owner, issue, dependencies and completion criterion; private inventory remains in its authorized workspace.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 30,
+              "variantId": "kacp-case30-complete"
+            },
+            {
+              "id": "kacp-case30-omitted",
+              "kind": "refusal",
+              "given": "Grammar case30. The authoritative inventory contains a hosted/source/in-host kit absent from tracked migration entries.",
+              "request": "Audit completeness.",
+              "expected": "Refuse programme completion and name the missing authorized entry; candidate conformance remains a separate standing.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 30,
+              "variantId": "kacp-case30-omitted"
+            },
+            {
+              "id": "kacp-case28-priority",
+              "kind": "success",
+              "given": "Grammar case28 programme portion. Public contract/checker prerequisites precede consumers; priority example-kit blockers and foundational kits have explicit priority/dependencies.",
+              "request": "Audit ordering.",
+              "expected": "Recognize the dependency-respecting tracked sequence without relaxing any candidate requirement.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 28,
+              "variantId": "kacp-case28-priority"
+            },
+            {
+              "id": "kacp-case28-premature",
+              "kind": "refusal",
+              "given": "Grammar case28 programme counterexample. A priority kit claims complete migration before its public prerequisites qualify.",
+              "request": "Close migration because it is urgent.",
+              "expected": "Refuse programme completion; urgency grants no release waiver.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 28,
+              "variantId": "kacp-case28-premature"
+            },
+            {
+              "id": "kacp-case34-dispatch",
+              "kind": "success",
+              "given": "Grammar case34 programme portion. source-package example-kit native lowering is an explicit first-group task with dependencies and independently verified completion evidence.",
+              "request": "Audit the first migration group.",
+              "expected": "Retain the lowering obligation and its evidence without treating source-package form as an exemption.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 34,
+              "variantId": "kacp-case34-dispatch"
+            },
+            {
+              "id": "kacp-case34-dispatch-omitted",
+              "kind": "refusal",
+              "given": "Grammar case34 programme counterexample. source-package example-kit is left as an untracked source package outside the first group.",
+              "request": "Declare first-group migration complete.",
+              "expected": "Refuse programme completion and retain the missing lowering task.",
+              "evaluator": "unavailable: checker qualification pending",
+              "grammarCase": 34,
+              "variantId": "kacp-case34-dispatch-omitted"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "contract",
+      "id": "kit-conformance-execution-contract",
+      "says": "Requires owned invocation, independent bootstrap and exact evidence consumption for the shared checker.",
+      "owner": "ia-authoring-exec",
+      "version": "0.1.0",
+      "requirements": [
+        {
+          "id": "REQ-KACE-01",
+          "says": "Every supported checker surface uses the exact externally selected qualified runtime profile, trust policy and owned implementation; exact contract, fixture and operation references resolve within selected scope, without fallback or permission from selection.",
+          "cases": [
+            {
+              "id": "kace-01-success",
+              "kind": "success",
+              "given": "Authorized invocation selects consistent exact native owner, manifest, catalogue and operation-binding identities. Both systems are composed in the selected kit workspace and every required reference resolves to its expected exact identity.",
+              "request": "Invoke the declared checker entry point.",
+              "expected": "The implementation matches the qualified candidate and retains binding and input identities. Exact referenced content and fixture identities are retained.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-refusal",
+              "kind": "refusal",
+              "given": "The catalogue target is missing, a module/binding identity differs, or only a selected method and loose script exist. Alternatively the content exists elsewhere but is outside the selected captured scope, or resolves to an incompatible revision.",
+              "request": "Substitute the script or similarly named operation.",
+              "expected": "Qualification or invocation refuses before the substitute can produce admissible conformance evidence. No external or nearby record is substituted to repair the missing selected reference.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-transition-valid",
+              "kind": "success",
+              "given": "The exact qualified installed transition runner permits an InventArch-published kit under its external publisher allowlist and recorded digest; its handler targets a declared executing-system asset.",
+              "request": "Invoke through the declared transitional route.",
+              "expected": "Use the actual approved runner and record profile, trust-policy, implementation and input identities; do not describe this as operation-bound execution.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-transition-untrusted",
+              "kind": "refusal",
+              "given": "The transition candidate asserts its own unapproved publisher is trusted.",
+              "request": "Invoke under transitional eligibility.",
+              "expected": "Refuse the specific trust/placement defect before admissible results are produced.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-transition-digest",
+              "kind": "refusal",
+              "given": "The transition module differs from the externally recorded digest.",
+              "request": "Invoke under transitional eligibility.",
+              "expected": "Refuse the specific trust/placement defect before admissible results are produced.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-transition-non-exec",
+              "kind": "refusal",
+              "given": "A handler targets a method-part module.",
+              "request": "Invoke under transitional eligibility.",
+              "expected": "Refuse the specific trust/placement defect before admissible results are produced.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-transition-undeclared",
+              "kind": "refusal",
+              "given": "A handler targets an undeclared executable asset.",
+              "request": "Invoke under transitional eligibility.",
+              "expected": "Refuse the specific trust/placement defect before admissible results are produced.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-retired-handler",
+              "kind": "refusal",
+              "given": "The externally selected qualified runtime/profile has crossed the recorded handler retirement cutover, but handlers.json is still declared.",
+              "request": "Claim the old transition is available.",
+              "expected": "Refuse handlers.json; library availability or candidate assertions cannot select the cutover policy.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-profile-downgrade",
+              "kind": "refusal",
+              "given": "A candidate requests a weaker transition profile under a runtime policy requiring bindings, or the runner/profile pair is unqualified.",
+              "request": "Select the easiest profile.",
+              "expected": "Refuse downgrade or remain unresolved; the trusted host selects the profile independently of candidate input.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-01-runner-surface",
+              "kind": "refusal",
+              "given": "handlers.json, onwrite.json, checks.json or a binding advertises an entry absent from reconciled supported/refusal coverage.",
+              "request": "Qualify only ordinary method routes.",
+              "expected": "Refuse incomplete surface coverage; actual runner-file entries are included. Only handlers.json has the cited explicit retirement rule.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KACE-02",
+          "says": "The first checker can qualify as an exact unpublished candidate without a predecessor checker, but cannot waive its own obligations or self-approve. Fixtures are inert data with independently approved versioned expectations; unchanged supported semantics retain their prior fixture baseline and independent verifier provenance. The admissible first-release route is an independently authorized maintainer build job invoking the frozen reviewed candidate through its qualified operation runner; it is not the installed plugin transition route and cannot alter that route trust policy. This unpublished-candidate route is limited to the canonical ia-authoring release qualifying its own embedded checker version, as selected by the trusted ia-authoring maintainer workflow; it is never an ordinary-kit validation route.",
+          "cases": [
+            {
+              "id": "kace-02-success",
+              "kind": "success",
+              "given": "Exact unpublished contract, checker and fixtures are frozen; independent expected outcomes and a separate verifier are available.",
+              "request": "Qualify valid, invalid and mutation cases through the owned binding, including obligations on the checker itself.",
+              "expected": "Attributable actual outcomes and independent review support the existing acceptance process without requiring prior publication.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-refusal",
+              "kind": "refusal",
+              "given": "The checker reports itself conforming while an evaluator is missing, a mutation fails, its binding is unqualified or independent verification is absent.",
+              "request": "Use a bootstrap exemption or self-issued positive badge.",
+              "expected": "Qualification remains failed or incomplete with specific evidence gaps and no inferred publication permission.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-fixture-review",
+              "kind": "success",
+              "given": "Inert encoded fixture descriptors, expected outcomes and their contract-version digest are reviewed independently of checker implementation; the verifier has distinct attributable identity and run.",
+              "request": "Run the fixed fixtures in a controlled scratch harness.",
+              "expected": "Bind fixture baseline, author/reviewer/verifier identities, approvals and actual variant outcomes; synthetic negative payloads remain inert outside controlled materialization.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-oracle-rewrite",
+              "kind": "refusal",
+              "given": "Checker and fixture expectations change together without a reviewed contract-version change, or the verifier is the authoring run under another label.",
+              "request": "Declare bootstrap green.",
+              "expected": "Refuse self-approval or changed expectations; retain the prior fixture baseline and require an independent review.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-fixture-executable",
+              "kind": "refusal",
+              "given": "A release ships an unowned executable negative fixture or auto-loadable fixture code under tests/.",
+              "request": "Exempt it because it is test data.",
+              "expected": "Refuse executable placement; only declared inert encoded descriptors qualify as data. The executable harness must be owned by the executing system.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-unpublished-trust",
+              "kind": "refusal",
+              "given": "An unpublished checker candidate lacks production-runner publisher/recorded-digest eligibility.",
+              "request": "Invent a published release row or loosen production trust to bootstrap.",
+              "expected": "Refuse that production invocation. Authorized development-harness tests remain explicitly non-production and cannot impersonate published-kit trust. Qualify a supported bootstrap path before closing checker qualification.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-baseline-deleted",
+              "kind": "refusal",
+              "given": "The checker passes a reduced fixture set after deleting an old case or changing its expected outcome without an independently reviewed contract-version delta.",
+              "request": "Use the new set as complete bootstrap evidence.",
+              "expected": "Refuse baseline drift; retain the prior mandatory variants and require an explicit reviewed semantic change.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-maintainer-bootstrap",
+              "kind": "success",
+              "given": "An independently authorized maintainer build job selects the exact reviewed unpublished checker source/payload, pinned contract and qualified maintainer operation runner. Its repository/workflow authorization and recorded candidate digest are outside candidate input. The target is the canonical ia-authoring release candidate containing exactly that checker module digest; the trusted source repository/publication identity and module inclusion are independently verified rather than asserted by candidate data.",
+              "request": "Invoke the frozen owned checker operation in that same job, verify all variants and seal final artifacts before any publication.",
+              "expected": "Produce attributable bootstrap evidence without a predecessor release. This is the explicitly qualified maintainer-build route, not installed-plugin transition eligibility; it neither invents a published row nor changes the plugin allowlist. Existing publication authority separately accepts the evidence. The receipt is self-checker-bootstrap scoped and cannot be consumed to accept another kit release.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-bootstrap-untrusted-job",
+              "kind": "refusal",
+              "given": "An untrusted candidate or fork job supplies its own purported maintainer authorization, operation runner or source digest.",
+              "request": "Use the maintainer bootstrap route.",
+              "expected": "Refuse: only the pre-existing trusted maintainer workflow can select its authorized source, runner and exact digest. A candidate cannot nominate itself as trusted.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-02-bootstrap-other-kit",
+              "kind": "refusal",
+              "given": "A trusted maintainer job tries to use a reviewed unpublished checker to qualify example-kit or another non-self release, or the ia-authoring target does not actually embed the invoked module digest.",
+              "request": "Use the bootstrap route to bypass accepted shared-checker pins.",
+              "expected": "Refuse the target/digest scope mismatch; trusted job status cannot widen bootstrap eligibility.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        },
+        {
+          "id": "REQ-KACE-03",
+          "says": "Replay and release handoff compare exact candidate closure, contract, checker and complete evidence while preserving publication authority and custody. Ordinary kit releases must use the exact recorded exec-module digest from an accepted published canonical ia-authoring release satisfying the required contract policy; trusted local forks and reviewed but unpublished builds cannot substitute. ia-authoring-record owns the published current gate-eligibility policy: required contract/checker floor, withdrawn-as-gate digests and policy validity. Historical availability is not current eligibility. The trusted consumer verifies an authenticated current policy snapshot at release acceptance; missing, expired, rolled-back or incompatible policy refuses. Eligibility is a separately published monotonically revisioned public channel selected by the trusted consumer independently of the pinned checker release. A policy carried by that release is never authoritative for current acceptance. Validity must have an enforced finite expiry or a fresh per-acceptance authority check; until-superseded or unbounded validity is forbidden. Any policy revision that lowers a floor, removes a withdrawal or otherwise widens checker eligibility requires an authenticated independent approval record with stated reason, exact previous/new policy digests and supporting requalification evidence under REQ-KACI-02. Publisher authentication alone is insufficient. Tightening-only revisions may use the established single authority; neither path grants an urgency waiver or changes contract requirements. Every withdrawal records its reason and exact affected digests. For a behavioral defect, the reviewed versioned fixture delta must include a reproducing case, and removal requires independently verified passing evidence for that case as well as the retained baseline. Rerunning the pre-defect baseline alone cannot remove a withdrawal. Non-behavioral withdrawals require reason-specific resolution evidence; an unresolved reason or absent evidence cannot be waived by a policy approval.",
+          "cases": [
+            {
+              "id": "kace-03-success",
+              "kind": "success",
+              "given": "Completed attributable evidence matches exact inputs resolved by an authorized release consumer.",
+              "request": "Consume or hand off the result.",
+              "expected": "The consumer establishes matching identity and completeness before treating the result as conformance evidence; disclosure and publication remain separately authorized.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-refusal",
+              "kind": "refusal",
+              "given": "Candidate, dependency, contract or checker changed, evidence is incomplete, or an interrupted result is replayed for unassessed inputs.",
+              "request": "Reuse the previous positive result as completed success.",
+              "expected": "The consumer refuses stale or incomplete evidence, preserves history and requires a new attributable assessment or qualified continuation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-altered-receipt",
+              "kind": "refusal",
+              "given": "An edited on-disk receipt claims matching digests but lacks a result from this trusted job invocation.",
+              "request": "Accept replay as release evidence.",
+              "expected": "The shared verification operation rejects it; first-version release consumers rerun in the same trusted job, deriving pins and hashes independently.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-final-artifacts",
+              "kind": "success",
+              "given": "All actual packed archives, sidecars and materialized runtime files match the frozen payload under declared packaging transformations; the trusted job observes the pinned checker directly.",
+              "request": "Verify and seal final artifacts without publishing.",
+              "expected": "Return a final-artifact-bound complete result; a later byte or provenance change invalidates it and publication remains separately authorized.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-checker-missing",
+              "kind": "refusal",
+              "given": "No qualified exact checker is available to the consumer.",
+              "request": "Pack for release acceptance or publish without shared assessment and final verification.",
+              "expected": "The release consumer fails closed and cannot accept or publish the release. A local candidate-build artifact is not release acceptance; category and urgency never waive the gate.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-checker-skipped",
+              "kind": "refusal",
+              "given": "The consumer skips conformance because the kit is hosted, source-only or a priority re-cut.",
+              "request": "Pack for release acceptance or publish without shared assessment and final verification.",
+              "expected": "The release consumer fails closed and cannot accept or publish the release. A local candidate-build artifact is not release acceptance; category and urgency never waive the gate.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-programme-result-as-release",
+              "kind": "refusal",
+              "given": "A valid programme audit result is supplied where a candidate-release assessment is required.",
+              "request": "Accept it as release conformance.",
+              "expected": "Refuse the context mismatch even when identifiers overlap; trusted consumer operation fixes the required assessment context.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-accepted-checker-pin",
+              "kind": "success",
+              "given": "An ordinary kit pipeline independently verifies its exact checker module digest and contract pin against an accepted published canonical ia-authoring release and the required policy.",
+              "request": "Assess and verify final artifacts using that recorded shared checker.",
+              "expected": "Use the same accepted implementation semantics; retain the release/module/policy identities and separate publication authority.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-unaccepted-checker-pin",
+              "kind": "refusal",
+              "given": "An ordinary kit pipeline selects a forked, unpublished, locally patched or reviewed-but-unadopted checker, even within a trusted maintainer job.",
+              "request": "Accept a fresh same-job result from it.",
+              "expected": "Refuse the unaccepted checker pin; fresh provenance and matching bytes cannot replace the approved shared implementation.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-eligible-current-policy",
+              "kind": "success",
+              "given": "An accepted published canonical checker pin meets the content-owner published contract/checker floor, is not withdrawn, and matches an authenticated current policy snapshot selected by the trusted consumer.",
+              "request": "Verify gate eligibility before accepting a new release.",
+              "expected": "Retain policy identity/digest and validity with checker/contract pins; historical release bytes remain unchanged.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-below-policy-floor",
+              "kind": "refusal",
+              "given": "The checker is accepted and published but below the current required contract/checker floor.",
+              "request": "Use historical availability as permission to validate a new kit release.",
+              "expected": "Refuse the superseded gate pin while preserving availability and immutable history.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-withdrawn-checker-pin",
+              "kind": "refusal",
+              "given": "The checker digest remains downloadable but is withdrawn as a gate by the authenticated current policy.",
+              "request": "Accept a fresh result from that checker.",
+              "expected": "Refuse gate use; do not rewrite or erase the historical release.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-stale-eligibility-policy",
+              "kind": "refusal",
+              "given": "Eligibility policy is missing, expired, rolled back against the trusted consumer known sequence, unauthenticated or cannot establish required freshness.",
+              "request": "Treat a cached older policy as indefinitely current.",
+              "expected": "Refuse new-release acceptance. Public policy retrieval/authorization is a separate host step and cannot disclose private candidate data.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-self-carried-or-unbounded-policy",
+              "kind": "refusal",
+              "given": "An authentic policy comes only from the pinned checker release, or has no finite enforced expiry and no fresh per-acceptance authority check, even if it is the highest revision the consumer has seen.",
+              "request": "Use the pinned release or until-superseded policy to authorize a new release.",
+              "expected": "Refuse; require an independently selected authenticated public eligibility channel with bounded freshness. An old signed policy cannot authorize itself indefinitely.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-unreviewed-policy-relaxation",
+              "kind": "refusal",
+              "given": "A fresh authentic monotonic policy lowers a floor, removes a withdrawal or otherwise re-enables a checker without independent exact-digest approval and supporting requalification evidence.",
+              "request": "Accept a release using the relaxed policy, including an urgent migration.",
+              "expected": "Refuse the policy relaxation; apply REQ-KACI-02 independent approval provenance to the exact policy delta. A publisher signature or urgency is insufficient.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-reviewed-policy-relaxation",
+              "kind": "success",
+              "given": "A widened policy has independently authenticated approval for its exact previous/new digests, stated reason and supporting requalification proving the checker meets the unchanged required contract. For a removed defect withdrawal, its independently reviewed versioned reproducing case is included and passes; all other recorded withdrawal reasons have their specific resolution evidence.",
+              "request": "Evaluate the policy revision and candidate under the normal release gates.",
+              "expected": "Accept the policy revision as eligible input only; candidate qualification, freshness and publication authority remain required.",
+              "evaluator": "unavailable: checker qualification pending"
+            },
+            {
+              "id": "kace-03-reenable-without-defect-regression",
+              "kind": "refusal",
+              "given": "A checker withdrawn for a known false pass is proposed for re-enablement with independent approval, but requalification reruns only the old baseline or omits/fails the reviewed reproducing case for the withdrawal reason.",
+              "request": "Remove the withdrawal using the otherwise authentic policy revision.",
+              "expected": "Refuse until reason-specific resolution and the independently reviewed reproducing regression pass alongside the retained baseline; approval cannot waive the known defect.",
+              "evaluator": "unavailable: checker qualification pending"
+            }
+          ],
+          "check": {
+            "runs": "COMP-COVERAGE",
+            "evaluator": "unavailable: checker qualification pending"
+          }
+        }
+      ]
+    }
+  ]
+}
