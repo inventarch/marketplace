@@ -30,6 +30,28 @@ Every playbook has the four phases, orient, plan, act and learn, each with its p
 
 Work that rests on a spec that is not accepted, or on a decision with no choice, goes one layer deep: design, prototype and tests on a branch. Nothing is built on that layer, nothing that depends on it is authored beyond its work records, and nothing is merged or released until the foundation is ratified. The law `method-provisional-foundation-ceiling` says so, and the `method-provisional-foundation` playbook says how to work under it. `ia next` blocks a task that requires an open decision, but not one that only cites a draft spec, and it does not count layers; the core's `scripts/ceiling.mjs` reports both, and fails closed (unknown, exit 2) when it cannot read a record. In an IA workspace, run `node "${CLAUDE_PLUGIN_ROOT}/scripts/ceiling.mjs" [--plan <plan>]` to see each task's layer, and `--task <task>` before starting one: exit 1 means beyond the ceiling (stop and ask for the ratification it waits on), exit 2 means unknown or refused (pass `--plan`, or run the command the message names; never treat it as clear).
 
+## Activation
+
+Each governance record says when it is meant to apply with `activate when <axis> is <value>` lines in its `activation` section. Several lines mean any of them, and `and` joins axes in one line. The tier is the axis: 1 is any write (`move`), 2 is one kind of record (`artifact-set` or `kind`), 3 is the activity at that moment (`phase` or `primitive`). A record with no activation is universal, and the row gives the reason.
+
+The lines are declarations. They do not scope delivery today: the resolvers do not put `move`, `artifact-set` or word into the coordinate (IA issue 249), so a selector on those axes is neutral, and packets from the core resolver carry only the two blocking rules.
+
+| Record | Tier | Activation |
+| --- | --- | --- |
+| `method-capability-is-the-unit` | 3 | `phase is orient` or `phase is plan`: the account of the work is anchored while orienting on it and planning it. |
+| `method-locate-before-inventing` | 3 | `phase is orient` or `phase is plan`: finding what exists happens before a new thing is proposed. |
+| `method-same-pattern-every-layer` | 3 | `phase is plan`: it shapes how a change is arranged across its owners and layers. |
+| `method-levels-of-knowledge` | 3 | `phase is orient` or `phase is learn`: the level of a claim is read when orienting and stated when reporting. |
+| `method-claims-within-evidence` | universal | Its rule covers every meaningful state claim, and every phase makes one: orient reads states, plan restates them, act reports refusals and learn reports checks. No axis value leaves claims out. |
+| `method-lineage-accountable` | 1 | `move is Synthesis`: replacing work is a write, whatever the record. Neutral today (see Open). |
+| `method-ask-while-continuing` | 3 | `primitive is Decision` or `primitive is Escalation`: it applies when a decision is needed or goes to the person. |
+| `method-one-account` | 1 | `move is Synthesis`: a hand-kept register is something an agent writes. Neutral today (see Open). |
+| `method-capture-before-delivery` | 3 | `phase is plan`: the capture comes before committing to deliver. |
+| `method-handoff-packet` | 3 | `phase is learn`: every playbook leaves the packet in its learn cells. |
+| `method-reconcile-on-change` | 3 | `phase is learn`: every playbook reconciles in its learn cells. |
+| `method-improvement-lifecycle` | 3 | `phase is learn`: improvements are proposed in learn. |
+| `method-provisional-foundation-ceiling` | universal (Open) | Its rule covers work that rests on a provisional foundation, which can happen at any phase. It stays universal while whether it is universal or conditioned is Open. |
+
 ## Per-word capabilities
 
 Each public record word has one capability, `<word>-method`, composing one playbook of the same name whose subject word is that word (the names are record names, not words). Its cells say how to orient on records of the word (`ia position --word <word>`, `ia read`, `ia vocabulary <word> --schema`), plan them through the word's owning system (re-seating with `ia position --seat` when that is another system), change them (`ia preview`, then `ia author` with the returned digest, then `ia validate`) and learn from the result.
@@ -98,6 +120,25 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/kit.mjs" adopt ia-method <repository>
 ```
 
 `--dry-run` lists what would be written. The real run checks that the archive hashes to the recorded release, copies it and the language base it pins into `vendor/ia/`, and runs `ia install`, which pins it in `.ia/distributions.lock.json`. Commit `vendor/ia/` and `.ia/distributions.lock.json`; `.ia/distributions/` is restored locally (`ia restore`), never committed. `ia validate` should still pass afterwards.
+
+## Kit authoring contract
+
+This release makes no conformance claim against the proposed contract baseline (marketplace pull request 24): that baseline is still a proposal and none of its cases have run. The table records what the kit declares, not what has been evaluated.
+
+| Requirement | Status | Basis |
+| --- | --- | --- |
+| Activation tiers | Declared (not evaluated) | Every governance record declares activation lines on the axes of its tier, or is universal with the reason in the Activation table. The lines do not scope delivery today (IA issue 249). |
+| Subjects | Declared (not evaluated) | Every principle, law, convention and playbook names a public record word as its subject word, and the taxonomy playbook names a taxonomy word. Delivery does not read the subject yet: IA issue 245 |
+| Edges | Declared (not evaluated) | Relationships are declared edges: the contract governs the ceiling law, its check enforces the contract, its cases implement its requirement, and every reference names a kit record or a public system. |
+| Supporting context | Declared (not evaluated) | Every file the kit ships beside .ia/ (bindings.json, delivery.json) is a declared release asset, so the archive carries it and the sources digest covers it. This README is the only document. |
+| Code via executing systems | N/A | The kit ships no code and no checks.json. Its one check runs the built-in COMP-COVERAGE evaluator, and the ceiling report its cases name is the core's scripts/ceiling.mjs. |
+| Routing per word | Open | The kit ships no routing data. IA cannot carry it in the language yet: there is no routing-profile field (IA issue 248), delivery has no word axis (IA issue 245), and resolvers declare no word, move or artifact-set (IA issue 249). |
+
+## Open
+
+- Tier 1 is not delivered. `method-lineage-accountable` and `method-one-account` declare `move is Synthesis`, but no resolver puts `move` into the coordinate (IA issue 249), so the selector is neutral and the two rules are not narrowed to writes. Until that lands, tier-1 activation is a declaration only.
+- Whether the ceiling law `method-provisional-foundation-ceiling` is universal or conditioned. For universal: it is blocking, and work at any phase can rest on a provisional foundation, so withholding it anywhere lets a second layer start unchecked. For conditioned: it limits building on, authoring from, merging and releasing a layer, which points at tier 1 (`move is Synthesis`) or at the plan and act phases. A tier-1 condition would be neutral today, as above. It stays universal until this is decided.
+- Scoping `method-improvement-lifecycle` to improvement records. An improvement record is the inquiry artifact-set, but a line on that axis beside `phase is learn` would widen the rule, because lines are OR-ed and a selector on an axis the coordinate does not carry is neutral. It needs a word axis in delivery (IA issue 245) and resolvers that declare the word or artifact-set (IA issue 249); until then it declares learn only.
 
 ## Maintain the kit
 

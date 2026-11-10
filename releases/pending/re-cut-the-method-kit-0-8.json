@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "patch",
+  "title": "Re-cut the method kit 0.8.0 with declared activation",
+  "summary": "The bundled inventarch/ia-method-kit is now 0.8.0, and the public kits package is 1.0.5. Eleven governance rules declare when they apply, by phase, primitive or move; the two blocking rules stay universal. The lines are declarations: the resolvers do not yet put move, artifact-set or word into the coordinate, so they narrow no delivery today. The kit README adds the activation table, the authoring contract rows as declared and not evaluated, and the open items. Releases up to 0.7.3 are unchanged.",
+  "plugins": [
+    "ia"
+  ]
+}

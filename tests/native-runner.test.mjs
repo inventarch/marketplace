@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { checkShards, inspectCli, reconcile, verifyReports } from '../tools/run-native-tests.mjs';
+import { checkShards, inspectCli, readShardReports, reconcile, verifyReports } from '../tools/run-native-tests.mjs';
 const required = [{ id: 'required', file: 'fixture.mjs', name: 'native fixture', mode: 'native', platforms: ['linux', 'win32', 'darwin'] }];
 const pass = { file: 'fixture.mjs', name: 'native fixture', status: 'pass' };
 test('MI-T08 required native inventory rejects missing, duplicate, skipped and todo cases', () => {
@@ -58,4 +58,31 @@ test('native shards: --plan prints the inventory shard list for a workflow matri
   const shards = JSON.parse(ran.stdout.trim().replace(/^shards=/, ''));
   assert.deepEqual(shards, Array.from({ length: shards.length }, (_, i) => i + 1));
   assert.ok(shards.length >= 1);
+});
+
+test('native artifact layouts retain all reports and all coverage failures', t => {
+  const dir = mkdtempSync(join(tmpdir(), 'native-artifacts-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const writeReport = (folder, report) => {
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(join(folder, 'native-report.json'), JSON.stringify(report));
+    writeFileSync(join(folder, 'native-events.jsonl'), '{}\n');
+  };
+  const one = { shards: 1, cases: [{ id: 'a', shard: 1 }] };
+  const flat = join(dir, 'flat');
+  writeReport(flat, shardReport(1, ['a'], { shards: 1 }));
+  assert.deepEqual(verifyReports(one, 'i', readShardReports([flat])), []);
+  const nested = join(dir, 'nested');
+  writeReport(join(nested, 'shard-1'), shardReport(1, ['a']));
+  writeReport(join(nested, 'shard-2'), shardReport(2, ['b', 'c']));
+  assert.deepEqual(verifyReports(sharded, 'i', readShardReports([nested])), []);
+  assert.deepEqual(verifyReports(sharded, 'i', readShardReports([join(nested, 'shard-1'), join(nested, 'shard-2')])), []);
+  const empty = join(dir, 'empty'); mkdirSync(empty);
+  assert.match(verifyReports(one, 'i', readShardReports([empty])).join('\n'), /shards reported \[\]/);
+  assert.match(verifyReports(sharded, 'i', readShardReports([join(nested, 'shard-1')])).join('\n'), /c: reported 0 times/);
+  writeReport(nested, shardReport(1, ['a']));
+  assert.match(verifyReports(sharded, 'i', readShardReports([nested])).join('\n'), /a: reported 2 times/);
+  rmSync(join(nested, 'native-report.json'));
+  writeReport(join(nested, 'shard-2'), shardReport(2, ['b', 'c'], { sourceRevision: 'other' }));
+  assert.match(verifyReports(sharded, 'i', readShardReports([nested])).join('\n'), /sourceRevision differs/);
 });

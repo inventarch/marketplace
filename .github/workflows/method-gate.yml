@@ -1,0 +1,46 @@
+# The method gate on this repository's own records (decision public-method-gate-ci): a report, never a block. It runs the
+# ia plugin's method-gate.mjs over every plan the records author and prints the result to the job summary. The job is not
+# one of the required checks (.github/rulesets/main.json), never tolerates a failed step, and exits 0 on findings, so a red job
+# means the setup broke, not that a task lacks evidence. A rule or task the gate could not evaluate raises a warning, because
+# exit 0 alone does not show that everything was checked. The workspace is restored the way CONTRIBUTING.md says
+# (npm run kits:install), since a fresh checkout is not an admitted IA workspace. tests/test_gates.py holds its shape.
+name: Method gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: method-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  method-gate:
+    name: Method gate (report only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22.22.0'
+      - name: Root dependencies (the pinned IA CLI)
+        run: npm ci
+      - name: Install the catalogue's own kits (the workspace the CLI admits)
+        run: npm run kits:install
+      - name: Method gate report (never blocks)
+        env:
+          IA_NO_HANDOFF: '1'
+        run: |
+          plans=$(grep -rh --include='*.ia' '^@plan ' .ia/src | sed 's/[[:space:]]*$//; s/^@plan //; s#^#--plan work-system/definition/plan/#')
+          test -n "$plans"
+          node plugins/ia/scripts/method-gate.mjs --root . $plans --budget 600 > "$RUNNER_TEMP/method-gate.txt"
+          cat "$RUNNER_TEMP/method-gate.txt"
+          { echo '### Method gate (report only: it never blocks)'; echo; echo '```'; cat "$RUNNER_TEMP/method-gate.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if grep -Eq 'NOT EVALUATED|UNKNOWN|task\(s\) unknown' "$RUNNER_TEMP/method-gate.txt"; then echo '::warning title=Method gate::a rule or task was not evaluated; the report checked less than it says'; fi

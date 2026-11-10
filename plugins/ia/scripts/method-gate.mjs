@@ -19,9 +19,17 @@
 // discovery. The children run as separate processes, because ceiling.mjs
 // exits the process; they inherit the environment, with IA_NO_HANDOFF=1, so
 // an npm or proxy setting the npx fallback needs still reaches them.
+//
+// Before the reports run, the gate asks the CLI once whether it admits the
+// workspace (`ia validate --json`). A refused workspace, or a validate that
+// cannot run, leaves both rules not evaluated with the first error codes: the
+// reports read a refused workspace as closed tasks with no evidence, which
+// would look like findings instead of a setup that did not work. The result is
+// `admission: { status, errors }` in the JSON; exit stays 0.
 import { existsSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveCli } from './lib/cli.mjs';
 import { runChild } from './lib/hygiene.mjs';
 import { findWorkspace } from './lib/workspace.mjs';
 
@@ -64,8 +72,14 @@ const options = parse(process.argv.slice(2));
 const root = resolve(options.root);
 if (!existsSync(root) || !statSync(root).isDirectory()) usage(`--root ${root} is not a directory`);
 
+let admission = null; // set by evaluate()
 const started = Date.now();
 const remaining = () => options.budget * 1000 - (Date.now() - started);
+// A child's time limit: what is left of the budget, never above the child cap,
+// and never below one second, so the limit a run prints is the one it ran with
+// and never reads 0 s. A run may overshoot the budget by under a second.
+const limitMs = left => Math.max(1000, Math.min(CHILD_TIMEOUT_MS, left));
+const secondsOf = ms => Math.ceil(ms / 1000);
 
 // One child report as { evaluated, reason?, report? }: anything but a clean
 // report reads as not evaluated, with the reason.
@@ -73,14 +87,38 @@ async function runRule({ script }, plan) {
   const left = remaining();
   if (left <= 0) return { evaluated: false, reason: `the ${options.budget} s budget was spent before this run started` };
   const argv = [process.execPath, script, '--root', root, '--json', ...(plan ? ['--plan', plan] : [])];
-  const ran = await runChild({ argv, cwd: root, env: { ...process.env, IA_NO_HANDOFF: '1' }, timeoutMs: Math.min(CHILD_TIMEOUT_MS, left), cap: CHILD_CAP });
-  if (ran.timedOut) return { evaluated: false, reason: `timed out after ${Math.round(Math.min(CHILD_TIMEOUT_MS, left) / 1000)} s` };
+  const ran = await runChild({ argv, cwd: root, env: { ...process.env, IA_NO_HANDOFF: '1' }, timeoutMs: limitMs(left), cap: CHILD_CAP });
+  if (ran.timedOut) return { evaluated: false, reason: `timed out after ${secondsOf(limitMs(left))} s` };
   if (ran.error) return { evaluated: false, reason: `did not run: ${ran.error.message}` };
   let json;
   try { json = JSON.parse(ran.stdout); } catch { json = undefined; }
   if (json?.error) return { evaluated: false, reason: json.error };
   if (ran.status !== 0 || !Array.isArray(json?.tasks)) return { evaluated: false, reason: (ran.stderr.trim() || `exit ${ran.status}, no report`).split('\n')[0] };
   return { evaluated: true, report: json };
+}
+
+// The CLI's admission of the workspace: { status, errors: [first error codes] }.
+// Run through the same tree-killing child runner as the reports, so a timeout
+// takes the whole process tree. A validate that cannot run, times out or prints
+// nothing readable is status 'unavailable'. Only 'admitted' lets the reports run.
+async function admit() {
+  const left = remaining();
+  if (left <= 0) return { status: 'unavailable', errors: [], reason: `the ${options.budget} s budget was spent before this run started` };
+  try {
+    const cli = resolveCli(root);
+    const limit = limitMs(left);
+    const ran = await runChild({ argv: [...cli.argv, 'validate', '--root', root, '--json'], cwd: root, env: { ...process.env, IA_NO_HANDOFF: '1' }, timeoutMs: limit, cap: CHILD_CAP });
+    if (ran.timedOut) return { status: 'unavailable', errors: [], reason: `timed out after ${secondsOf(limit)} s` };
+    if (ran.error) return { status: 'unavailable', errors: [], reason: `did not run: ${ran.error.message}` };
+    let json;
+    try { json = JSON.parse(ran.stdout); } catch { json = undefined; }
+    const status = json?.status;
+    if (typeof status !== 'string') return { status: 'unavailable', errors: [], reason: (ran.stderr.trim() || `exit ${ran.status}, no readable report`).split(/\r?\n/)[0] };
+    const errors = (json.findings ?? []).filter(f => f.severity === 'error').map(f => f.code).filter(Boolean);
+    return { status, errors: [...new Set(errors)].slice(0, 5) };
+  } catch (error) {
+    return { status: 'unavailable', errors: [], reason: `${error.code ? error.code + ': ' : ''}${error.message}`.split(/\r?\n/)[0] };
+  }
 }
 
 async function evaluate() {
@@ -90,6 +128,13 @@ async function evaluate() {
   for (const entry of RULES) results.push({ rule: entry.rule, runs: [] });
   if (!workspace) {
     for (const result of results) result.runs.push({ plan: null, evaluated: false, reason: `no IA workspace (.ia/src) at or above ${root}` });
+  } else if ((admission = await admit()).status !== 'admitted') {
+    const reason = admission.status === 'refused'
+      ? `workspace not admitted: ${admission.errors.length ? admission.errors.join(', ') : 'no error code reported'}, run ia validate`
+      : admission.status === 'unavailable'
+        ? `workspace not admitted: ia validate did not answer (${admission.reason}), run ia validate`
+        : `workspace not admitted: ia validate reported status ${admission.status}, run ia validate`;
+    for (const result of results) result.runs.push({ plan: null, evaluated: false, reason });
   } else {
     // The two rules read the same records and write nothing, so they run
     // together; the plans follow one another.
@@ -152,7 +197,7 @@ function lines() {
 }
 
 if (options.json) {
-  process.stdout.write(JSON.stringify({ format: 'inventarch.method-gate', version: 1, root, advisory: true, evaluated, notEvaluated, unknownTasks, rules: results.map(({ rule, evaluated: ok, reason, counts, unknown, exempt, runs }) => ({ rule, evaluated: ok, ...(reason ? { reason } : {}), counts, unknown, ...(exempt ? { exempt } : {}), runs })) }, null, 2) + '\n');
+  process.stdout.write(JSON.stringify({ format: 'inventarch.method-gate', version: 1, root, advisory: true, admission: admission ? { status: admission.status, errors: admission.errors } : null, evaluated, notEvaluated, unknownTasks, rules: results.map(({ rule, evaluated: ok, reason, counts, unknown, exempt, runs }) => ({ rule, evaluated: ok, ...(reason ? { reason } : {}), counts, unknown, ...(exempt ? { exempt } : {}), runs })) }, null, 2) + '\n');
 } else {
   process.stdout.write(lines().join('\n') + '\n');
 }
