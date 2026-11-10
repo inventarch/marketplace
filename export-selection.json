@@ -393,7 +393,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/release.json",
-      "sha256": "0adf0c22efb456e427538dd4cfdd7bdb985f7c9e632ba8304597f287ca3e5eda"
+      "sha256": "94c9b87e3a18abb88ea2e8eba527a9d6a38de1266d146d7c6463daddb15e2d84"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/capability.ia",
@@ -405,7 +405,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/conventions.ia",
-      "sha256": "527102f1c168c7cd3215ff7067dbfc3839bdef846c0dbfa26087e76959660e08"
+      "sha256": "d4ddbb58f30d247fad72130992112c3eab8244bca4d70fc2f4fbb7773b30ad55"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/distribution.ia",
@@ -421,7 +421,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/principles.ia",
-      "sha256": "b42d31ea090043aebc9ef1843ab59617a88cf0ad0cec204431c091ae1fa8521d"
+      "sha256": "2829eb2bdac7c995957f9999c35bcc3fee2fd7efc38cc5ba0dd8ac583c967264"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/.ia/src/systems/ia-method/records/vocabulary.ia",
@@ -485,7 +485,7 @@
     },
     {
       "path": "plugins/ia/config/kits/ia-method/README.md",
-      "sha256": "d665a8d671d45cadc8a5d58bdec4c8149af7e357c2188e0574fa3bb1f19f8a4c"
+      "sha256": "048b12d5580e69a7744c37d4624d352cba0593d267001d26acc314ac4f52b1e7"
     },
     {
       "path": "plugins/ia/config/kits/ia-method/bindings.json",
@@ -536,8 +536,12 @@
       "sha256": "c3d9f40c56a4e20c48e677511ef201071feecbb774c1a29085469f93e29538b4"
     },
     {
+      "path": "plugins/ia/config/kits/ia-method/releases/0.8.0.json",
+      "sha256": "8e8037cac300c8506c95b6bc350ebbb069862d9094488306ca1b88acdeb727b9"
+    },
+    {
       "path": "plugins/ia/config/kits/ia-method/releases.json",
-      "sha256": "6cd81c1ed54d8f82b9a8566db1dd07fe1390ee08402248fc99c6de00af04ad29"
+      "sha256": "57da8650d6527b01eb7d765dccdcaa90a7db32e085eeb83a59cfdeff227b5851"
     },
     {
       "path": "plugins/ia/config/method-qualification-ia-kb.json",
@@ -545,7 +549,7 @@
     },
     {
       "path": "plugins/ia/config/public-kits.json",
-      "sha256": "8e954eb2036b835eb55a30acaf1f86b7ee69f205f8ddcc2045aab9df8317f9ba"
+      "sha256": "48b0ea20ab397aed7000e1a6483e0b71155602bafd393d0d2cce2d5a3b31f616"
     },
     {
       "path": "plugins/ia/config/qualified-executors.json",

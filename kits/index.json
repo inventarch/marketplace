@@ -82,14 +82,14 @@
       "folder": "kits/ia-method",
       "releases": "kits/ia-method/releases.json",
       "latest": {
-        "version": "0.7.3",
-        "archive": "dc9efbf35b56eaf2c14e59eaf680ad479dd518777057a51bc63c0fabc243e7fa",
+        "version": "0.8.0",
+        "archive": "e6c69e6f8aae1d66105b3b6b8d42f8056670d757d696ec2c21b9bfa3c4a561a4",
         "cli": "@inventarch/cli 3.6.0",
         "language": "inventarch/language ^3.2.0",
-        "file": "kits/ia-method/releases/0.7.3.json",
+        "file": "kits/ia-method/releases/0.8.0.json",
         "source": {
           "repository": "https://github.com/inventarch/marketplace.git",
-          "commit": "900da4e819766e7c93705888eb51491f1b49c1fd"
+          "commit": "46fb19c0b1384cbdee8d690839a93c15d0a483b8"
         }
       },
       "versions": [
@@ -102,7 +102,8 @@
         "0.7.0",
         "0.7.1",
         "0.7.2",
-        "0.7.3"
+        "0.7.3",
+        "0.8.0"
       ],
       "offers": [
         "knowledge.vocabulary",
