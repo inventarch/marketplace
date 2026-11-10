@@ -1,0 +1,479 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-method-kit",
+  "version": "0.9.0",
+  "archive": "e63c1bec90bdf6bdfe2f93f170daf9f6e6812d59ed240849d8e2c0a94a747d87",
+  "records": [
+    {
+      "system": "ia-method",
+      "word": "agent",
+      "name": "ia-method-steward"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "agent-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "agent-profile-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "authoring-guide-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "capability-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "case-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "check-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "contract-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "convention-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "decision-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "distribution-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "execution-binding-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "harness-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "hook-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "improvement-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "law-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "mandate-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "method-operate"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "method-vocabulary"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "milestone-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "observation-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "operation-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "plan-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "playbook-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "principle-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "run-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "schema-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "spec-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "system-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "task-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "template-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "voice-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "capability",
+      "name": "workspace-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "case",
+      "name": "method-req-01-failure"
+    },
+    {
+      "system": "ia-method",
+      "word": "case",
+      "name": "method-req-01-success"
+    },
+    {
+      "system": "ia-method",
+      "word": "case",
+      "name": "method-req-02-failure"
+    },
+    {
+      "system": "ia-method",
+      "word": "case",
+      "name": "method-req-02-success"
+    },
+    {
+      "system": "ia-method",
+      "word": "check",
+      "name": "ia-method-coverage"
+    },
+    {
+      "system": "ia-method",
+      "word": "contract",
+      "name": "ia-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "convention",
+      "name": "method-capture-before-delivery"
+    },
+    {
+      "system": "ia-method",
+      "word": "convention",
+      "name": "method-handoff-packet"
+    },
+    {
+      "system": "ia-method",
+      "word": "convention",
+      "name": "method-improvement-lifecycle"
+    },
+    {
+      "system": "ia-method",
+      "word": "convention",
+      "name": "method-reconcile-on-change"
+    },
+    {
+      "system": "ia-method",
+      "word": "distribution",
+      "name": "ia-method-distribution"
+    },
+    {
+      "system": "ia-method",
+      "word": "law",
+      "name": "method-provisional-foundation-ceiling"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "agent-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "agent-profile-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "authoring-guide-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "capability-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "case-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "check-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "contract-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "convention-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "decision-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "distribution-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "execution-binding-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "harness-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "hook-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "improvement-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "law-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "mandate-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "method-operate"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "method-provisional-foundation"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "method-vocabulary"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "milestone-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "observation-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "operation-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "plan-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "playbook-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "principle-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "run-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "schema-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "spec-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "system-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "task-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "template-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "voice-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "playbook",
+      "name": "workspace-method"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-ask-while-continuing"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-capability-is-the-unit"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-claims-within-evidence"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-levels-of-knowledge"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-lineage-accountable"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-locate-before-inventing"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-one-account"
+    },
+    {
+      "system": "ia-method",
+      "word": "principle",
+      "name": "method-same-pattern-every-layer"
+    },
+    {
+      "system": "ia-method",
+      "word": "system",
+      "name": "ia-method"
+    }
+  ],
+  "offers": {
+    "keys": [
+      "knowledge.vocabulary",
+      "work.*",
+      "work.agent",
+      "work.agent-profile",
+      "work.authoring-guide",
+      "work.capability",
+      "work.case",
+      "work.check",
+      "work.contract",
+      "work.convention",
+      "work.decision",
+      "work.distribution",
+      "work.execution-binding",
+      "work.harness",
+      "work.hook",
+      "work.improvement",
+      "work.law",
+      "work.mandate",
+      "work.milestone",
+      "work.observation",
+      "work.operation",
+      "work.plan",
+      "work.playbook",
+      "work.principle",
+      "work.run",
+      "work.schema",
+      "work.spec",
+      "work.system",
+      "work.task",
+      "work.template",
+      "work.voice",
+      "work.workspace"
+    ]
+  }
+}
