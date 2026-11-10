@@ -8,6 +8,9 @@
     severity advisory
   subject
     subject-word spec
+  activation
+    activate when phase is orient
+    activate when phase is plan
 
 @principle method-locate-before-inventing
   meaning
@@ -17,6 +20,9 @@
     severity advisory
   subject
     subject-word system
+  activation
+    activate when phase is orient
+    activate when phase is plan
 
 @principle method-same-pattern-every-layer
   meaning
@@ -26,6 +32,8 @@
     severity advisory
   subject
     subject-word system
+  activation
+    activate when phase is plan
 
 @principle method-levels-of-knowledge
   meaning
@@ -35,6 +43,9 @@
     severity advisory
   subject
     subject-word spec
+  activation
+    activate when phase is orient
+    activate when phase is learn
 
 @principle method-claims-within-evidence
   meaning
@@ -54,6 +65,8 @@
     severity advisory
   subject
     subject-word decision
+  activation
+    activate when move is Synthesis
 
 @principle method-ask-while-continuing
   meaning
@@ -63,6 +76,9 @@
     severity advisory
   subject
     subject-word decision
+  activation
+    activate when primitive is Decision
+    activate when primitive is Escalation
 
 @principle method-one-account
   meaning
@@ -72,3 +88,5 @@
     severity advisory
   subject
     subject-word plan
+  activation
+    activate when move is Synthesis
