@@ -33,9 +33,18 @@ The Work lane's entry capability is a whole procedure: when the repository binds
 
 Pass `--seat` with the task's or plan's record identity; the seat's laws and mandates reach the packet only when the bound kit is installed in the repository (`envelope.kitInstalled`). Otherwise `--seat` sets only `scope.seat`, and the packet says so: read the rule by its identity instead (`node "${CLAUDE_PLUGIN_ROOT}/scripts/ia.mjs" read <rule identity> --root <envelope.kitRoot>`). Pass `--project` and `--task` for a coordination task: the resolve is then pinned to the task, and `binding.revision` names the pin every run of it shares.
 
-## 2. The ceiling gate, when the method has one
+## 2. The ceiling and exit-evidence reports, when the method has one
 
 Run this only when the packet's `references` include `governance-system/governance/law/method-provisional-foundation-ceiling`, its `closure.kit` is `inventarch/ia-method-kit`, or the repository binds `inventarch/ia-method-kit` for any `work` key (`node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" show`); otherwise skip to the next section. Then, in an IA workspace with work records, run `node "${CLAUDE_PLUGIN_ROOT}/scripts/ceiling.mjs" --task <task identity>` before you start a task (`[--plan <plan>]` without `--task` lists every task's layer). Exit 0: clear, or the first layer (design, prototype and tests on a branch; no merge or release until ratified). Exit 1: beyond the ceiling; stop and ask the person for the ratification the task waits on, which the report names. Exit 2: unknown or refused; pass `--plan`, or run the command the message names, and never treat it as clear.
+
+Then, to judge a closed task's exit evidence, run `node "${CLAUDE_PLUGIN_ROOT}/scripts/exit-evidence.mjs" --task <task identity>` (without `--task`, `[--plan <plan>]` lists every closed task). This report is advisory: exit 0 does not mean evidenced. Read the position that starts the first line: `EVIDENCED`, `EXEMPT` (the author declared there was nothing to run; not verified), `REFUSED`, `STALE`, `NO EVIDENCE`, `INCONCLUSIVE`, `UNKNOWN (NOT EVALUATED)` or `NOT CLOSED`. Exit 2 means the report could not decide (unknown, refused or bad usage): never treat it as evidenced. A current refusal outweighs a success, and a verdict covers only the task revision it was taken at, so record evidence last:
+
+1. Finish the task's fields, closing it included.
+2. Read its digest: `node "${CLAUDE_PLUGIN_ROOT}/scripts/ia.mjs" inspect <task identity>`, the record's `digest`.
+3. Author an `@observation` with `evidence.subject @task <name>`, an `evidence.verdict` and `evidence.subject-revision` set to that digest. Prefer this to setting `work.exit-evidence`, which changes the task's digest and so makes the evidence stale.
+4. Run `--task`.
+
+Any later edit to the task makes the success stale. The principle `method-claims-within-evidence` is not enforced by anything yet; `scripts/method-gate.mjs` runs both reports for a repository and only reports.
 
 ## 3. Follow only the packet
 

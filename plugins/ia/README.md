@@ -43,6 +43,8 @@ Delivery checks the optional hosted stage for UX, UI, design-system and brand in
 | `scripts/check.mjs` | `<check-name> [--root] [--kit] [--manifest <workspace-relative-file>]`: runs one declared `@check` of a trusted kit with its fixed argv and declared data slots; anything else is `IA-CORE-CHECK-UNKNOWN`, and an untrusted kit's check `IA-CORE-KIT-UNTRUSTED`. |
 | `scripts/lib/trust.mjs`, `scripts/lib/hygiene.mjs`, `config/trusted-publishers.json` | Which kits may run code (publisher on the list, bytes their recorded release), and the environment allowlist, tree kill and output cap every kit runner's child gets. |
 | `scripts/ceiling.mjs` | `[--root] [--plan] [--task] [--json]`: each task's layer above a provisional foundation (the `ia-method` kit's law); `--task` exits 1 beyond the ceiling and 2 when unknown. |
+| `scripts/exit-evidence.mjs` | `[--root] [--plan] [--task] [--json]`: each closed task's exit evidence, read from the `@observation` records that name it (principle `method-claims-within-evidence`, decision `public-method-report-gate`). Advisory: it exits 0 whenever it produced a report, findings included, so read the capitalised position that starts each line; `--task` exits 2 when the task reads unknown (not evaluated, never evidenced). It never exits 1. |
+| `scripts/method-gate.mjs` | `[--root] [--plan]... [--budget] [--json]`: runs the ceiling and exit-evidence reports and prints what each found, plus how many of its two rules were evaluated. Report only: it exits 0 whatever it finds; exit 2 is bad usage, and `--strict` is refused. |
 | `scripts/ia.mjs` | Runs IA: `IA_CLI_PATH`, else the repository's pinned `@inventarch/cli`, else exactly 3.6.0 through npx; never an `ia` on PATH. |
 | `scripts/bootstrap.mjs` | The SessionStart hook (`startup\|resume\|compact`, 15 s): read-only context inside an IA workspace; at startup only, the account offer and the governance notice; after a compaction, the current task pin. |
 | `scripts/handlers.mjs` | `session\|prompt\|pre\|post\|stop`: the kit handler hooks (SessionStart for every source, UserPromptSubmit, PreToolUse and PostToolUse on edits and shell commands, Stop; off in Codex). Runs the handlers installed kits declare (`handlers.json`, `lib/handlers.mjs`) and, after a write, their `onwrite.json` checks. |
@@ -51,6 +53,29 @@ Delivery checks the optional hosted stage for UX, UI, design-system and brand in
 | `scripts/lib/scratch.mjs` | Scratch capture for kit scripts: copies a workspace's `.ia` and adopted source roots to a temp folder and runs `ia capture` there, with the CLI this plugin resolves. |
 | `scripts/design.mjs` | Bounded JSON-stdin client for all four hosted design offerings. Requires an operator-owned service binding and existing admitted OAuth service token; workspace adoption and runs are explicit. |
 | [`config/kits`](config/kits/README.md) | The kits, as text sources. |
+
+## Repository gate (report only)
+
+`scripts/method-gate.mjs` runs the two method reports over a repository's work records: the ceiling (`ceiling.mjs`) and the exit evidence of closed tasks (`exit-evidence.mjs`). It only reports. It never blocks, so `method-claims-within-evidence` is still not enforced by anything: a later release has to add a blocking step (decision `public-method-report-gate`).
+
+```sh
+node "<plugin>/scripts/method-gate.mjs" --root . --plan <plan identity> --plan <plan identity>
+```
+
+- **Read the last line.** It says how many of the two rules were evaluated, and prints any rule it could not evaluate in capitals (`NOT EVALUATED`, with the reason; the same line goes to stderr). A run that evaluated none checked nothing, whatever its exit code. The JSON (`--json`: `format` `inventarch.method-gate`, `version` 1) carries `evaluated`, `notEvaluated` and a `reason` per rule.
+- **Pass `--plan` for each plan.** With no `--plan` the gate runs each rule once, and a workspace with several plans then reads not evaluated, because the CLI will not choose one. There is no plan discovery. A `--root` that is not a directory exits 2.
+- **Run time.** About 2 to 3 minutes for 30 tasks with an installed CLI, one CLI call per record. Install `@inventarch/cli` in the repository first: the npx fallback is far slower. `--budget <seconds>` (default 1800) leaves whatever has not started when it is spent as not evaluated. Run it before a push or in CI, not before a commit.
+- **In CI.** The gate needs only Node 22 and the plugin's scripts, which import nothing outside Node. Clone the plugin outside the repository's own tree, pinned to the commit of the release tag, not to the tag, which can move. The first release that carries the gate is the `ia` release after 1.5.0; no earlier tag has it.
+
+```sh
+git clone --filter=blob:none --no-checkout https://github.com/inventarch/marketplace "$RUNNER_TEMP/ia-plugin"
+git -C "$RUNNER_TEMP/ia-plugin" sparse-checkout set plugins/ia
+git -C "$RUNNER_TEMP/ia-plugin" checkout <commit of the tag ia-v<version>>
+npm ci                      # installs the repository's pinned @inventarch/cli
+node "$RUNNER_TEMP/ia-plugin/plugins/ia/scripts/method-gate.mjs" --root . --plan <plan identity>
+```
+
+  On a Windows runner call `node` explicitly and quote every path. This catalogue's own CI does not run the gate.
 
 ## Contracts
 

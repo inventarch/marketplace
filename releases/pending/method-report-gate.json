@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Add the exit-evidence report and a report-only method gate",
+  "summary": "Two new scripts read a repository's work records and only report. exit-evidence.mjs lists each closed task as evidenced, exempt, refused, inconclusive, stale, no evidence or unknown, from the observation records that name it. method-gate.mjs runs it with the ceiling report and says how many of its two rules were evaluated. Neither blocks: they exit 0 for findings, so read the position that starts each line. The ia:work skill says how to record evidence in the right order; the README shows the gate in CI.",
+  "plugins": [
+    "ia"
+  ]
+}
