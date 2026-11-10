@@ -45,15 +45,17 @@ QUALIFIED_HOOKS = {
     # suppressible), says once when a repository is governed but no installed kit declares governance handlers, and
     # after a compaction re-injects the current task pin; it reads no credentials and never fetches.
     # public-kit-handlers: scripts/handlers.mjs runs the handlers installed kits declare (handlers.json, and onwrite.json
-    # as tool post handlers) for every SessionStart source, UserPromptSubmit, PreToolUse and PostToolUse on edits and
-    # shell commands, and Stop; a fast silent no-op when no kit declares one, and a pre block is honoured only in a
-    # workspace with .ia/governance.json.
+    # as tool post handlers) for every SessionStart source, UserPromptSubmit, PreToolUse on edits and shell commands,
+    # PostToolUse on edits, shell commands and AskUserQuestion, and Stop; a fast silent no-op when no kit declares one,
+    # and a pre block is honoured only in a workspace with .ia/governance.json. AskUserQuestion reaches post handlers
+    # only, so a kit can witness the person's answers (ia-governance records plan approvals and change acceptances
+    # from them); it can never block or rewrite the question. (Proposed widening, 2026-11-08, for review.)
     'ia': {
         'SessionStart': [('startup|resume|compact', [_handler('bootstrap.mjs', None, 15)]),
                          (None, [_handler('handlers.mjs', 'session', 60)])],
         'UserPromptSubmit': [(None, [_handler('handlers.mjs', 'prompt', 30)])],
         'PreToolUse': [(_EDITS, [_handler('handlers.mjs', 'pre', 30)])],
-        'PostToolUse': [(_EDITS, [_handler('handlers.mjs', 'post', 60)])],
+        'PostToolUse': [(_EDITS + '|AskUserQuestion', [_handler('handlers.mjs', 'post', 60)])],
         'Stop': [(None, [_handler('handlers.mjs', 'stop', 30)])],
     },
 }
