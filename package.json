@@ -19,9 +19,9 @@
     "kits:install": "node plugins/ia/scripts/kit.mjs add inventarch/ia-method-kit . --apply && node plugins/ia/scripts/kit.mjs add inventarch/ia-kb-kit . --apply && node plugins/ia/scripts/kit.mjs add inventarch/ia-authoring-kit . --apply"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.6.5",
     "@inventarch/cli": "3.6.0",
-    "lefthook": "2.1.16"
+    "lefthook": "2.2.2"
   },
   "engines": {
     "node": ">=22.22.0 <23"
