@@ -5,7 +5,7 @@
     says "The authored source boundary for the public InventArch plugin catalogue: the ia plugin and the public method kits it carries."
     answers "Which sources and existing systems describe this catalogue?"
   composition
-    systems [@system workspace-system, @system work-system]
+    systems [@system workspace-system, @system work-system, @system learning-system]
     sources [".ia/src @authored"]
 
 @spec marketplace-front-door

@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-method-kit",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "distribution": "workspace-system/definition/distribution/ia-method-distribution",
   "engine": "^0.1.1",
   "language": [
@@ -40,8 +40,8 @@
   "description": "The IA methodology kit: principles, a law, conventions, a contract with cases, the operating loop and the provisional-foundation ceiling, and one method capability with a four-phase playbook for every public IA record word, plus one over the vocabulary taxonomy, for thinking and operating by the IA methodology (ia-method).",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "900da4e819766e7c93705888eb51491f1b49c1fd",
+    "commit": "46fb19c0b1384cbdee8d690839a93c15d0a483b8",
     "recipe": "ustar-v1",
-    "epoch": 1794182161
+    "epoch": 1794261634
   }
 }

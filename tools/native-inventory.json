@@ -193,6 +193,18 @@
         "darwin"
       ],
       "shard": 1
+    },
+    {
+      "id": "native-method-gate-admission",
+      "file": "plugins/ia/tests/method-gate.test.mjs",
+      "name": "real CLI: the gate reads the shape of ia validate: an admitted workspace runs the reports and a refused one reads not evaluated (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
     }
   ],
   "excluded": [

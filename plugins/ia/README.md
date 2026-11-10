@@ -63,6 +63,7 @@ node "<plugin>/scripts/method-gate.mjs" --root . --plan <plan identity> --plan <
 ```
 
 - **Read the last line.** It says how many of the two rules were evaluated, and prints any rule it could not evaluate in capitals (`NOT EVALUATED`, with the reason; the same line goes to stderr). A run that evaluated none checked nothing, whatever its exit code. The JSON (`--json`: `format` `inventarch.method-gate`, `version` 1) carries `evaluated`, `notEvaluated` and a `reason` per rule.
+- **It checks admission first.** Before the reports run it asks the CLI to validate the workspace (`ia validate --json`). Only a workspace the CLI reports as `admitted` is evaluated; if it is refused, reports any other status, or validate cannot run, both rules read `NOT EVALUATED` with `workspace not admitted: <error codes>, run ia validate` and no report runs, so a refused workspace does not read as closed tasks with no evidence. The JSON carries `admission` (`status`, `errors`). Exit stays 0.
 - **Pass `--plan` for each plan.** With no `--plan` the gate runs each rule once, and a workspace with several plans then reads not evaluated, because the CLI will not choose one. There is no plan discovery. A `--root` that is not a directory exits 2.
 - **Run time.** About 2 to 3 minutes for 30 tasks with an installed CLI, one CLI call per record. Install `@inventarch/cli` in the repository first: the npx fallback is far slower. `--budget <seconds>` (default 1800) leaves whatever has not started when it is spent as not evaluated. Run it before a push or in CI, not before a commit.
 - **In CI.** The gate needs only Node 22 and the plugin's scripts, which import nothing outside Node. Clone the plugin outside the repository's own tree, pinned to the commit of the release tag, not to the tag, which can move. The first release that carries the gate is the `ia` release after 1.5.0; no earlier tag has it.
@@ -75,7 +76,7 @@ npm ci                      # installs the repository's pinned @inventarch/cli
 node "$RUNNER_TEMP/ia-plugin/plugins/ia/scripts/method-gate.mjs" --root . --plan <plan identity>
 ```
 
-  On a Windows runner call `node` explicitly and quote every path. This catalogue's own CI does not run the gate.
+  On a Windows runner call `node` explicitly and quote every path. This catalogue's own CI runs the gate as a report, in `.github/workflows/method-gate.yml`; a repository that ignores its lock, as this one does, restores it first (`npm run kits:install`) so the CLI admits the workspace.
 
 ## Contracts
 
