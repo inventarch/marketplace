@@ -31,7 +31,7 @@ It runs `plugins/ia/scripts/kit.mjs add` for `ia-method`, `ia-kb` and `ia-author
 ## How the repository is organised
 
 - [AGENTS.md](AGENTS.md) holds the working rules: what may ship, the plugin rules, the kit rules and the gates. Read it before changing anything.
-- Every decision has a `@decision` record in [.ia/src/decisions.ia](.ia/src/decisions.ia) and a row in [docs/decisions.md](docs/decisions.md); follow-up work is a `@task` in [.ia/src/work.ia](.ia/src/work.ia), listed in [docs/roadmap.md](docs/roadmap.md). Add the record and the row in the same change. `tools/validate.py` refuses a decision without both.
+- Every decision has a `@decision` record in [.ia/src/decisions.ia](.ia/src/decisions.ia) and a row in [docs/decisions.md](docs/decisions.md). Add the record and the row in the same change. Plans, milestones and tasks are not kept here: InventArch plans this repository's work with its other work records, and open work is in the [GitHub issues](https://github.com/inventarch/marketplace/issues). `tools/validate.py` refuses a decision without both.
 - Every Markdown document is a record's `source` or sits under a spec's `covers` path in [.ia/src/workspace.ia](.ia/src/workspace.ia). `tools/validate.py` refuses a document without one.
 - `plugins/ia` is the core plugin. What a plugin may contain, and how to add or change one, is in [docs/adding-plugins.md](docs/adding-plugins.md).
 - `kits/<kit>` holds each public kit's sources. Edit those, never the copy bundled into `plugins/ia/config/kits`; [kits/README.md](kits/README.md) covers the kit folder and the release steps.
