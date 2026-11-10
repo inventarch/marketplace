@@ -57,7 +57,7 @@ The other record words' capabilities have the effects `read` and `local-write`.
 
 ## Bindings
 
-The core ships no bindings. A repository that works by the IA methodology binds the kit in its `.ia/bindings.json`; the kit's `bindings.json` recommends:
+The core ships no bindings. A repository that works by the IA methodology binds the kit in its `.ia/bindings.json`, and its lock must install the kit first (see "Reach the kit"); the kit's `bindings.json` recommends:
 
 | Key | Capability |
 | --- | --- |
@@ -65,14 +65,14 @@ The core ships no bindings. A repository that works by the IA methodology binds 
 | `work.<word>`, for each of the 30 record words | `<word>-method` |
 | `knowledge.vocabulary` | `method-vocabulary` |
 
-An exact `work.<word>` key wins over `work.*`, so `resolve.mjs --entry work --activity milestone` delivers the `milestone-method` cells and any other Work activity delivers `method-operate`. The activity names are binding keys, not words. From the repository, show what the kit recommends, then write the new keys once the person agrees:
+An exact `work.<word>` key wins over `work.*`, so `resolve.mjs --entry work --activity milestone` delivers the `milestone-method` cells and any other Work activity delivers `method-operate`. The activity names are binding keys, not words. From the repository, show what the kit recommends, then install the kit and write the new keys once the person agrees (`kit.mjs bind` installs the kit with `--install` and previews without `--apply`):
 
 ```
 node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" recommend inventarch/ia-method-kit
-node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" recommend inventarch/ia-method-kit --apply
+node "${CLAUDE_PLUGIN_ROOT}/scripts/kit.mjs" bind ia-method --install --apply
 ```
 
-`--apply` writes only keys the repository does not bind otherwise. To bind one key by hand: `node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set 'work.*' inventarch/ia-method-kit method-operate`.
+`kit.mjs bind` writes only keys the repository does not bind otherwise, and without `--install` it refuses, naming the install command, when the lock does not install the kit. To bind one key by hand: `node "${CLAUDE_PLUGIN_ROOT}/scripts/bind.mjs" set 'work.*' inventarch/ia-method-kit method-operate`.
 
 Probing a design's open questions with the person, and an independent assessment before calling it complete, are available with an InventArch subscription; this kit's `method-provisional-foundation` playbook and the ceiling remain public.
 
@@ -81,7 +81,7 @@ Probing a design's open questions with the person, and an independent assessment
 Run IA through `node "${CLAUDE_PLUGIN_ROOT}/scripts/ia.mjs" <command> ...` (written `ia.mjs` below). It runs `IA_CLI_PATH` when set, else the repository's pinned `@inventarch/cli`, else the pinned version through npx; never an `ia` on PATH.
 
 - `node "${CLAUDE_PLUGIN_ROOT}/scripts/kit.mjs" list` lists the kits the core carries, with the keys each recommends.
-- When the kit is not installed, the resolver reads a restored copy, and the packet's `envelope.kitRoot` names its folder. Add `--root <envelope.kitRoot>` only to reads of the kit's own records; that root admits none of the repository's seats.
+- A key the repository binds runs only a kit its own `.ia/distributions.lock.json` installs (a `packages` row or a package entry counts). When the kit is not installed, the core's resolver and checks refuse, naming the install command (the IA door does too), and the session start names the kit; the packet's `envelope.kitRoot` names the kit's folder once it runs. Add `--root <envelope.kitRoot>` only to reads of the kit's own records; that root admits none of the repository's seats.
 - When it is installed, `ia position` in the repository delivers the kit's rules and cells together with the repository's own records.
 
 The two blocking rules, the law `method-provisional-foundation-ceiling` and the principle `method-claims-within-evidence`, arrive in every packet's `rules`. Honour the rules first, then do what the cells say, then follow the pointers. A cell's `address` is its full locator, for example `ia.mjs read governance-system/definition/procedure/method-operate#orient/Attention`; `ia.mjs inspect <identity> --json` returns every section of a record, including a rule's `requires`.
@@ -90,7 +90,7 @@ Record identities: principles `governance-system/governance/principle/<name>`, t
 
 ## Adopt the kit
 
-Adoption installs `inventarch/ia-method-kit` into a repository's IA workspace, so `ia position` there delivers the kit's rules and cells with the repository's own records, and the repository's work can cite them. Ask the person first: it writes files they commit. The repository must be an IA workspace (`.ia/src`; otherwise `ia init` first, which is the person's call), and its pinned `@inventarch/cli` must be the version the release names.
+The preferred route is `node "${CLAUDE_PLUGIN_ROOT}/scripts/kit.mjs" bind ia-method --install --apply`, which installs the public kits through the public kits package and writes the recommended keys; it needs npm and the registry, and a kit that package does not carry is installed with `kit.mjs add`. Adoption is the vendored route: it installs `inventarch/ia-method-kit` into a repository's IA workspace, so `ia position` there delivers the kit's rules and cells with the repository's own records, and the repository's work can cite them. Ask the person first: it writes files they commit. The repository must be an IA workspace (`.ia/src`; otherwise `ia init` first, which is the person's call), and its pinned `@inventarch/cli` must be the version the release names.
 
 ```
 node "${CLAUDE_PLUGIN_ROOT}/scripts/kit.mjs" adopt ia-method <repository> --dry-run

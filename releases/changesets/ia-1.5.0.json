@@ -1,0 +1,15 @@
+{
+  "format": "inventarch-marketplace.changeset.v1",
+  "plugin": "ia",
+  "version": "1.5.0",
+  "previous": "1.4.0",
+  "bump": "minor",
+  "notes": [
+    {
+      "id": "move-to-ia-3-6-0",
+      "bump": "minor",
+      "title": "Move to IA 3.6.0",
+      "summary": "The IA door is now `@inventarch/mcp-door` 3.6.0, and it refuses a kit the repository binds but its `.ia/distributions.lock.json` does not install; the remedy is `node <ia plugin>/scripts/kit.mjs bind <kit> --install --apply`, or `kit.mjs add` for a kit `@inventarch/public-kits` does not carry. In a repository that pins `@inventarch/cli`, `kit.mjs add` and `bind --install` need that pin to be 3.6.0. Every IA CLI the plugin starts gets `IA_NO_HANDOFF=1`, so the CLI the plugin chose is the CLI that runs, and from an installed `@inventarch/cli` the plugin runs the CLI's own `main` entry (`dist/main.js`) rather than 3.6.0's hand-off launcher. With no consumer workspace named, the closure path follows IA's repository default, except for a distribution this repository authors with packaged workspace roots, where the default must be one of them. The bundled kits are re-cut on CLI 3.6.0: `ia-method` 0.7.3, `ia-kb` 0.9.4 and `ia-authoring` 0.1.4, carried by `@inventarch/public-kits` 1.0.4."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ RUNS = [
     'git config --global user.email "gates-ci@example.invalid"',
     'npm ci',
     'node tools/run-native-tests.mjs --shard ${{ matrix.shard }}',
-    'node tools/run-native-tests.mjs --verify native-reports/*',
+    'node tools/run-native-tests.mjs --verify native-reports',
 ]
 
 # Decision public-ci-matrix.
@@ -77,7 +77,7 @@ class GatesWorkflowTests(unittest.TestCase):
     def test_native_lane_has_exact_installed_cli(self):
         self.assertIn('IA_CORE_TEST_CLI: ${{ github.workspace }}/node_modules/@inventarch/cli/dist/main.js', self.text)
         inventory = json.loads((ROOT / 'tools/native-inventory.json').read_text(encoding='utf-8'))
-        self.assertEqual({case['id'] for case in inventory['cases']}, {'native-releases', 'MI-T04', 'MI-T05', 'native-closure-ownership', 'native-closure-plural-workspaces', 'native-closure-capability-roots', 'native-closure-missing-dependencies', 'native-closure-retention-execution', 'native-closure-executor-refusal', 'native-closure-validation-before-publish', 'native-closure-historical-refusal', 'native-closure-cwd-refusal', 'native-carried-ia-kb', 'native-method-position'})
+        self.assertEqual({case['id'] for case in inventory['cases']}, {'native-releases', 'MI-T04', 'MI-T05', 'native-closure-ownership', 'native-closure-plural-workspaces', 'native-closure-capability-roots', 'native-closure-missing-dependencies', 'native-closure-retention-execution', 'native-closure-executor-refusal', 'native-closure-validation-before-publish', 'native-closure-historical-refusal', 'native-closure-cwd-refusal', 'native-carried-ia-kb', 'native-method-position', 'native-exit-evidence-positions', 'native-exit-evidence-stale'})
         self.assertEqual(len({case['id'] for case in inventory['cases']}), len(inventory['cases']))
         for case in inventory['cases']:
             self.assertEqual(case['mode'], 'native')
@@ -164,6 +164,12 @@ class ReleasePullRequestWorkflowTests(unittest.TestCase):
         self.assertIn('Authored by InventArch', self.text)
         self.assertIn("node-version: '22.22.0'", self.text)
         pinned_actions(self, self.text)
+
+    def test_new_release_pull_requests_are_drafts_and_updates_preserve_readiness(self):
+        self.assertIn('gh pr create --draft --head release/next --base main', self.text)
+        self.assertEqual(self.text.count('gh pr create '), 1)
+        self.assertIn('gh pr edit "$number" --title', self.text)
+        self.assertNotIn('gh pr ready', self.text)
 
 
 class ReleaseWorkflowTests(unittest.TestCase):

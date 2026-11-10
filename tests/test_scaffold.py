@@ -395,8 +395,8 @@ class ScaffoldTests(unittest.TestCase):
         def door(value): return value['mcpServers']['ia']
         def connector(value): return value['mcpServers']['inventarch']
         edits = {
-            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.5.0']),
-            'cmd /c npx': lambda v: door(v).update(command='cmd', args=['/c', 'npx', '-y', '@inventarch/mcp-door@3.5.0']),
+            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.6.0']),
+            'cmd /c npx': lambda v: door(v).update(command='cmd', args=['/c', 'npx', '-y', '@inventarch/mcp-door@3.6.0']),
             'other script': lambda v: door(v).update(args=['${CLAUDE_PLUGIN_ROOT}/scripts/resolve.mjs']),
             'extra argument': lambda v: door(v)['args'].append('--root'),
             'shell command': lambda v: door(v).update(command='bash'),
@@ -429,7 +429,7 @@ class ScaffoldTests(unittest.TestCase):
         def door(value): return value['mcpServers']['ia']
         edits = {
             'claude placeholder': lambda v: door(v).update(args=['${CLAUDE_PLUGIN_ROOT}/scripts/door.mjs']),
-            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.5.0']),
+            'bare npx': lambda v: door(v).update(command='npx', args=['-y', '@inventarch/mcp-door@3.6.0']),
             'other script': lambda v: door(v).update(args=['./scripts/resolve.mjs']),
             'no cwd': lambda v: door(v).pop('cwd'),
             'second server': lambda v: v['mcpServers'].update(extra={'command': 'npx', 'args': ['-y', 'x']}),
@@ -615,6 +615,12 @@ class ScaffoldTests(unittest.TestCase):
         self.plant('docs/unrecorded.md', '# Synthetic\n')
         with self.assertRaisesRegex(ValueError, 'document without a record'):
             validate(self.root)
+
+    def test_installed_kit_state_is_not_a_document_without_a_record(self):
+        # Ignored by Git: npm run kits:install writes kit assets under .ia/distributions/ and vendor/ia/.
+        self.plant('.ia/distributions/store/abc/assets/note.md', '# Installed kit asset\n')
+        self.plant('vendor/ia/note.md', '# Vendored\n')
+        validate(self.root)
 
     def test_skill_without_trigger_refuses(self):
         folder = self.root / 'plugins/ia/skills/no-trigger'

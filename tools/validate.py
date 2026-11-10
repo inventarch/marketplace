@@ -342,6 +342,8 @@ def record_coverage(root):
         rel = path.relative_to(root).as_posix()
         if {'.git', 'node_modules', '.scratch', 'build', 'review-private'} & set(rel.split('/')):
             continue
+        if rel.startswith(('.ia/distributions/', 'vendor/ia/')):
+            continue  # installed kit state, ignored by Git (decision public-cli-3-6-0-own-lock)
         require(rel in sources or any(rel == c or (c.endswith('/') and rel.startswith(c)) for c in covers),
                 'document without a record (add a source or covers path): ' + rel)
 
@@ -525,7 +527,7 @@ def validate(root=ROOT):
             safe_bytes(root, source)
     record_coverage(root)
     host_run_checks(root)
-    require(pins['released']['cli'] == '3.5.0' and 'pending' not in pins, 'release standing: sources.lock.json pins the released 3.5.0 and no unreleased build')
+    require(pins['released']['cli'] == '3.6.0' and 'pending' not in pins, 'release standing: sources.lock.json pins the released 3.6.0 and no unreleased build')
     schema_check(load(root / 'examples/review-dossier.json'), load(root / 'schemas/review-dossier.schema.json'))
     return {'status':'passed', 'plugins':len(PLUGINS), 'selectedFiles':len(entries), 'skills':skills,
             'hostQualified':False, 'policyRatified':False}

@@ -21,7 +21,7 @@
 import { realpathSync } from 'node:fs';
 import { resolveCli, runIa } from './lib/cli.mjs';
 import { readBindings, RENAMED, renamedMessage, selectBinding } from './lib/binding.mjs';
-import { assertPinnedKit, findKit, implementationDigest, installedKit, kitBindings, kitChecks, kitDelivery, listKits, readRoot, sourcesDigest } from './lib/kit.mjs';
+import { assertPinnedKit, findKit, implementationDigest, installedKit, kitBindings, kitChecks, kitDelivery, listKits, readRoot, requireKitInstalled, sourcesDigest } from './lib/kit.mjs';
 import { assemblePacket } from './lib/packet.mjs';
 import { closureStore } from './lib/home.mjs';
 import { kitUpdate, PinError, pinRootFor, readPin, writePin } from './lib/pin.mjs';
@@ -130,6 +130,10 @@ async function main() {
   if (workspaceRoot && unbound) throw new ResolveError(`${workspaceRoot} is an IA workspace, and its .ia/bindings.json chooses the method: bind the kit there (bind.mjs set ${options.entry}.${options.activity} ${options.kit} ${options.capability}, or bind.mjs recommend ${options.kit} --apply for the keys it recommends) instead of naming it with --kit`, 'IA-CORE-UNBOUND-IN-WORKSPACE');
   const activityKey = `${options.entry}.${options.activity}`;
   const binding = unbound ? { kit: options.kit, capability: options.capability, ...(options.profile ? { profile: options.profile } : {}), key: activityKey, via: 'unbound' } : bound(workspaceRoot, options.entry, options.activity);
+  // A bound key runs only a kit the repository's own lock installs, whatever copy of the kit is carried, held in the IA
+  // home or retained by a pin. The refusal comes before the qualified route, before the CLI is resolved and before
+  // anything is retained or written. The unbound route (outside a workspace, --kit with --capability) has no lock.
+  if (!unbound) requireKitInstalled(workspaceRoot, { id: binding.kit });
   if (options.qualified) {
     const cli = resolveCli(workspaceRoot ?? startRoot, { cliPath: options.cli, allowNpx: false });
     printJson(await resolveQualifiedMethod({ binding, activityKey, workspaceRoot, cli, pinRoot, options, storeRoot: closureStore() }));

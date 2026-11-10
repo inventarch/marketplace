@@ -120,10 +120,12 @@ export function resolveIa(root, explicit, { quiet = false } = {}) {
 
 // Runs the IA CLI without a shell and returns its stdout; a nonzero exit
 // throws, with the output on the error (execFileSync's stdout and stderr).
+// IA_NO_HANDOFF=1 keeps the resolved CLI the one that runs (from 3.6.0 the CLI
+// otherwise hands its command to the repository's installed CLI).
 export function invokeIa(cli, argv, options = {}) {
   const ia = resolveIa(process.cwd(), cli, { quiet: true });
   const [command, ...prefix] = ia.argv;
-  return execFileSync(command, [...prefix, ...argv], { encoding: 'utf8', windowsHide: true, maxBuffer: 16 * 1024 * 1024, timeout: 120000, stdio: ['ignore', 'pipe', 'pipe'], ...options });
+  return execFileSync(command, [...prefix, ...argv], { encoding: 'utf8', windowsHide: true, maxBuffer: 16 * 1024 * 1024, timeout: 120000, stdio: ['ignore', 'pipe', 'pipe'], ...options, env: { ...(options.env ?? process.env), IA_NO_HANDOFF: '1' } });
 }
 
 // Accepts the ia-snapshot-1 that `ia capture` writes, and the older

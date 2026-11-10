@@ -12,7 +12,7 @@ The main system, `ia-authoring`, holds the entry capability `authoring-deliver`,
 
 This kit replaces two retired kits, `inventarch/host-authoring-kit` and `inventarch/catalogue-authoring-kit`, whose records it carries as its host and catalogue parts. Their old releases remain in the history of the catalogue they came from.
 
-Version 0.1.1. Language base `inventarch/language ^3.2.0`, packed with `@inventarch/cli 3.5.0`. Guidance, checks and scripts only: it grants no authority and installs no hook. Licence Apache-2.0.
+Version 0.1.4. Language base `inventarch/language ^3.2.0`, packed with `@inventarch/cli 3.6.0`. Guidance, checks and scripts only: it grants no authority and installs no hook. Licence Apache-2.0.
 
 ## Layout
 
@@ -41,7 +41,7 @@ The scripts import the kit's own scratch-capture helper (`./lib/scratch.mjs`), s
 
 `delivery.json` declares every capability whole: the core's resolver delivers each one's playbooks, every cell in phase order, whatever `ia position` returns at the entry's key.
 
-`bindings.json` recommends these keys (`bind.mjs recommend inventarch/ia-authoring-kit` shows them, `--apply` writes those the repository does not bind yet):
+`bindings.json` recommends these keys (`bind.mjs recommend inventarch/ia-authoring-kit` lists them read-only; `kit.mjs bind inventarch/ia-authoring-kit --install --apply` installs the kit and writes those the repository does not bind yet):
 
 | Key | Capability |
 | --- | --- |

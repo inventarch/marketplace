@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "patch",
-  "title": "Retain workflow metadata in installed kit archives",
-  "summary": "Public kit archives now include binding recommendations, full-procedure delivery settings and check metadata so CLI-only setup can discover and use the same workflows as the plugin.",
-  "plugins": [
-    "ia"
-  ]
-}

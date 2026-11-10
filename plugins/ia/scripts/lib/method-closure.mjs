@@ -87,7 +87,7 @@ function validateManifest(manifest, digest) {
   const { closureSha256, ...body } = manifest;
   if (sha(canonical(body)) !== closureSha256) fail('Closure envelope digest differs');
   if (!manifest.kit?.id || !manifest.kit.version || !manifest.distributionRoots?.length || !Array.isArray(manifest.packagedWorkspaces) || !Array.isArray(manifest.systems)) fail('Incomplete method closure');
-  if (manifest.native?.cliVersion !== '3.5.0' || manifest.native.languageId !== 'inventarch/language' || manifest.native.languageVersion !== '3.2.0') unsupported('Unsupported native cohort');
+  if (manifest.native?.cliVersion !== '3.6.0' || manifest.native.languageId !== 'inventarch/language' || manifest.native.languageVersion !== '3.2.0') unsupported('Unsupported native cohort');
   for (const value of [manifest.native.languageArchiveSha256, manifest.release?.archiveSha256, manifest.release?.manifestSha256, manifest.release?.sourcesSha256]) if (!HEX.test(value ?? '')) fail('Invalid release digest');
   if (!/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(manifest.release.sourceCommit ?? '') || !manifest.release.sourceRepository) fail('Invalid release provenance');
   if (!Array.isArray(manifest.files) || manifest.files.length > LIMITS.files || !Array.isArray(manifest.checks) || manifest.checks.length > LIMITS.checks || !Array.isArray(manifest.capabilities) || manifest.capabilities.length > LIMITS.capabilities) fail('Closure inventory limit or shape refused');
@@ -277,7 +277,7 @@ export async function createMethodClosure({ kit, cli, workspaceContracts = {}, c
       format: FORMAT, kit: { id: descriptor.id, version: descriptor.version }, plugin: { id: pluginManifest.name, version: pluginManifest.version },
       distributionRoots: graph.distributionRoots, packagedWorkspaces: graph.packagedWorkspaces, systems: graph.systems,
       release: { archiveSha256: packed.archiveDigest, manifestSha256: packed.manifestDigest, sourcesSha256: release.sources, sourceRepository: descriptor.source?.repository, sourceCommit: descriptor.source?.commit },
-      native: { cliVersion: '3.5.0', languageId: 'inventarch/language', languageVersion: '3.2.0', languageArchiveSha256: runtime.identity.nativeLanguageArchive },
+      native: { cliVersion: '3.6.0', languageId: 'inventarch/language', languageVersion: '3.2.0', languageArchiveSha256: runtime.identity.nativeLanguageArchive },
       runtimeIdentity: runtime.identity, files, checks, capabilities: graph.capabilities,
     };
     const digest = sha(canonical(body)), manifest = { ...body, closureSha256: digest };

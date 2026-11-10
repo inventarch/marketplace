@@ -5,7 +5,8 @@
 // it cannot drift from them.
 //   node tools/kit.mjs package --check [--built]   the committed package.json is the claim the bundled kits make,
 //                                                  and the built files, when present (required with --built), are theirs
-//   node tools/kit.mjs package --write             rewrite package.json's ia.kits from the bundled kits, then build
+//   node tools/kit.mjs package --write             rewrite package.json's ia.kits from the bundled kits and the core's
+//                                                  config/public-kits.json from its version, then build
 //   node tools/kit.mjs package --build             build the files, refusing a stale package.json (the publish workflow)
 // package.json is committed: its version is the maintainer's (strict semver,
 // bumped whenever a carried kit release changes; tools/consistency.py --base
@@ -35,6 +36,9 @@ import { findKit, packDependencies, packRelease, readReleases, sourcesDigest } f
 export const PACKAGE_DIR = 'packages/public-kits';
 export const PACKAGE_NAME = '@inventarch/public-kits';
 const BUNDLED = 'plugins/ia/config/kits';
+// The core's copy of the package's name and version (decision public-cli-3-6-0-install-route): a plugin installed on its
+// own cannot read packages/. The kits the package carries are the bundled kits, so the file names none.
+export const PLUGIN_CONFIG = 'plugins/ia/config/public-kits.json';
 const COPIED = { 'index.json': 'kits/index.json', LICENSE: 'LICENSE', NOTICE: 'NOTICE' };
 const BUILT = ['index.json', 'kits', 'archives', 'LICENSE', 'NOTICE'];
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/;
@@ -92,6 +96,16 @@ export function packageManifest(root, version) {
   };
 }
 
+// The text the core's config/public-kits.json should hold for a package version.
+export const pluginConfigText = version => text({ package: PACKAGE_NAME, version });
+
+function pluginConfigProblems(root, version) {
+  const path = join(root, PLUGIN_CONFIG);
+  if (!existsSync(path)) return [`${PLUGIN_CONFIG} is missing; run node tools/kit.mjs package --write`];
+  if (readFileSync(path, 'utf8').replace(/\r\n/g, '\n') !== pluginConfigText(version)) return [`${PLUGIN_CONFIG} is not ${PACKAGE_NAME}@${version}, the package.json's name and version; run node tools/kit.mjs package --write`];
+  return [];
+}
+
 function committed(root) {
   const path = join(root, PACKAGE_DIR, 'package.json');
   if (!existsSync(path)) return null;
@@ -109,6 +123,7 @@ export function manifestProblems(root) {
     if (current.json[key] !== undefined) problems.push(`${PACKAGE_DIR}/package.json declares ${key}; the package has no scripts, dependencies, entry points or exports and is published`);
   }
   if (current.text !== text(packageManifest(root, version))) problems.push(`${PACKAGE_DIR}/package.json is not the claim the bundled kits make (ia.kits, or a generated field, differs); run node tools/kit.mjs package --write, and bump its version when a carried release changed`);
+  problems.push(...pluginConfigProblems(root, version));
   return problems;
 }
 
@@ -221,6 +236,9 @@ export function packageMain(argv, root, out = t => process.stdout.write(t), err 
       const want = text(packageManifest(root, version));
       mkdirSync(join(root, PACKAGE_DIR), { recursive: true });
       if (current?.text !== want) writeFileSync(join(root, PACKAGE_DIR, 'package.json'), want);
+      const config = join(root, PLUGIN_CONFIG);
+      mkdirSync(dirname(config), { recursive: true });
+      if (!existsSync(config) || readFileSync(config, 'utf8').replace(/\r\n/g, '\n') !== pluginConfigText(version)) writeFileSync(config, pluginConfigText(version));
       out(`${PACKAGE_DIR}/package.json ${current?.text === want ? 'unchanged' : 'written'} (version ${version}${current && current.text !== want ? '; bump it if a carried release changed' : ''})\n`);
     }
     build(root, { out });

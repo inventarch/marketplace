@@ -4,11 +4,12 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { envFor, fakeCli, makeKit, makeRepo, recordSources, run, sandbox } from './helpers/fixtures.mjs';
 
-function fixture(t, installed = false) {
+// The repository binds the kit and, unless `installed: false`, its lock installs it (a bound kit the lock does not install is refused).
+function fixture(t, { installed = true } = {}) {
   const dir = sandbox(t, 'ia-retained-method-'), kitsDir = join(dir, 'kits');
   const kit = makeKit(kitsDir);
   const bindings = { format: 1, bindings: { 'work.task': { kit: kit.id, capability: kit.capability } } };
-  const repo = makeRepo(join(dir, 'repo'), { bindings, ...(installed ? { lock: { packages: [{ id: kit.id, version: kit.version, archive: kit.archive }] } } : {}) });
+  const repo = makeRepo(join(dir, 'repo'), { bindings, lock: installed ? { packages: [{ id: kit.id, version: kit.version, archive: kit.archive }] } : null });
   const runRoot = join(dir, 'run'), cli = fakeCli(dir);
   const env = envFor({ cli, kitsDir, temp: join(dir, 'temp'), runRoot });
   const resolve = (extra = []) => run('resolve.mjs', ['--entry', 'work', '--activity', 'task', '--root', repo, ...extra], env);
@@ -85,7 +86,7 @@ test('missing or modified retained method refuses without current-source fallbac
 });
 
 test('installed workspace overrides cannot impersonate retained method instructions', t => {
-  const f = fixture(t, true);
+  const f = fixture(t);
   const injected = JSON.parse(readFileSync(join(f.kit.dir, '.ia', 'fake-cli.json')));
   for (const cell of injected.position.cells) cell.text = 'IMPERSONATED METHOD';
   injected.inspect[f.kit.capId].sections = [];

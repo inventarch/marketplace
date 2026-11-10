@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.6.0
+
+Add the exit-evidence report and a report-only method gate.
+
+- **Add the exit-evidence report and a report-only method gate.** Two new scripts read a repository's work records and only report. exit-evidence.mjs lists each closed task as evidenced, exempt, refused, inconclusive, stale, no evidence or unknown, from the observation records that name it. method-gate.mjs runs it with the ceiling report and says how many of its two rules were evaluated. Neither blocks: they exit 0 for findings, so read the position that starts each line. The ia:work skill says how to record evidence in the right order; the README shows the gate in CI.
+
+## 1.5.0
+
+Move to IA 3.6.0.
+
+- **Move to IA 3.6.0.** The IA door is now `@inventarch/mcp-door` 3.6.0, and it refuses a kit the repository binds but its `.ia/distributions.lock.json` does not install; the remedy is `node <ia plugin>/scripts/kit.mjs bind <kit> --install --apply`, or `kit.mjs add` for a kit `@inventarch/public-kits` does not carry. In a repository that pins `@inventarch/cli`, `kit.mjs add` and `bind --install` need that pin to be 3.6.0. Every IA CLI the plugin starts gets `IA_NO_HANDOFF=1`, so the CLI the plugin chose is the CLI that runs, and from an installed `@inventarch/cli` the plugin runs the CLI's own `main` entry (`dist/main.js`) rather than 3.6.0's hand-off launcher. With no consumer workspace named, the closure path follows IA's repository default, except for a distribution this repository authors with packaged workspace roots, where the default must be one of them. The bundled kits are re-cut on CLI 3.6.0: `ia-method` 0.7.3, `ia-kb` 0.9.4 and `ia-authoring` 0.1.4, carried by `@inventarch/public-kits` 1.0.4.
+
+## 1.4.0
+
+Bind installs the kits it binds; Bound execution requires an installed kit; Install your bound kits before the IA 3.6.0 release; Retain workflow metadata in installed kit archives; The session bootstrap no longer routes every request through a lane.
+
+- **Bind installs the kits it binds.** kit.mjs bind now refuses a kit the repository lock does not install, on a preview too and with --key, and writes nothing; --install installs it first. For the kits `@inventarch/public-kits` carries, --install runs `ia install --package @inventarch/public-kits@<version> --apply --yes` (a workspace with no lock gets a language-only lock and a restore first), which needs npm and the registry; any other kit installs as kit.mjs add does. The refusal names the remedy for the kit: the package route for the kits the package carries, kit.mjs add for the rest. The session start names every bound kit the lock does not install. The bundled kits' guidance now teaches `kit.mjs bind <kit> --install --apply` as the way to install and bind a kit, and says a bound kit the lock does not install is refused with `IA-CORE-KIT-NOT-INSTALLED`: the `ia-authoring` `convention` and `playbook`, the `ia-authoring-record` installed-kits `convention`, the `ia-kb` `IA-CORE-NO-METHOD` remedy and `case` records, and the `ia-method` README.
+- **Bound execution requires an installed kit.** resolve.mjs and check.mjs now refuse a kit the repository binds but its own lock does not install, with IA-CORE-KIT-NOT-INSTALLED, before anything is retained, restored, written or run. This holds for the ordinary and the qualified routes (--qualified, --qualified-input), and a copy the plugin carries, the IA home holds or a task pin retained never stands in for the lock. A kit row of an npm package carrier in the lock's entries counts as installed, as it does for the IA runtime; a pin older than the installed version keeps running from its retained bytes. The refusal also carries the kit's canonical id as `error.kit`, and a binding written with a kit's folder name (such as `ia-authoring`) is guarded as the kit it names. --kit with no binding and the unbound resolve outside a workspace are unchanged.
+- **Install your bound kits before the IA 3.6.0 release.** The next release of the `ia` plugin moves to IA 3.6.0, whose door runs a kit the repository binds only when the repository's own `.ia/distributions.lock.json` installs it. Run `kit.mjs bind <kit> --install --apply` now for each kit you bind (the session start names any that are missing); a repository that installs on this release keeps working at the next. The bundled `ia-authoring` 0.1.3 and `ia-kb` 0.9.3 are patch re-cuts whose guidance teaches that route; `ia-method` stays at 0.7.2, because its archive is unchanged and only its README text changed.
+- **Retain workflow metadata in installed kit archives.** Public kit archives now include binding recommendations, full-procedure delivery settings and check metadata so CLI-only setup can discover and use the same workflows as the plugin.
+- **The session bootstrap no longer routes every request through a lane.** The SessionStart context says reading, building, testing, editing and submitting a change need no binding, plugin, door or private access, routes through the lanes only when a task needs a method, and refuses only the operation that needs one. It carries a one-line ia-bootstrap marker and a sentence naming what needs a bound method or private authority, both kept however long the bindings, the notices or the plugin path are (the whole context stays within 2,500 characters), and names a locked kit the plugin does not carry.
+
 ## 1.3.0
 
 Bundle the InventArch account connector.

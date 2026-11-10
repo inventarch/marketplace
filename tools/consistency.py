@@ -34,7 +34,7 @@ from validate import PLUGINS, ROOT
 
 # What .gitignore keeps out, for a copy that is not a Git checkout (the tests).
 IGNORED_DIRS = {'.git', 'node_modules', '__pycache__', '.scratch', 'build', 'review-private', '.qualification'}
-IGNORED_PATHS = ('.ia/work/', '.ia/distributions/', '.ia/distributions.lock.json', '.env',
+IGNORED_PATHS = ('.ia/work/', '.ia/distributions/', '.ia/distributions.lock.json', 'vendor/ia/', '.env',
                  'packages/public-kits/index.json', 'packages/public-kits/kits/', 'packages/public-kits/archives/',
                  'packages/public-kits/LICENSE', 'packages/public-kits/NOTICE')
 PUBLIC_KITS = 'packages/public-kits/package.json'

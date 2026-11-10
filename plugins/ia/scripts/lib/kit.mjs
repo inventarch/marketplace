@@ -40,7 +40,7 @@ export const DEFAULT_KITS_DIR = fileURLToPath(new URL('../../config/kits/', impo
 export const kitsDir = (env = process.env) => (env.IA_CORE_KITS_DIR ? resolve(env.IA_CORE_KITS_DIR) : DEFAULT_KITS_DIR);
 
 export class KitError extends Error {
-  constructor(message, code = 'IA-CORE-KIT') { super(message); this.code = code; }
+  constructor(message, code = 'IA-CORE-KIT', extra = {}) { super(message); this.code = code; Object.assign(this, extra); }
 }
 
 const TEXT = /\.(?:ia|json|md|mjs|txt)$/i;
@@ -229,6 +229,12 @@ export function findKit(ref, dir) {
   const kit = kits.find(k => k.id === ref) ?? kits.find(k => k.folder === ref);
   if (!kit) throw new KitError(`no kit ${ref} is carried by this plugin or installed in the IA home; known: ${kits.map(k => k.id).join(', ') || 'none'}`, 'IA-CORE-KIT-UNKNOWN');
   return kit;
+}
+
+// The canonical id of a kit reference: the id of the carried kit findKit resolves it to (an id or a folder alias),
+// or the reference itself when no carried kit answers it.
+export function canonicalKitId(ref) {
+  try { return findKit(ref).id; } catch { return ref; }
 }
 
 // Does a version satisfy a dependency range? Exact versions, ^, ~, >= and *.
@@ -605,14 +611,193 @@ export function readLock(root) {
   return JSON.parse(readFileSync(lockPath, 'utf8'));
 }
 
-// The installed kit, if any: the lock entry for the kit's id.
+// The kit rows of the lock: its `packages` rows, then the kit rows of every package
+// carrier in `entries` (kind: 'package'), which the engine installs as ordinary
+// releases. Each is { via: 'package' | 'entry', row }.
+function lockedKitRows(root) {
+  const lock = readLock(root);
+  const rows = (lock?.packages ?? []).map(row => ({ via: 'package', row }));
+  for (const entry of Array.isArray(lock?.entries) ? lock.entries : []) {
+    if (entry?.kind !== 'package' || !Array.isArray(entry.kits)) continue;
+    for (const row of entry.kits) if (row && typeof row.id === 'string') rows.push({ via: 'entry', row });
+  }
+  return rows;
+}
+
+// The installed kit, if any: the lock's row for the kit's id, from `packages` or from
+// a package carrier's `entries`.
 export function installedKit(root, kitId) {
-  return (readLock(root)?.packages ?? []).find(p => p.id === kitId);
+  return lockedKitRows(root).find(({ row }) => row.id === kitId)?.row;
 }
 
 // Every installed package other than the language base: the kits a workspace carries.
 export function installedKits(root) {
-  return (readLock(root)?.packages ?? []).filter(p => p.id !== 'inventarch/language').map(p => ({ id: p.id, version: p.version, archive: p.archive }));
+  return lockedKitRows(root).filter(({ row }) => row.id !== 'inventarch/language').map(({ row }) => ({ id: row.id, version: row.version, archive: row.archive }));
+}
+
+// The lock's row for the kit and where it came from, or null when no row names it.
+export function kitInstallation(root, kitId) {
+  const id = canonicalKitId(kitId);
+  const found = lockedKitRows(root).find(({ row }) => row.id === id);
+  return found ? { via: found.via, version: found.row.version, archive: found.row.archive ?? null } : null;
+}
+
+// Presence: a repository-bound method runs a kit only while the repository's own lock
+// installs it. Any row naming the kit counts, at any version and archive: a task pin
+// runs its own retained bytes, which may be older than the version the lock now
+// installs. A kit no row names refuses before anything is retained or run, and
+// nothing answers for it from another copy.
+// A folder alias names the kit it resolves to, as findKit reads it; an unknown reference stays as given. An
+// unreadable or corrupt lock propagates from here as its own error, never as not-installed.
+export function requireKitInstalled(root, kit) {
+  const id = canonicalKitId(kit.id);
+  if (kitInstallation(root, id) === null) throw new KitError(`kit ${id} is bound by this repository but its lock does not install it; ${installRemedy(id, process.env, root)}, then resolve again`, 'IA-CORE-KIT-NOT-INSTALLED', { kit: id });
+}
+
+// The public-kits package the core installs the kits it carries from (decision
+// public-cli-3-6-0-install-route): config/public-kits.json holds its name and
+// version only; the kits it carries are the ones the plugin carries. IA_CORE_PUBLIC_KITS points at
+// another file (the tests build one at runtime); it is read only when IA_CORE_KITS_DIR is set too, and
+// shipped use sets neither. A missing or malformed file is null, never an error.
+export const PUBLIC_KITS_FILE = fileURLToPath(new URL('../../config/public-kits.json', import.meta.url));
+export function publicKitsPackage(env = process.env) {
+  try {
+    const data = JSON.parse(readFileSync(env.IA_CORE_PUBLIC_KITS && env.IA_CORE_KITS_DIR ? resolve(env.IA_CORE_PUBLIC_KITS) : PUBLIC_KITS_FILE, 'utf8'));
+    if (typeof data?.package !== 'string' || !/^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/.test(data.package)) return null;
+    if (typeof data.version !== 'string' || !/^\d+\.\d+\.\d+$/.test(data.version)) return null;
+    return { name: data.package, version: data.version, spec: `${data.package}@${data.version}` };
+  } catch { return null; }
+}
+
+// The kit ids the package carries: the kits in this plugin's own kit folder.
+function packageKitIds(env = process.env) {
+  try { return new Set(listKits(kitsDir(env)).map(k => k.id)); } catch { return new Set(); }
+}
+
+// Does the public-kits package carry the kit? Needs a readable manifest and the kit among the plugin's own.
+export function packageCarries(kitId, env = process.env) {
+  return publicKitsPackage(env) !== null && packageKitIds(env).has(canonicalKitId(kitId));
+}
+
+// The kits the package carries that the lock installs as direct `packages` rows. Such a row sits ahead of the package
+// entry, so bind --install refuses while one exists. Never throws.
+export function shadowingRows(root, env = process.env) {
+  try {
+    const carried = packageKitIds(env);
+    return (readLock(root)?.packages ?? []).filter(p => p?.id !== LANGUAGE_ID && carried.has(p?.id)).map(p => p.id);
+  } catch { return []; }
+}
+
+// How a kit gets installed: 'package' (bind --install through the public-kits package) or 'add' (kit.mjs add), for a kit
+// the package does not carry, with no manifest, or while a direct row shadows the package entry. Never throws.
+export function installRoute(kitId, root = null, env = process.env) {
+  try {
+    if (!packageCarries(kitId, env)) return 'add';
+    return root && shadowingRows(root, env).length ? 'add' : 'package';
+  } catch { return 'add'; }
+}
+
+// How to install a kit a repository needs, in words. Never throws.
+export function installRemedy(kitId, env = process.env, root = null) {
+  const pkg = publicKitsPackage(env);
+  if (pkg && installRoute(kitId, root, env) === 'package') return `run kit.mjs bind ${kitId} --install --apply (or ia install --package ${pkg.spec} --apply --yes)`;
+  return `run kit.mjs add ${kitId} --apply (or ia install ${kitId})`;
+}
+
+const LANGUAGE_ID = 'inventarch/language';
+// Installs a kit into the IA workspace at root so a binding to it can run (kit.mjs bind --install).
+// - The kit is installed already (any lock row names it): nothing runs, { already: true }.
+// - The public-kits package carries it: with no lock, seed a language-only lock from a carried kit's own and
+//   `ia restore`; then `ia install --package <package>@<version> --apply --yes`, which installs every kit the package
+//   carries; the kit must then be installed through the package entry. A lock that already holds a `packages` row for a
+//   kit the package carries is refused first (that row would shadow the entry); an existing lock is never seeded over.
+// - Any other kit: adopt, the same as kit.mjs add.
+// Without apply nothing runs or is written: the result lists the commands. A definite CLI refusal restores the lock and
+// the active generation as they were (and removes a lock and generation this call seeded); a command that did not exit
+// on its own, or an exit that changed nothing we can account for, refuses IA-CORE-INSTALL-UNCERTAIN and removes nothing.
+export function installForBind(root, kit, { apply = false, cli, env = process.env, installTimeoutMs } = {}) {
+  const id = canonicalKitId(kit.id);
+  if (kitInstallation(root, id) !== null) return { kit: id, already: true, route: 'installed', added: [], commands: [], applied: false };
+  const pkg = publicKitsPackage(env);
+  if (!pkg || !packageKitIds(env).has(id)) {
+    const release = kit.latest;
+    if (!apply) return { kit: id, already: false, route: 'adopt', added: [], commands: [`ia install ${id}${release ? `@${release.version}` : ''} --catalog vendor/ia/catalog.json --apply --yes`], applied: false };
+    const done = adopt(root, kit, { cli, installTimeoutMs });
+    return { kit: id, already: Boolean(done.already), route: 'adopt', added: done.already ? [] : [{ kit: id, version: done.version }], commands: done.requests ?? [], applied: true };
+  }
+  const lock = readLock(root);
+  if (lock) {
+    const shadow = shadowingRows(root, env);
+    if (shadow.length) throw new KitError(`the lock already installs ${shadow.join(', ')} as a direct package, which the entry for ${pkg.spec} would shadow; install ${id} the direct way instead, as the lock's other kits are, with kit.mjs add ${id} --apply, then bind ${id} --apply`, 'IA-CORE-INSTALL-CONFLICT', { kit: id });
+  }
+  const seed = lock ? null : seedLock(env);
+  const commands = [...(seed ? ['ia restore --apply --yes'] : []), `ia install --package ${pkg.spec} --apply --yes`];
+  if (!apply) return { kit: id, already: false, route: 'package', package: pkg.spec, seeded: Boolean(seed), added: [], commands, applied: false };
+  const lockPath = join(root, '.ia', 'distributions.lock.json'), generations = join(root, '.ia', 'distributions'), activePath = join(generations, 'active.json');
+  const read = path => (existsSync(path) ? readFileSync(path) : null);
+  const lockBefore = read(lockPath), activeBefore = read(activePath), generationsBefore = existsSync(generations);
+  const before = installedKits(root);
+  const resolved = cli ?? resolveCli(root);
+  const timeout = installTimeoutMs ? { timeoutMs: installTimeoutMs } : {};
+  const rollback = () => {
+    if (lockBefore === null) rmSync(lockPath, { force: true }); else writeFileSync(lockPath, lockBefore);
+    if (activeBefore === null) rmSync(activePath, { force: true }); else writeFileSync(activePath, activeBefore);
+    if (!generationsBefore) rmSync(generations, { recursive: true, force: true });
+  };
+  const uncertain = (command, why) => new KitError(`installation outcome is uncertain: ${command} ${why}. Nothing was removed. Wait for it to finish, then inspect the native installation (kit.mjs status ${id}) before running bind ${id} --install again.`, 'IA-CORE-INSTALL-UNCERTAIN', { kit: id });
+  // The lock and the active generation as bytes: a step that exits nonzero is a definite refusal only if neither moved.
+  const state = () => JSON.stringify([read(lockPath), read(activePath)].map(b => (b ? b.toString('base64') : null)));
+  // One CLI step. A command that could not start ran nothing, so the files are restored; one that did not exit on its own,
+  // or exited nonzero after the lock or the generation moved, may have committed: uncertain, and nothing is removed.
+  const step = (label, args) => {
+    const snapshot = state();
+    let ran;
+    try { ran = runIa(root, args, { cli: resolved, ...timeout }); } catch (error) {
+      if (/\b(?:ENOENT|EACCES|EPERM)\b/.test(error.message)) {
+        rollback();
+        throw new KitError(`ia ${args[0]} could not start: ${error.message}. Nothing was changed.`, 'IA-CORE-INSTALL-REFUSED', { kit: id });
+      }
+      throw Object.assign(uncertain(`ia ${args[0]}`, `did not exit on its own (${error.message})`), { cause: error });
+    }
+    if (ran.code === 0) return ran;
+    const code = ran.json?.code ?? ran.json?.findings?.[0]?.code ?? null;
+    const detail = ran.json?.message ?? JSON.stringify(ran.json?.findings?.slice(0, 3) ?? ran.json ?? ran.stderr.trim());
+    const unpublished = code === 'IA-CLI-KITS-PACKAGE-UNAVAILABLE' || /\b(?:E404|ENOTFOUND|ETIMEDOUT|ECONNREFUSED|not found|unavailable)\b/i.test(`${detail} ${ran.stderr ?? ''}`);
+    const hint = label === 'install' && unpublished ? ` If ${pkg.spec} is not published yet, retry after the release publishes it; npm must be on PATH and the registry reachable.` : code === 'IA-DIST-CONFLICT' ? ' The lock holds a package this install cannot reconcile; inspect it with ia inspect.' : '';
+    if (ran.code === null || state() !== snapshot) throw uncertain(`ia ${args[0]}`, ran.code === null ? 'did not exit on its own' : `exited ${ran.code}${code ? ` (${code})` : ''} after the lock or the active generation changed`);
+    rollback();
+    throw new KitError(`ia ${args[0]} refused${code ? ` (${code})` : ''}: ${detail}.${hint}`, code ?? 'IA-CORE-INSTALL-REFUSED', { kit: id });
+  };
+  if (seed) {
+    writeLf(lockPath, JSON.stringify(seed) + '\n');
+    step('restore', ['restore', '--apply', '--yes']);
+  }
+  const ran = step('install', ['install', '--package', pkg.spec, '--apply', '--yes']);
+  const status = ran.json?.applied?.status ?? ran.json?.status;
+  const row = kitInstallation(root, id);
+  if (row?.via !== 'entry') throw new KitError(`ia install --package ${pkg.spec} ${status === 'installed' ? 'reported installed' : 'exited 0'} but the lock does not install ${id} through the package entry (${row ? `it is installed from the ${row.via} rows` : 'no row names it'}); the package may not carry it. Inspect .ia/distributions.lock.json before running bind ${id} --install again.`, 'IA-CORE-INSTALL-UNCERTAIN', { kit: id });
+  const known = new Set(before.map(k => k.id));
+  return { kit: id, already: false, route: 'package', package: pkg.spec, seeded: Boolean(seed), added: installedKits(root).filter(k => !known.has(k.id)).map(k => ({ kit: k.id, version: k.version })), commands, applied: true };
+}
+
+// The language-only lock a workspace with none starts from: a carried kit's own, filtered to the language base, as
+// tools/check-language.mjs builds it. Null when no carried kit pins the base (the CLI then judges the empty workspace).
+function seedLock(env) {
+  for (const kit of listKits(kitsDir(env))) {
+    const lock = readLock(kit.dir);
+    const packages = (lock?.packages ?? []).filter(p => p?.id === LANGUAGE_ID);
+    if (packages.length === 1) return { ...lock, packages, requests: (lock.requests ?? []).filter(r => r?.id === LANGUAGE_ID) };
+  }
+  throw new KitError('no kit this plugin carries pins the language base, so there is no lock to start the install from; run ia init, then ia install --package yourself', 'IA-CORE-INSTALL-REFUSED');
+}
+
+// Identity: true only when the lock's row for the kit carries exactly this version
+// and archive. Never throws: a lock that cannot be read or parsed matches nothing.
+export function kitInstallMatches(root, kit) {
+  try {
+    const row = kitInstallation(root, kit.id);
+    return row !== null && row.version === kit.version && row.archive === (kit.archive ?? null);
+  } catch { return false; }
 }
 
 // Installs a kit's latest recorded release into the IA workspace at root.

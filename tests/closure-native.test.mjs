@@ -14,7 +14,7 @@ const importNative = specifier => import(pathToFileURL(require.resolve(specifier
 const kit = findKit('ia-kb');
 const descriptor = JSON.parse(readFileSync(join(kit.dir, '.ia/release.json'), 'utf8'));
 const cli = resolveCli(process.cwd());
-assert.equal(cli.version, '3.5.0');
+assert.equal(cli.version, '3.6.0');
 const root = readRoot(kit, { cli });
 const { packDistribution } = await importNative('@inventarch/distribution/pack');
 const nativeManifest = packDistribution(root, descriptor).manifest;
@@ -52,10 +52,32 @@ test('native plural workspace roots require separate explicit qualification', as
     assert.deepEqual(result.distributionRoots, identities);
     assert.deepEqual(result.packagedWorkspaces.map(row => row.identity), identities);
     assert.ok(result.packagedWorkspaces.every(row => row.systems.includes('floor/definition/system/ia-kb')));
+    // IA's repository default, ia-kb-kit, is not one of the packaged roots: it is never taken by accident.
     await assert.rejects(resolveConsumerSubject({ root: scratch, importNative }), /unambiguous/);
     const explicit = await resolveConsumerSubject({ root: scratch, workspaceIdentity: identities[1], importNative });
     assert.equal(explicit.identity, identities[1]);
     assert.ok(explicit.systems.some(row => row.identity === 'floor/definition/system/agent-composition-system'));
+  } finally { rmSync(scratch, { recursive: true, force: true }); }
+});
+
+test('with no workspace named, the repository default is taken when it is a packaged root or nothing packages a workspace', async () => {
+  const scratch = mkdtempSync(join(realpathSync(tmpdir()), 'closure-native-default-'));
+  const expected = 'workspace-system/definition/workspace/ia-kb-kit';
+  try {
+    cpSync(root, scratch, { recursive: true });
+    const workspace = readFileSync(join(scratch, '.ia/src/workspace.ia'), 'utf8').replace(/systems \[[^\]]+\]/, 'systems [@system ia-kb]');
+    writeFileSync(join(scratch, '.ia/src/systems/ia-kb/records/compositions.ia'), workspace.replaceAll('ia-kb-kit', 'second-composition'));
+    const distribution = join(scratch, '.ia/src/systems/ia-kb/records/distribution.ia');
+    const original = readFileSync(distribution, 'utf8');
+    // The default is one of the packaged roots: it resolves.
+    writeFileSync(distribution, original.replace('records [@system ia-kb]', 'records [@workspace ia-kb-kit, @workspace second-composition]'));
+    assert.equal((await resolveConsumerSubject({ root: scratch, importNative })).identity, expected);
+    // A consumer that admits no distribution and one workspace: the default resolves.
+    rmSync(join(scratch, '.ia/src/systems/ia-kb/records/compositions.ia'));
+    rmSync(distribution);
+    const consumer = await resolveConsumerSubject({ root: scratch, importNative });
+    assert.equal(consumer.identity, expected);
+    assert.ok(consumer.systems.some(row => row.identity === 'floor/definition/system/ia-kb'));
   } finally { rmSync(scratch, { recursive: true, force: true }); }
 });
 

@@ -36,12 +36,13 @@ import { resolveCli } from './lib/cli.mjs';
 import { childEnv } from './lib/hygiene.mjs';
 import { kitTrust } from './lib/trust.mjs';
 import { checkArguments } from './lib/check-arguments.mjs';
-import { readBindings } from './lib/binding.mjs';
-import { assertPinnedKit, findKit, installedKits, kitChecks, listKits } from './lib/kit.mjs';
+import { readBindings, selectBinding } from './lib/binding.mjs';
+import { assertPinnedKit, canonicalKitId, findKit, installedKits, kitChecks, listKits, requireKitInstalled } from './lib/kit.mjs';
 import { retainedKit } from './lib/retained.mjs';
 import { closureStore } from './lib/home.mjs';
 import { pinRootFor, readPin } from './lib/pin.mjs';
 import { runMethodCheck } from './lib/method-check.mjs';
+import { readMethodPin } from './lib/method-pin.mjs';
 import { runOrdinaryCheck } from './lib/check-output.mjs';
 import { findWorkspace, parseArgs, printJson, refuse, UsageError } from './lib/workspace.mjs';
 
@@ -52,11 +53,18 @@ class CheckError extends Error {
   constructor(message, code, extra = {}) { super(message); this.code = code; Object.assign(this, extra); }
 }
 
-function candidateKits(options, workspaceRoot) {
+// The kit ids a repository's bindings name, keys and defaults alike.
+const boundKitIds = bindings => (bindings ? [...new Set([...Object.values(bindings.bindings).flat(), ...Object.values(bindings.defaults)].map(b => canonicalKitId(b.kit)))] : []);
 
+// A repository-bound method runs a kit only while the repository's own lock installs it (lib/kit.mjs
+// requireKitInstalled, the one guard resolve.mjs and every route here share). It comes before any kit is retained,
+// trusted or run. A kit the task pin or the bindings do not name stays the plugin-only route, which needs no row.
+function candidateKits(options, workspaceRoot) {
   const pin = readPin(pinRootFor({ project: options.project, task: options.task }), workspaceRoot);
   if (pin) {
     const ids = options.kit ? [Object.hasOwn(pin.kits, options.kit) ? options.kit : findKit(options.kit).id] : Object.keys(pin.kits);
+    const bound = boundKitIds(readBindings(workspaceRoot));
+    for (const id of ids) if (Object.hasOwn(pin.kits, id) || bound.includes(id)) requireKitInstalled(workspaceRoot, { id });
     const kits = ids.map(id => {
       const saved = pin.kits[id];
       if (!saved?.retained) throw new CheckError(`kit ${id} has no retained implementation in this pin; explicitly rebind`, 'IA-CORE-PIN-UNAVAILABLE');
@@ -67,15 +75,32 @@ function candidateKits(options, workspaceRoot) {
     });
     return { kits, via: `pin revision ${pin.revision}` };
   }
-  if (options.kit) return { kits: [findKit(options.kit)], via: 'option' };
   const bindings = readBindings(workspaceRoot);
+  if (options.kit) {
+    const kit = findKit(options.kit);
+    if (boundKitIds(bindings).includes(kit.id)) requireKitInstalled(workspaceRoot, { id: kit.id });
+    return { kits: [kit], via: 'option' };
+  }
   if (bindings) {
-    const ids = [...new Set([...Object.values(bindings.bindings).flat(), ...Object.values(bindings.defaults)].map(b => b.kit))];
     const carried = listKits().map(k => k.id);
-    return { kits: ids.filter(id => carried.includes(id)).map(id => findKit(id)), via: 'bindings' };
+    const ids = boundKitIds(bindings).filter(id => carried.includes(id));
+    // Every carried kit the bindings name, not only the one that declares the check: running none of them would read as no kit being bound.
+    for (const id of ids) requireKitInstalled(workspaceRoot, { id });
+    return { kits: ids.map(id => findKit(id)), via: 'bindings' };
   }
   const carried = listKits();
   return { kits: installedKits(workspaceRoot).map(p => carried.find(k => k.id === p.id)).filter(Boolean), via: 'installed' };
+}
+
+// The kit a qualified check's activity key names: the task's format 4 pin when it holds the key, else the
+// repository's binding for it. Null when neither names one, which leaves the qualified run to its own refusal.
+function qualifiedKit(activityKey, pinRoot, workspaceRoot) {
+  try {
+    const named = readMethodPin(pinRoot)?.keys?.[activityKey]?.kit;
+    if (named) return named;
+  } catch { /* an unreadable pin is the qualified run's refusal to give */ }
+  const [entry, ...activity] = activityKey.split('.');
+  try { return selectBinding(readBindings(workspaceRoot), entry, activity.join('.')).kit; } catch { return null; }
 }
 
 async function main() {
@@ -89,6 +114,8 @@ async function main() {
   if (options['qualified-input']) {
     const pinRoot = pinRootFor({ project: options.project, task: options.task });
     if (!pinRoot || !options.activity || options.kit || options.manifest) throw new UsageError('qualified checks need a task pin and --activity, without --kit or --manifest');
+    const kitId = qualifiedKit(options.activity, pinRoot, workspaceRoot);
+    if (kitId) requireKitInstalled(workspaceRoot, { id: kitId });
     const stat = lstatSync(options['qualified-input']);
     if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 65536) throw new UsageError('qualified input must be bounded regular JSON');
     const input = JSON.parse(readFileSync(options['qualified-input'], 'utf8'));

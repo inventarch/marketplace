@@ -6,8 +6,11 @@
 //                                                                   capabilities, the keys it offers, what it resolves unbound
 //   node scripts/kit.mjs add <kit> [<repo>] [--apply]               install the kit's latest release into an IA workspace
 //   node scripts/kit.mjs add --from <folder|archive> [--apply]      validate a kit and install it into <IA home>/kits/<kit>/<version>/
-//   node scripts/kit.mjs bind <kit> [<repo>] [--apply]              add the keys the kit recommends that the repository does not bind
-//   node scripts/kit.mjs bind <kit> [<repo>] --key <k> --capability <c> [--profile <p>] [--apply]   bind one key
+//   node scripts/kit.mjs bind <kit> [<repo>] [--install] [--apply]  add the keys the kit recommends that the repository does not bind;
+//                                                                   refuses a kit the lock does not install (previews too), and --install
+//                                                                   installs it first: ia install --package for the kits the public-kits
+//                                                                   package carries, add for the rest
+//   node scripts/kit.mjs bind <kit> [<repo>] --key <k> --capability <c> [--profile <p>] [--install] [--apply]   bind one key
 //   node scripts/kit.mjs upgrade [<kit>] [<repo>] [--apply]         installed kits against their latest release; adopt the newer
 //   node scripts/kit.mjs repin --project <p> --task <t> [<repo>] [--apply]   move a task pin's keys to the kits now available
 //   node scripts/kit.mjs rebind <from-kit> <to-kit> [<repo>] [--keys a,b] [--apply]   move bound keys to another kit
@@ -26,10 +29,10 @@ import { adopt, findKit, installedKit, kitBindings, readRoot } from './lib/kit.m
 import { addFromOp, addOp, bindOp, checkOp, listOp, rebindOp, repinOp, upgradeOp } from './lib/kit-ops.mjs';
 import { parseArgs, printJson, refuse, UsageError } from './lib/workspace.mjs';
 
-const USAGE = 'usage: kit.mjs list | add <kit> [<repo>] [--apply] | add --from <folder|archive> [--apply] | bind <kit> [<repo>] [--key <k> --capability <c> [--profile <p>]] [--apply] | upgrade [<kit>] [<repo>] [--apply] | repin --project <p> --task <t> [<repo>] [--apply] | rebind <from-kit> <to-kit> [<repo>] [--keys a,b] [--apply] | check [<kit>] | root <kit> | status <kit> [<repo>] | adopt <kit> <repo> [--dry-run]\n';
+const USAGE = 'usage: kit.mjs list | add <kit> [<repo>] [--apply] | add --from <folder|archive> [--apply] | bind <kit> [<repo>] [--key <k> --capability <c> [--profile <p>]] [--install] [--apply] | upgrade [<kit>] [<repo>] [--apply] | repin --project <p> --task <t> [<repo>] [--apply] | rebind <from-kit> <to-kit> [<repo>] [--keys a,b] [--apply] | check [<kit>] | root <kit> | status <kit> [<repo>] | adopt <kit> <repo> [--dry-run]\n';
 const SPECS = {
   list: [{}, 0, 0], check: [{}, 0, 1], root: [{}, 1, 1], status: [{}, 1, 2],
-  add: [{ apply: 'flag', from: 'value' }, 0, 2], bind: [{ apply: 'flag', key: 'value', capability: 'value', profile: 'value' }, 1, 2],
+  add: [{ apply: 'flag', from: 'value' }, 0, 2], bind: [{ apply: 'flag', install: 'flag', key: 'value', capability: 'value', profile: 'value' }, 1, 2],
   upgrade: [{ apply: 'flag' }, 0, 2], repin: [{ apply: 'flag', project: 'value', task: 'value' }, 0, 1],
   rebind: [{ apply: 'flag', keys: 'value' }, 2, 3], adopt: [{ 'dry-run': 'flag', dry: 'flag' }, 2, 2],
 };
@@ -48,7 +51,7 @@ export function run(argv) {
       if (options.from) { if (positional.length) throw new UsageError('add --from takes no kit or repository'); return addFromOp(options.from, { apply }); }
       if (!positional.length) throw new UsageError('add needs a kit, or --from <folder|archive>');
       return addOp(positional[0], positional[1], { apply });
-    case 'bind': return bindOp(positional[0], positional[1], { apply, key: options.key, capability: options.capability, profile: options.profile });
+    case 'bind': return bindOp(positional[0], positional[1], { apply, install: Boolean(options.install), key: options.key, capability: options.capability, profile: options.profile });
     case 'upgrade': {
       // One positional is a kit when it names one, else the repository.
       let [kit, repo] = positional;

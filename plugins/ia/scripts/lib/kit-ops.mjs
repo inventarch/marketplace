@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENTRIES, readBindings, writeBindings } from './binding.mjs';
-import { adopt, declaredAssets, findKit, homeKitsDir, installedKits, KitError, kitBindings, kitChecks, kitDelivery, kitDependencies, listKits, readDescriptor, readReleases, releaseRecords, sourcesDigest } from './kit.mjs';
+import { adopt, declaredAssets, findKit, homeKitsDir, installedKits, installForBind, installRemedy, KitError, kitBindings, kitInstallation, kitChecks, kitDelivery, kitDependencies, listKits, readDescriptor, readReleases, releaseRecords, sourcesDigest } from './kit.mjs';
 import { kitHandlers } from './handlers.mjs';
 import { kitTrust } from './trust.mjs';
 import { isVersion } from './releases.mjs';
@@ -213,25 +213,40 @@ export function addOp(ref, repo, { apply = false } = {}) {
 }
 
 // Recommends a kit's keys, or sets one key, in the repository's bindings.
-export function bindOp(ref, repo, { apply = false, key, capability, profile } = {}) {
+// A binding to a kit that the repository's lock does not install cannot run, so bind refuses it (decision
+// public-cli-3-6-0-bind), on a preview as on --apply, with a key as without, and writes nothing. --install installs
+// the kit first (installForBind: the public-kits package for the kits it carries, adopt for the rest), then writes the keys.
+export function bindOp(ref, repo, { apply = false, key, capability, profile, install = false } = {}) {
   const kit = findKit(ref);
   const { recommend, unbound, undeclared } = kitBindings(kit);
-  const root = apply ? workspaceRoot(repo) : findWorkspace(repo ?? process.cwd());
-  const data = root ? readBindings(root) ?? empty() : null;
+  const root = findWorkspace(repo ?? process.cwd());
+  if (!root) throw new KitError(`${repo ?? process.cwd()} is not inside an IA workspace (no .ia/src at or above it); run ia init first, then ${installRemedy(kit.id, process.env, root)}`, 'IA-CORE-KIT-NOT-INSTALLED', { kit: kit.id });
+  // Everything that can refuse for the arguments does so before anything is installed or written.
+  let keyed = null;
   if (key || capability) {
     if (!key || !capability) throw new UsageError('bind --key needs --capability (and --capability needs --key)');
     if (!KEY.test(key)) throw new UsageError(`a key is <entry>.<activity> or <entry>.*, with the entry one of ${ENTRIES.join(', ')}: ${key}`);
     const names = kitRecordNames(kit.dir);
     if (!names.some(r => r.word === 'capability' && r.name === capability)) throw new KitError(`${kit.id} has no capability ${capability}`, 'IA-CORE-BIND-UNDECLARED');
     if (profile && !names.some(r => r.word === 'agent-profile' && r.name === profile)) throw new KitError(`${kit.id} has no agent-profile ${profile}`, 'IA-CORE-BIND-UNDECLARED');
-    const binding = { kit: kit.id, capability, ...(profile ? { profile } : {}) };
+    keyed = { kit: kit.id, capability, ...(profile ? { profile } : {}) };
+  }
+  const data = readBindings(root) ?? empty();
+  let installation = null;
+  if (kitInstallation(root, kit.id) === null) {
+    if (!install) throw new KitError(`kit ${kit.id} is not installed by this repository's lock, so a binding to it could not run; ${installRemedy(kit.id, process.env, root)}`, 'IA-CORE-KIT-NOT-INSTALLED', { kit: kit.id });
+    installation = installForBind(root, kit, { apply });
+  } else if (install) installation = { kit: kit.id, already: true, route: 'installed', added: [], commands: [], applied: false };
+  const installed = installation ? { install: installation } : {};
+  if (keyed) {
+    const binding = keyed;
     let path = null;
     if (apply) { data.bindings[key] = [binding]; path = writeBindings(root, data); }
-    return { root, kit: kit.id, key, binding, previous: data?.bindings[key] ?? null, path, applied: apply };
+    return { root, kit: kit.id, key, binding, previous: data?.bindings[key] ?? null, path, ...installed, applied: apply };
   }
   const added = [], already = [], kept = [];
   for (const [k, binding] of Object.entries(recommend)) {
-    const current = data?.bindings[k] ?? [];
+    const current = data.bindings[k] ?? [];
     if (!current.length) added.push(k);
     else if (current.length === 1 && same(current[0], binding)) already.push(k);
     else kept.push({ key: k, bound: current });
@@ -241,7 +256,7 @@ export function bindOp(ref, repo, { apply = false, key, capability, profile } = 
     for (const k of added) data.bindings[k] = [recommend[k]];
     path = writeBindings(root, data);
   }
-  return { root, kit: kit.id, recommend, unbound, undeclared, [apply ? 'added' : 'wouldAdd']: added, already, kept, path, applied: apply };
+  return { root, kit: kit.id, recommend, unbound, undeclared, [apply ? 'added' : 'wouldAdd']: added, already, kept, path, ...installed, applied: apply };
 }
 
 // Moves keys bound to one kit to another; refuses a capability or profile the

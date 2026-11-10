@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-11-08T18:24:08.324Z",
+  "cliVersion": "codex-cli 0.164.0",
+  "cliSha256": "6f267830b029ee25d9339864aa867cd45de9f8fd4c5ea007d2e63c13a0c66d36",
+  "nodeVersion": "v22.23.4",
+  "repository": {
+    "head": "efca9659f08c38a9387a6d654b5caa089179959e",
+    "dirty": false,
+    "changedEntries": 0
+  },
+  "validator": {
+    "command": "python tools/validate.py",
+    "status": "passed"
+  },
+  "marketplace": "inventarch",
+  "marketplaceInterface": {
+    "displayName": "InventArch"
+  },
+  "plugins": [
+    {
+      "name": "ia",
+      "version": "1.3.0",
+      "installedPath": "<codex-home>/plugins/cache/inventarch/ia/1.3.0",
+      "manifestSha256": "b58eb6e35e4cd6521a43b09e154b103c2303f1617c11e4bb752f938f07e83274",
+      "hostGuideSha256": "34d1e7b1bdb50c48093ef269f115d9f6b1b23f8070ed4933f9a0207e210e8011",
+      "loadedSkillCount": 6,
+      "skillNames": [
+        "ia:delegate",
+        "ia:delivery",
+        "ia:doctor",
+        "ia:init",
+        "ia:knowledge",
+        "ia:work"
+      ],
+      "hostInterface": {
+        "displayName": "InventArch",
+        "shortDescription": "Resolve the bound method, then act on its packet",
+        "longDescription": null,
+        "developerName": null,
+        "category": "Developer Tools",
+        "capabilities": [],
+        "websiteUrl": null,
+        "privacyPolicyUrl": null,
+        "termsOfServiceUrl": null,
+        "defaultPrompt": null,
+        "brandColor": null,
+        "composerIcon": null,
+        "composerIconUrl": null,
+        "logo": null,
+        "logoDark": null,
+        "logoUrl": null,
+        "logoUrlDark": null,
+        "screenshots": [],
+        "screenshotUrls": []
+      },
+      "listedInterface": {
+        "displayName": "InventArch",
+        "shortDescription": "Resolve the bound method, then act on its packet",
+        "longDescription": null,
+        "developerName": null,
+        "category": "Developer Tools",
+        "capabilities": [],
+        "websiteUrl": null,
+        "privacyPolicyUrl": null,
+        "termsOfServiceUrl": null,
+        "defaultPrompt": null,
+        "brandColor": null,
+        "composerIcon": null,
+        "composerIconUrl": null,
+        "logo": null,
+        "logoDark": null,
+        "logoUrl": null,
+        "logoUrlDark": null,
+        "screenshots": [],
+        "screenshotUrls": []
+      },
+      "interfaceMatchesManifest": true,
+      "manifestHooks": {
+        "hooks": {}
+      },
+      "installedHooksJson": true,
+      "hooks": 0,
+      "mcpServers": 1,
+      "doorTools": [
+        "ia_catalogue",
+        "ia_context",
+        "ia_get",
+        "ia_kb_check",
+        "ia_kb_read",
+        "ia_kb_resolve",
+        "ia_kb_search",
+        "ia_kb_traverse",
+        "ia_method",
+        "ia_next",
+        "ia_position",
+        "ia_read",
+        "ia_records",
+        "ia_resolve",
+        "ia_scope",
+        "ia_search",
+        "ia_select",
+        "ia_session",
+        "ia_traverse",
+        "ia_vocabulary"
+      ],
+      "apps": 0,
+      "installedCacheVerified": true
+    }
+  ],
+  "totalLoadedSkills": 6,
+  "isolation": "Temporary CODEX_HOME; OS-only child environment; removed after run",
+  "verification": [
+    "tools/validate.py passes and lists every skill folder",
+    "CLI marketplace discovery",
+    "CLI isolated installation",
+    "app-server plugin/list",
+    "app-server plugin/read",
+    "app-server skills/list from a separate consumer directory",
+    "installed skill and host-guide bytes match source",
+    "zero MCP servers, apps and hooks",
+    "the core hooks.json installed yet reported as zero hooks; no hooks/ folder elsewhere"
+  ],
+  "limitations": [
+    "No model turn or end-to-end domain workflow",
+    "No Git install from GitHub",
+    "No router-trigger check",
+    "No desktop UI installation",
+    "No native registration of Claude agents or hooks"
+  ]
+}
