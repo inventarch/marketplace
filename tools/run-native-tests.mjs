@@ -73,9 +73,22 @@ export function verifyReports(inventory, inventorySha256, reports) {
   for (const r of results) if (!inventory.cases.some(c => c.id === r.id)) problems.push(`${r.id}: not in the inventory`);
   return problems;
 }
+// Artifact downloads can put a single shard directly in the destination, or
+// put each shard in its own child directory. Keep every report (including
+// duplicates) so verifyReports still enforces the complete inventory.
+export function readShardReports(dirs) {
+  const reports = [];
+  for (const dir of dirs) {
+    const folder = resolve(dir);
+    const paths = [join(folder, 'native-report.json'), ...readdirSync(folder, { withFileTypes: true })
+      .filter(entry => entry.isDirectory()).map(entry => join(folder, entry.name, 'native-report.json'))];
+    for (const path of paths) if (existsSync(path)) reports.push(JSON.parse(readFileSync(path, 'utf8')));
+  }
+  return reports;
+}
 function verifyMain(dirs) {
   const inventoryBytes = readFileSync(join(root, 'tools/native-inventory.json'));
-  const reports = dirs.map(dir => JSON.parse(readFileSync(join(resolve(dir), 'native-report.json'), 'utf8')));
+  const reports = readShardReports(dirs);
   const problems = verifyReports(JSON.parse(inventoryBytes), digest(inventoryBytes), reports);
   for (const p of problems) console.error(p);
   console.log(JSON.stringify({ verified: !problems.length, shards: reports.length, cases: reports.reduce((n, r) => n + (r.results?.length ?? 0), 0) }));
