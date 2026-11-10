@@ -32,7 +32,7 @@
       primary Decision
       Attention means "Before each step, re-read the principle records that bear on it."
       Inference means "Apply each principle as the step it constrains produces its output, and stop a step that would break a blocking one."
-      Decision means "This kit reads and applies principle records only. A change to one goes to its owner as a proposal, and enforcement (gates, recorded evidence, verifiers) is not part of this public kit."
+      Decision means "This kit reads and applies principle records only. A change to one goes to its owner as a proposal. Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit."
       Learning means "Record where applying a principle changed or stopped a step."
     learn
       primary Learning
@@ -73,7 +73,7 @@
       primary Decision
       Attention means "Before each step, re-read the law records that bear on it."
       Inference means "Check the law's requires before each step it constrains; when a step would break it, stop and say so."
-      Decision means "This kit reads and applies law records only. A change to one goes to its owner as a proposal, and enforcement (gates, recorded evidence, verifiers) is not part of this public kit."
+      Decision means "This kit reads and applies law records only. A change to one goes to its owner as a proposal. Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit."
       Learning means "Record where applying a law changed or stopped a step."
     learn
       primary Learning
@@ -114,7 +114,7 @@
       primary Decision
       Attention means "Before each step, re-read the convention records that bear on it."
       Inference means "Apply each convention as the step it governs produces its output."
-      Decision means "This kit reads and applies convention records only. A change to one goes to its owner as a proposal, and enforcement (gates, recorded evidence, verifiers) is not part of this public kit."
+      Decision means "This kit reads and applies convention records only. A change to one goes to its owner as a proposal. Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit."
       Learning means "Record where applying a convention changed or stopped a step."
     learn
       primary Learning

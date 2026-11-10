@@ -13,7 +13,7 @@ This folder is the source of truth for every kit the core carries: `ia-method` (
 | `.ia/distributions.lock.json` | The language base the kit pins. |
 | `releases.json` | The release index, format 2: `{ format: 2, kit, latest, releases: [ { version, archive, manifest, sources, language, cli, file, source? } ] }`. |
 | `releases/<version>.json` | One release's record names: `{ format: 2, kit, version, archive, records, offers? }`. Immutable once published. |
-| `checks.json`, `delivery.json`, `bindings.json`, `onwrite.json` | Optional sidecars: the fixed argv of each runnable check, the capabilities delivered whole, the bindings the kit recommends, and the on-write checks. |
+| `checks.json`, `delivery.json`, `bindings.json`, `onwrite.json`, `handlers.json` | Optional sidecars: the fixed argv of each runnable check, the capabilities delivered whole, the bindings the kit recommends, the on-write checks, and the hook handlers. |
 
 ## Where each kit is bundled
 

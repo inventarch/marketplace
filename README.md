@@ -200,7 +200,7 @@ A repository adopted for governance (it has `.ia/governance.json`) needs a kit t
 
 ### Kit handlers
 
-A kit may declare handlers in a `handlers.json` beside its records: scripts the core runs at session start, on each prompt, before or after an edit or shell command, and when a turn stops, or a plain `context` text it adds at those moments without running anything. Only installed kits whose folder holds the script run them (a kit fetched as a release carries no executables); each kit adds at most 2,000 characters of context; a handler may block a tool call only in a repository that opted in with `.ia/governance.json`. With no kit declaring a handler, the hooks do nothing.
+A kit may declare handlers in a `handlers.json` beside its records: scripts the core runs at session start, on each prompt, before or after an edit or shell command, and when a turn stops, or a plain `context` text it adds at those moments without running anything. Only installed kits whose folder holds the script run them (a kit fetched as a release carries no executables); each kit adds at most 2,000 characters of context; a handler may block a tool call only in a repository that opted in with `.ia/governance.json`. With no kit declaring a handler, the hooks do nothing. A trusted kit that ships no code may name one script of the core, `scripts/method-advise.mjs`, as a handler's `run` (decision `public-method-advisory-run-points`): the ia-method kit does, to report the ceiling and the exit evidence of the tasks in the changed or uncommitted records, as advice that blocks nothing.
 
 ### Kit trust
 

@@ -17,14 +17,19 @@ import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { adopt, DEFAULT_KITS_DIR, findKit, kitBindings, kitDelivery, KitError, packRelease, readDescriptor, readReleases, releaseRecords, sourcesDigest } from '../scripts/lib/kit.mjs';
+import { kitHandlers, PLUGIN_RUNS } from '../scripts/lib/handlers.mjs';
+import { adopt, DEFAULT_KITS_DIR, findKit, kitBindings, kitDelivery, kitOnWrite, KitError, packRelease, readDescriptor, readReleases, releaseRecords, sourcesDigest } from '../scripts/lib/kit.mjs';
 import { kitRecordNames } from '../scripts/lib/records.mjs';
+import { kitTrust } from '../scripts/lib/trust.mjs';
 import { PHASES } from '../scripts/lib/workspace.mjs';
+import { matches } from '../scripts/on-write.mjs';
 
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url));
 const KIT = join(PLUGIN, 'config', 'kits', 'ia-method');
 const KIT_ID = 'inventarch/ia-method-kit';
-const VERSION = '0.8.0';
+const VERSION = '0.9.0';
+// The sentence every governance-word cell carries about enforcement.
+const ENFORCEMENT_SENTENCE = 'Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit.';
 const SYSTEMS = join(KIT, '.ia', 'src', 'systems');
 const README = join(KIT, 'README.md');
 const WORK_SKILL = join(PLUGIN, 'skills', 'work', 'SKILL.md');
@@ -118,18 +123,18 @@ test('every kit source is an LF IA 1.0 file, the kit text carries no CR and no m
     assert.ok(!body.includes('\r'), `${file} has CR bytes`);
     assert.doesNotMatch(body, /[A-Za-z]:\\Users\\|\/Users\/[a-z]+\/|\/home\/[a-z]+\//, `${file} carries a machine path`);
   }
-  assert.deepEqual(readdirSync(KIT).sort(), ['.ia', 'README.md', 'bindings.json', 'delivery.json', 'releases', 'releases.json'], 'the kit carries no assets and no checks.json: its bindings, its delivery and its releases');
+  assert.deepEqual(readdirSync(KIT).sort(), ['.ia', 'README.md', 'bindings.json', 'delivery.json', 'handlers.json', 'onwrite.json', 'releases', 'releases.json'], 'the kit carries no script and no checks.json: its bindings, its delivery, its two run-point sidecars and its releases');
   assert.deepEqual(readdirSync(SYSTEMS), ['ia-method'], 'one system');
 });
 
-test('the descriptor is the public 0.8.0 release of one system, and the distribution ships that system', () => {
+test('the descriptor is the public 0.9.0 release of one system, and the distribution ships that system', () => {
   const descriptor = readDescriptor(KIT);
   assert.equal(descriptor.id, KIT_ID);
   assert.equal(descriptor.version, VERSION);
   assert.equal(descriptor.license, 'Apache-2.0');
   assert.equal(descriptor.source.repository, 'https://github.com/inventarch/marketplace.git');
   assert.equal(descriptor.distribution, 'workspace-system/definition/distribution/ia-method-distribution');
-  assert.deepEqual(descriptor.assets, [{ path: 'bindings.json', role: 'asset' }, { path: 'delivery.json', role: 'asset' }]);
+  assert.deepEqual(descriptor.assets, [{ path: 'bindings.json', role: 'asset' }, { path: 'delivery.json', role: 'asset' }, { path: 'handlers.json', role: 'asset' }, { path: 'onwrite.json', role: 'asset' }]);
   assert.deepEqual(descriptor.dependencies.map(d => [d.id, d.range]), [['inventarch/language', '^3.2.0']]);
   assert.deepEqual([...descriptor.dependencies[0].systems].sort(), PUBLIC_SYSTEMS);
   const lock = JSON.parse(readFileSync(join(KIT, '.ia', 'distributions.lock.json'), 'utf8'));
@@ -173,8 +178,14 @@ test('every case evaluator names a test that exists in the core', () => {
   const titles = new Set(testTitles());
   const evaluators = [...text('ia-method', 'compliance.ia').matchAll(/evaluator "([^"]+)"/g)].map(m => m[1]);
   assert.ok(evaluators.length >= 2);
-  for (const evaluator of evaluators) {
-    assert.match(evaluator, /^plugins\/ia\/tests\/ceiling\.test\.mjs :: /);
+  assert.ok(evaluators.length >= 4);
+  // The test file each requirement's cases may name, written here and not read back from the records.
+  const fileOf = { 'REQ-METHOD-01': 'ceiling', 'REQ-METHOD-02': 'exit-evidence' };
+  for (const block of text('ia-method', 'compliance.ia').split(/^@case /m).slice(1)) {
+    const req = /implements @contract ia-method#(REQ-METHOD-\d+)/.exec(block)?.[1];
+    const evaluator = /evaluator "([^"]+)"/.exec(block)?.[1];
+    assert.ok(fileOf[req] && evaluator, `case ${block.split('\n')[0]} names a requirement and an evaluator`);
+    assert.ok(evaluator.startsWith(`plugins/ia/tests/${fileOf[req]}.test.mjs :: ${req} `), `${evaluator} is a ${fileOf[req]} test for ${req}`);
     assert.ok(titles.has(evaluator), `no test named by ${evaluator}`);
   }
 });
@@ -182,16 +193,69 @@ test('every case evaluator names a test that exists in the core', () => {
 test('every contract requirement has a success and a failure case, and every blocking law is governed by the contract', () => {
   const compliance = text('ia-method', 'compliance.ia');
   const requirements = [...compliance.matchAll(/^ {4}(REQ-METHOD-\d+) "/gm)].map(m => m[1]);
-  assert.ok(requirements.length >= 1);
-  for (const req of requirements) {
-    const kinds = [...compliance.matchAll(new RegExp(`kind (\\w+)[\\s\\S]*?implements @contract ia-method#${req}\\b`, 'g'))].map(m => m[1]);
-    assert.ok(kinds.includes('success') && kinds.includes('failure'), `${req} cases: ${kinds}`);
+  assert.deepEqual(requirements, ['REQ-METHOD-01', 'REQ-METHOD-02']);
+  // Each case block carries its own kind and its own requirement: exactly one success and one failure per requirement.
+  const caseKinds = {};
+  for (const block of compliance.split(/^@case /m).slice(1)) {
+    const req = /implements @contract ia-method#(REQ-METHOD-\d+)\b/.exec(block)?.[1];
+    const kind = /^ {4}kind (\w+)$/m.exec(block)?.[1];
+    (caseKinds[req] ??= []).push(kind);
   }
+  for (const req of requirements) assert.deepEqual((caseKinds[req] ?? []).sort(), ['failure', 'success'], `${req} cases`);
   const laws = [...text('ia-method', 'laws.ia').matchAll(/^@law ([a-z0-9-]+)\n[\s\S]*?severity (\w+)/gm)];
   assert.ok(laws.some(([, law]) => law === 'method-provisional-foundation-ceiling'), 'the ceiling law stays public');
   for (const [, law, severity] of laws) {
     if (severity === 'blocking') assert.match(compliance, new RegExp(`governs @law ${law}\\n`), `blocking law ${law} is not governed by the contract`);
   }
+});
+
+test('the run-point sidecars load under the core\'s loaders and name only the core\'s allowlisted script, advisory and never pre', () => {
+  const writes = kitOnWrite({ dir: KIT });
+  assert.deepEqual(writes.map(w => [w.name, w.extensions, w.argv]), [['method-advise', ['.ia'], ['${NODE}', '${PLUGIN}/scripts/method-advise.mjs']]]);
+  assert.equal(writes[0].marker ?? null, null, 'no marker: a workspace need not hold a lock file');
+  const handlers = kitHandlers({ dir: KIT });
+  assert.deepEqual(handlers.session.map(h => [h.plugin, h.events]), [['scripts/method-advise.mjs', ['resume', 'compact']]]);
+  assert.deepEqual(handlers.tool.map(h => [h.plugin, h.phase, h.match]), [['scripts/method-advise.mjs', 'post', 'Bash|PowerShell']]);
+  assert.deepEqual([...handlers.prompt, ...handlers.stop], []);
+  assert.ok([...handlers.session, ...handlers.tool].every(h => h.run === null && PLUGIN_RUNS.includes(h.plugin)));
+  assert.ok(existsSync(join(PLUGIN, 'scripts', 'method-advise.mjs')), 'the script the sidecars name ships with the core');
+  // A record file anywhere under a workspace's .ia/src matches, with no lock file beside it; another extension does not.
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-core-method-onwrite-')));
+  try {
+    mkdirSync(join(root, '.ia', 'src', 'systems', 'x', 'records'), { recursive: true });
+    assert.equal(matches(join(root, '.ia', 'src', 'systems', 'x', 'records', 'a.ia'), [{ folder: 'ia-method', dir: KIT }]).length, 1);
+    assert.equal(matches(join(root, 'notes.md'), [{ folder: 'ia-method', dir: KIT }]).length, 0);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('the contract is version 0.2.0 with REQ-METHOD-01 and REQ-METHOD-02, one check, and no enforced-by edge', () => {
+  const compliance = text('ia-method', 'compliance.ia');
+  assert.match(compliance, /^@contract ia-method\n {2}version "0\.2\.0"$/m);
+  assert.deepEqual([...compliance.matchAll(/^@check ([a-z0-9-]+)$/gm)].map(m => m[1]), ['ia-method-coverage']);
+  assert.deepEqual([...compliance.matchAll(/^ {4}runs (\S+)$/gm)].map(m => m[1]), ['COMP-COVERAGE']);
+  assert.match(compliance, /cites @principle method-claims-within-evidence/);
+  for (const file of sources()) assert.doesNotMatch(readFileSync(file, 'utf8'), /enforced-by/, `${relative(KIT, file)} declares an enforced-by edge`);
+  // The exemption basis is described once, neutrally, and never as something to author.
+  for (const file of walk(KIT).filter(f => !relative(KIT, f).startsWith('releases'))) assert.doesNotMatch(readFileSync(file, 'utf8'), /nothing-to-run/, relative(KIT, file));
+});
+
+test('the README names its Run points and the script they run', () => {
+  const body = readFileSync(README, 'utf8');
+  assert.match(body, /^## Run points$/m);
+  assert.match(body, /scripts\/method-advise\.mjs/);
+  assert.match(body, /blocks nothing/);
+  assert.match(body, /never as clear/);
+  assert.match(body, /Only the changed or uncommitted records are in scope/);
+  assert.match(body, /does not re-check the tasks that cite it/);
+  assert.match(body, /the only complete check/);
+  assert.match(body, /When the hook is silent/);
+  assert.match(body, /none of them is a clear result for the workspace/);
+  assert.doesNotMatch(body, /Enforcing them \(gates, recorded evidence, verifiers\) is not part of this kit/);
+});
+
+test('the bundled kit is trusted to run its sidecars once its release is recorded (fails until the release is stamped)', () => {
+  const trust = kitTrust(kit());
+  assert.equal(trust.trusted, true, trust.reason);
 });
 
 test('every playbook has the four phases with their four primitive cells', () => {
@@ -230,7 +294,7 @@ test('every public record word is covered by exactly one <word>-method capabilit
     assert.match(all, new RegExp(`ia vocabulary ${word} --schema`), `${name} reads the word's schema`);
     if (GOVERNANCE_WORDS.includes(word)) {
       assert.match(all, /reads and applies .* records only/, `${name} is read and apply only`);
-      assert.match(all, /enforcement \(gates, recorded evidence, verifiers\) is not part of this public kit/, `${name} leaves enforcement out`);
+      assert.ok(all.includes(ENFORCEMENT_SENTENCE), `${name} says what runs and what is not part of this public kit`);
       assert.doesNotMatch(all, /ia author /, `${name} authors nothing`);
     } else if (!['schema', 'system', 'workspace', 'distribution'].includes(word)) {
       assert.match(all, new RegExp(`ia preview ${word} <name>[^"]*then ia author with the same form and the digest preview returned, then ia validate`), `${name} changes records through preview, author and validate`);
@@ -294,11 +358,11 @@ test('the recommended bindings and the whole-procedure delivery name kit records
   for (const name of ['method-operate', 'method-provisional-foundation']) assert.deepEqual([...new Set(declaredCells(name).map(c => c.address.split('#')[1].split('/')[0]))], PHASES);
 });
 
-test('the recorded release is 0.8.0 and lists the source records, with the sources digest and the CLI it was packed with (fails until the release is recorded)', () => {
+test('the recorded release is 0.9.0 and lists the source records, with the sources digest and the CLI it was packed with (fails until the release is recorded)', () => {
   const { kit: id, releases } = readReleases(KIT);
   const latest = releases.at(-1);
   assert.equal(id, KIT_ID);
-  assert.equal(latest.version, VERSION, 'record the 0.8.0 release');
+  assert.equal(latest.version, VERSION, 'record the 0.9.0 release');
   assert.equal(readDescriptor(KIT).version, latest.version);
   assert.deepEqual(releaseRecords(KIT, latest), kitRecordNames(KIT));
   assert.equal(latest.sources, sourcesDigest(KIT), 'the kit sources changed since the recorded release: bump the version in .ia/release.json and record the release');
@@ -357,7 +421,7 @@ test('sourcesDigest ignores CRLF line endings and sees a content change', () => 
   const copy = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-core-method-crlf-')));
   try {
     cpSync(join(KIT, '.ia'), join(copy, '.ia'), { recursive: true });
-    for (const sidecar of ['bindings.json', 'delivery.json']) cpSync(join(KIT, sidecar), join(copy, sidecar));
+    for (const sidecar of ['bindings.json', 'delivery.json', 'handlers.json', 'onwrite.json']) cpSync(join(KIT, sidecar), join(copy, sidecar));
     const file = join(copy, '.ia', 'src', 'workspace.ia');
     writeFileSync(file, readFileSync(file, 'utf8').replace(/\n/g, '\r\n'));
     assert.equal(sourcesDigest(copy), sourcesDigest(KIT));
@@ -408,7 +472,7 @@ test('real CLI: the CLI\'s public vocabulary is the 30 record words and 14 taxon
 test('real CLI: the sources repack to the recorded release (opt-in: IA_CORE_TEST_CLI; fails until the release is recorded)', { skip: SKIP }, async () => {
   const { resolveCli } = await import('../scripts/lib/cli.mjs');
   const cli = resolveCli(KIT, { env: { IA_CLI_PATH: CLI } });
-  assert.equal(kit().latest.version, VERSION, 'record the 0.8.0 release');
+  assert.equal(kit().latest.version, VERSION, 'record the 0.9.0 release');
   const built = packRelease(kit(), kit().latest, cli);
   built.cleanup();
 });
@@ -458,4 +522,8 @@ test('real CLI: with the recommended bindings, an uninstalled kit is refused, th
     const vocabulary = resolve('knowledge', 'vocabulary');
     assert.deepEqual([...new Set(cellsOf(vocabulary))], ['governance-system/definition/procedure/method-vocabulary']);
   } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+test('no record of the kit has a comma before a full stop', () => {
+  for (const file of sources()) assert.doesNotMatch(readFileSync(file, 'utf8'), /,\./, relative(KIT, file));
 });

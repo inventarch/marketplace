@@ -30,6 +30,15 @@
 // refused, naming the kit and the fix (alteredGates). A kit from a publisher
 // that is not on the list never blocks: its pre handler never runs. A kit's
 // onwrite.json stays supported as tool post handlers (scripts/on-write.mjs).
+// One more form of `run`: `${PLUGIN}/<entry>`, where <entry> is written out in
+// PLUGIN_RUNS (today only scripts/method-advise.mjs), runs that script of the
+// core itself, for a kit whose release carries no code. It is an allowlist of
+// literal names, never a pattern; it is accepted on session and tool `post`
+// handlers only and refused on tool `pre`, prompt and stop handlers (a plugin
+// run is advisory, can never gate, and has nothing to say there); the script must be that very file in the
+// plugin's scripts folder once links are followed; the kit must still be
+// trusted; it gets no arguments; and it is skipped, before the trust check and
+// before any process starts, when the call is not inside an IA workspace.
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +51,9 @@ export const HANDLERS_FORMAT = 1;
 export const SESSION_EVENTS = ['startup', 'resume', 'compact', 'clear'];
 export const KIT_CONTEXT_CAP = 2000;
 export const MAX_TIMEOUT = 25;
+// The scripts of the core a kit's handlers.json may run, as `${PLUGIN}/<entry>`.
+export const PLUGIN_RUNS = ['scripts/method-advise.mjs'];
+const PLUGIN_ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const DEFAULT_TIMEOUT = { session: 20, prompt: 10, tool: 20, stop: 20 };
 const KIT_SCRIPT = resolve(fileURLToPath(new URL('../kit.mjs', import.meta.url)));
 const KINDS = Object.keys(DEFAULT_TIMEOUT);
@@ -69,15 +81,21 @@ export function kitHandlers(kit) {
       const where = `${path}: ${kind}[${i}]`;
       if (!plainObject(entry)) throw new KitError(`${where} is an object`);
       if (entry.run === undefined && entry.context === undefined) throw new KitError(`${where} needs a run script, a context text, or both`);
-      let rel = null;
-      if (entry.run !== undefined) {
+      let rel = null, plugin = null;
+      if (typeof entry.run === 'string' && entry.run.startsWith('${PLUGIN}')) {
+        const named = PLUGIN_RUNS.find(name => entry.run === `\${PLUGIN}/${name}`);
+        if (!named) throw new KitError(`${where}: a \${PLUGIN} run is one of ${PLUGIN_RUNS.map(name => `\${PLUGIN}/${name}`).join(', ')}, written out in full`);
+        if (kind === 'prompt' || kind === 'stop') throw new KitError(`${where}: a \${PLUGIN} run is advisory and runs only on session and tool post handlers, never on ${kind}`);
+        plugin = named;
+      } else if (entry.run !== undefined) {
         const run = entry.run;
+        if (typeof run === 'string' && run.includes('${')) throw new KitError(`${where}: run takes no placeholder; only a \${PLUGIN} run of the core's own allowlisted script is written that way`);
         rel = typeof run === 'string' ? relative(root, resolve(root, run)).replace(/\\/g, '/') : '';
         if (typeof run !== 'string' || !/\.mjs$/.test(run) || isAbsolute(run) || /^[A-Za-z]:/.test(run) || rel === '' || rel.startsWith('../') || rel === '..') throw new KitError(`${where}: run is a .mjs script inside the kit, such as scripts/<file>.mjs`);
       }
       if (entry.context !== undefined && !(typeof entry.context === 'string' && entry.context.trim() && entry.context.length <= KIT_CONTEXT_CAP)) throw new KitError(`${where}: context is a non-empty text of at most ${KIT_CONTEXT_CAP} characters`);
       if (entry.timeout !== undefined && !(Number.isInteger(entry.timeout) && entry.timeout > 0 && entry.timeout <= MAX_TIMEOUT)) throw new KitError(`${where}: timeout is a whole number of seconds from 1 to ${MAX_TIMEOUT}`);
-      const handler = { run: rel, context: entry.context?.trim() ?? null, timeout: entry.timeout ?? DEFAULT_TIMEOUT[kind] };
+      const handler = { run: rel, context: entry.context?.trim() ?? null, timeout: entry.timeout ?? DEFAULT_TIMEOUT[kind], ...(plugin ? { plugin } : {}) };
       const allowed = { session: ['run', 'context', 'timeout', 'events'], prompt: ['run', 'context', 'timeout'], tool: ['run', 'context', 'timeout', 'phase', 'match'], stop: ['run', 'context', 'timeout'] }[kind];
       const extra = Object.keys(entry).filter(k => !allowed.includes(k));
       if (extra.length) throw new KitError(`${where}: unknown key ${extra.join(', ')}`);
@@ -91,6 +109,7 @@ export function kitHandlers(kit) {
           if (typeof entry.match !== 'string' || !entry.match) throw new KitError(`${where}: match is a tool-name pattern such as Write|Edit|Bash`);
           try { new RegExp(`^(?:${entry.match})$`); } catch { throw new KitError(`${where}: match is not a valid pattern`); }
         }
+        if (plugin && entry.phase === 'pre') throw new KitError(`${where}: a \${PLUGIN} run is advisory and is refused on a pre handler`);
         handler.phase = entry.phase;
         handler.match = entry.match ?? null;
       }
@@ -125,7 +144,22 @@ export function handlerKits({ kits } = {}) {
 // A handler's script is present when it is a file inside its kit's folder once
 // links are followed: a run path is checked inside the kit when it is read,
 // and a link must not carry it out.
+// A plugin run is present when the allowlisted script is that file of the core
+// itself: its real path is the expected one, inside the plugin's scripts folder.
+export function pluginScriptPresent(handler, pluginRoot = PLUGIN_ROOT) {
+  if (!handler.plugin || !PLUGIN_RUNS.includes(handler.plugin)) return false;
+  try {
+    const scripts = realpathSync(join(pluginRoot, 'scripts'));
+    const real = realpathSync(join(pluginRoot, handler.plugin));
+    const rel = relative(scripts, real);
+    if (rel === '' || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) return false;
+    if (real !== join(realpathSync(pluginRoot), handler.plugin)) return false;
+    return statSync(real).isFile();
+  } catch { return false; }
+}
+
 const scriptPresent = (kit, handler) => {
+  if (handler.plugin) return pluginScriptPresent(handler);
   if (!handler.run) return false;
   try {
     const root = realpathSync(kit.dir);
@@ -140,6 +174,8 @@ const scriptPresent = (kit, handler) => {
 function codeRefusal(found, handler) {
   const trust = trustOf(found);
   if (!trust.trusted) return trust.reason;
+  // The sidecar that names a plugin run is covered by the kit's digest; the script is the core's own.
+  if (handler.plugin) return null;
   if (!coversScript(found.kit, handler.run)) return `its handler script ${handler.run} is not a declared asset, so its recorded release does not cover it`;
   return null;
 }
@@ -244,6 +280,8 @@ function answerOf(stdout) {
   return { context: context.trim(), decision, reason: reason.trim() };
 }
 
+const runName = handler => handler.run ?? `\${PLUGIN}/${handler.plugin}`;
+
 // While a trusted pre handler runs in a governed workspace, the kit it belongs
 // to: an entry point that has to exit before it answers refuses the call
 // instead of allowing it (scripts/handlers.mjs).
@@ -268,26 +306,28 @@ export async function runHandlers(picked, { event, raw = '{}', cwd = process.cwd
     byKit.set(kit.id, parts);
     if (handler.context) parts.push(handler.context);
     if (!scriptPresent(kit, handler)) continue;
+    // A plugin run outside an IA workspace has nothing to read: no trust check, no process.
+    if (handler.plugin && !workspace) continue;
     const refusal = codeRefusal(item.found ?? (item.found = { kit }), handler);
     if (refusal) {
-      ran.push({ kit: kit.id, run: handler.run, status: 'untrusted', reason: refusal });
+      ran.push({ kit: kit.id, run: runName(handler), status: 'untrusted', reason: refusal });
       if (!skipped.some(s => s.kit === kit.id)) skipped.push({ kit: kit.id, reason: refusal });
       continue;
     }
     const left = budgetMs - (Date.now() - started);
-    if (left <= 0) { ran.push({ kit: kit.id, run: handler.run, status: 'skipped', reason: 'hook budget spent' }); continue; }
+    if (left <= 0) { ran.push({ kit: kit.id, run: runName(handler), status: 'skipped', reason: 'hook budget spent' }); continue; }
     const gating = event === 'pre' && governed;
     const timeoutMs = Math.min(handler.timeout * 1000, left);
     if (gating) gate.kit = kit.id;
     const child = await runChild({
-      argv: [process.execPath, join(kit.dir, handler.run)], cwd, input: raw, timeoutMs,
+      argv: [process.execPath, handler.plugin ? join(PLUGIN_ROOT, handler.plugin) : join(kit.dir, handler.run)], cwd, input: raw, timeoutMs,
       env: childEnv(env, { IA_KIT_ROOT: kit.dir, IA_WORKSPACE_ROOT: workspace ?? '', IA_HOME: home }),
     });
     if (gating) gate.kit = null;
     const failed = Boolean(child.error) || child.timedOut || child.status !== 0;
     // Output cut at the cap may have lost a gate's answer, so a governed gate's cut output decides nothing.
     const answer = failed || (gating && child.truncated.stdout) ? null : answerOf(child.stdout);
-    ran.push({ kit: kit.id, run: handler.run, status: child.error ? 'error' : child.timedOut ? 'timed out' : child.status === 0 ? 'ran' : `exit ${child.status ?? child.signal}`, answered: Boolean(answer), truncated: child.truncated.stdout || child.truncated.stderr });
+    ran.push({ kit: kit.id, run: runName(handler), status: child.error ? 'error' : child.timedOut ? 'timed out' : child.status === 0 ? 'ran' : `exit ${child.status ?? child.signal}`, answered: Boolean(answer), truncated: child.truncated.stdout || child.truncated.stderr });
     // A pre handler that could not decide (it failed to start, crashed, timed out, exited non-zero, or said more than
     // the cap) refuses the call in a governed workspace: a gate that fails must not read as allow.
     if (gating && !answer && (failed || child.truncated.stdout)) {

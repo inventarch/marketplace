@@ -39,7 +39,7 @@ const only = (cli, name, extra = []) => run(cli, ['--task', taskId(name), ...ext
 const firstLine = ran => ran.stdout.split('\n')[0];
 const positionOf = (cli, name) => JSON.parse(only(cli, name, ['--json']).stdout).tasks[0];
 
-test('a current success is evidenced, through evidence.subject; --task exits 0', t => {
+test('REQ-METHOD-02 success: a current success is evidenced, through evidence.subject; --task exits 0', t => {
   const cli = cliFor(t, [{ name: 't-ok', obs: [{ name: 'o-ok', verdict: 'success', subjectRevision: CURRENT }] }]);
   const ran = only(cli, 't-ok');
   assert.equal(ran.status, 0, ran.stdout + ran.stderr);
@@ -54,7 +54,7 @@ test('a current success is evidenced through work.exit-evidence alone', t => {
   assert.equal(positionOf(cli, 't-exit').position, 'evidenced');
 });
 
-test('a closed task with no observation is a finding, and exit 0 does not hide it: the first line says NO EVIDENCE', t => {
+test('REQ-METHOD-02 failure: a closed task with no observation is a finding, and exit 0 does not hide it: the first line says NO EVIDENCE', t => {
   const cli = cliFor(t, [{ name: 't-none' }]);
   const ran = only(cli, 't-none');
   assert.equal(ran.status, 0, ran.stdout + ran.stderr);
