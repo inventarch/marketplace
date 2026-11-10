@@ -569,7 +569,7 @@
     },
     {
       "path": "plugins/ia/hooks/hooks.json",
-      "sha256": "6c439631d59d902220c60f99ef2c22f8ad5e013800ae78cbc48b1859d7a2cd12"
+      "sha256": "6279b2a85bc860ddb5436840280f825c6f85f1bbecf701ed4d4836f0874d6390"
     },
     {
       "path": "plugins/ia/references/design-service.md",

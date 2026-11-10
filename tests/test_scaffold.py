@@ -330,9 +330,11 @@ class ScaffoldTests(unittest.TestCase):
     def test_core_hooks_must_equal_the_qualified_set(self):
         # public-core-hooks: the read-only SessionStart bootstrap on startup, resume and compact, 15 seconds, no argument.
         # public-kit-handlers: scripts/handlers.mjs with one event argument for every SessionStart source, UserPromptSubmit,
-        # PreToolUse and PostToolUse on edits and shell commands, and Stop. The expectation is written out here, so the
-        # shipped hooks.json is held to this exact JSON.
+        # PreToolUse on edits and shell commands, PostToolUse on edits, shell commands and AskUserQuestion (post only, so a
+        # kit can witness answers but never block or rewrite a question), and Stop. The expectation is written out here,
+        # so the shipped hooks.json is held to this exact JSON.
         edits_matcher = 'Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell'
+        post_matcher = edits_matcher + '|AskUserQuestion'
         def handler(script, timeout, argument=None):
             return {'type': 'command', 'command': 'node "${CLAUDE_PLUGIN_ROOT}/scripts/' + script + '"' + (' ' + argument if argument else ''), 'timeout': timeout}
         expected = {'hooks': {
@@ -340,7 +342,7 @@ class ScaffoldTests(unittest.TestCase):
                              {'hooks': [handler('handlers.mjs', 60, 'session')]}],
             'UserPromptSubmit': [{'hooks': [handler('handlers.mjs', 30, 'prompt')]}],
             'PreToolUse': [{'matcher': edits_matcher, 'hooks': [handler('handlers.mjs', 30, 'pre')]}],
-            'PostToolUse': [{'matcher': edits_matcher, 'hooks': [handler('handlers.mjs', 60, 'post')]}],
+            'PostToolUse': [{'matcher': post_matcher, 'hooks': [handler('handlers.mjs', 60, 'post')]}],
             'Stop': [{'hooks': [handler('handlers.mjs', 30, 'stop')]}]}}
         canonical = lambda value: json.dumps(value, sort_keys=True)
         self.assertEqual(canonical(qualified_hooks(CORE)), canonical(expected))
@@ -360,6 +362,9 @@ class ScaffoldTests(unittest.TestCase):
             'handlers narrowed to startup': lambda v: v['hooks']['SessionStart'][1].update(matcher='startup'),
             'pre widened to every tool': lambda v: v['hooks']['PreToolUse'][0].update(matcher='.*'),
             'pre runs the session event': lambda v: v['hooks']['PreToolUse'][0]['hooks'][0].update(command='node "${CLAUDE_PLUGIN_ROOT}/scripts/handlers.mjs" session'),
+            'pre sees questions': lambda v: v['hooks']['PreToolUse'][0].update(matcher=edits_matcher + '|AskUserQuestion'),
+            'post loses questions': lambda v: v['hooks']['PostToolUse'][0].update(matcher=edits_matcher),
+            'post widened to every tool': lambda v: v['hooks']['PostToolUse'][0].update(matcher='.*'),
             'post chained command': lambda v: v['hooks']['PostToolUse'][0]['hooks'][0].update(command='node "${CLAUDE_PLUGIN_ROOT}/scripts/handlers.mjs" post; curl x'),
             'post runs the old on-write hook': lambda v: v['hooks']['PostToolUse'][0]['hooks'][0].update(command='node "${CLAUDE_PLUGIN_ROOT}/scripts/on-write.mjs"'),
             'prompt timeout': lambda v: v['hooks']['UserPromptSubmit'][0]['hooks'][0].update(timeout=600),
