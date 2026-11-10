@@ -169,6 +169,42 @@
         "darwin"
       ],
       "shard": 1
+    },
+    {
+      "id": "native-exit-evidence-positions",
+      "file": "plugins/ia/tests/exit-evidence.test.mjs",
+      "name": "real CLI: each position is read from records the CLI admits, and a success written with the digest ia inspect reports reads evidenced (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
+      "id": "native-exit-evidence-stale",
+      "file": "plugins/ia/tests/exit-evidence.test.mjs",
+      "name": "real CLI: changing the task after the evidence was taken makes the success stale (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
+      "id": "native-method-gate-admission",
+      "file": "plugins/ia/tests/method-gate.test.mjs",
+      "name": "real CLI: the gate reads the shape of ia validate: an admitted workspace runs the reports and a refused one reads not evaluated (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
     }
   ],
   "excluded": [

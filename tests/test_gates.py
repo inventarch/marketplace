@@ -28,7 +28,7 @@ RUNS = [
     'git config --global user.email "gates-ci@example.invalid"',
     'npm ci',
     'node tools/run-native-tests.mjs --shard ${{ matrix.shard }}',
-    'node tools/run-native-tests.mjs --verify native-reports/*',
+    'node tools/run-native-tests.mjs --verify native-reports',
 ]
 
 # Decision public-ci-matrix.
@@ -77,7 +77,7 @@ class GatesWorkflowTests(unittest.TestCase):
     def test_native_lane_has_exact_installed_cli(self):
         self.assertIn('IA_CORE_TEST_CLI: ${{ github.workspace }}/node_modules/@inventarch/cli/dist/main.js', self.text)
         inventory = json.loads((ROOT / 'tools/native-inventory.json').read_text(encoding='utf-8'))
-        self.assertEqual({case['id'] for case in inventory['cases']}, {'native-releases', 'MI-T04', 'MI-T05', 'native-closure-ownership', 'native-closure-plural-workspaces', 'native-closure-capability-roots', 'native-closure-missing-dependencies', 'native-closure-retention-execution', 'native-closure-executor-refusal', 'native-closure-validation-before-publish', 'native-closure-historical-refusal', 'native-closure-cwd-refusal', 'native-carried-ia-kb', 'native-method-position'})
+        self.assertEqual({case['id'] for case in inventory['cases']}, {'native-releases', 'MI-T04', 'MI-T05', 'native-closure-ownership', 'native-closure-plural-workspaces', 'native-closure-capability-roots', 'native-closure-missing-dependencies', 'native-closure-retention-execution', 'native-closure-executor-refusal', 'native-closure-validation-before-publish', 'native-closure-historical-refusal', 'native-closure-cwd-refusal', 'native-carried-ia-kb', 'native-method-position', 'native-exit-evidence-positions', 'native-exit-evidence-stale', 'native-method-gate-admission'})
         self.assertEqual(len({case['id'] for case in inventory['cases']}), len(inventory['cases']))
         for case in inventory['cases']:
             self.assertEqual(case['mode'], 'native')
@@ -194,6 +194,62 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertEqual(sorted(order, key=self.text.index), order)
         self.assertIn('--target "$GITHUB_SHA"', self.text)
         pinned_actions(self, self.text)
+
+
+class MethodGateWorkflowTests(unittest.TestCase):
+    """The method gate on this repository's own records (decision public-method-gate-ci): a report, never a block, and
+    not a required check. It reads the workflow as text and asserts on step text, because the report step is one block."""
+
+    def setUp(self):
+        self.text = (ROOT / '.github' / 'workflows' / 'method-gate.yml').read_text(encoding='utf-8')
+
+    def test_actions_are_pinned_and_nothing_fails_quietly(self):
+        pinned_actions(self, self.text)
+        self.assertEqual(self.text.count('uses: '), 2)
+
+    def test_runs_on_pull_requests_and_main_with_a_read_only_token(self):
+        self.assertIn('on:\n  pull_request:\n    branches: [main]\n  push:\n    branches: [main]\n  workflow_dispatch:\n\npermissions:\n  contents: read\n', self.text)
+        for absent in ('pull_request_target', 'secrets.', 'id-token:', 'contents: write', 'pull-requests: write', 'schedule:', 'workflow_run:'):
+            self.assertNotIn(absent, self.text)
+        self.assertIn("node-version: '22.22.0'", self.text)
+
+    def test_restores_the_workspace_then_runs_the_gate(self):
+        runs = re.findall(r'^ +run: (.*)$', self.text, re.MULTILINE)
+        self.assertEqual([r for r in runs if r != '|'], ['npm ci', 'npm run kits:install'])
+        order = ['run: npm ci', 'run: npm run kits:install', 'node plugins/ia/scripts/method-gate.mjs --root . $plans']
+        self.assertEqual(sorted(order, key=self.text.index), order)
+        self.assertIn("IA_NO_HANDOFF: '1'", self.text)
+
+    def test_every_plan_the_records_author_is_passed_by_its_full_identity(self):
+        self.assertIn("grep -rh --include='*.ia' '^@plan ' .ia/src", self.text)
+        self.assertIn('--plan work-system/definition/plan/', self.text)
+        self.assertIn('test -n "$plans"', self.text)
+        self.assertIn('--budget 600', self.text)
+
+    def test_the_report_is_shown_and_never_blocks(self):
+        for absent in ('--strict', 'exit 1', '|| true', 'continue-on-error'):
+            self.assertNotIn(absent, self.text)
+        self.assertIn('GITHUB_STEP_SUMMARY', self.text)
+        self.assertIn('Method gate (report only: it never blocks)', self.text)
+
+    def test_a_rule_or_task_not_evaluated_raises_a_warning(self):
+        self.assertIn(r"grep -Eq 'NOT EVALUATED|UNKNOWN|task\(s\) unknown'", self.text)
+        self.assertIn('::warning title=Method gate::', self.text)
+
+    def test_the_warning_pattern_matches_what_the_gate_prints(self):
+        pattern = re.compile(r'NOT EVALUATED|UNKNOWN|task\(s\) unknown')
+        for printed in ('EXIT-EVIDENCE: NOT EVALUATED: the task could not be read',
+                        '2 of 2 rules evaluated: exit-evidence NOT EVALUATED',
+                        'ceiling (2 of 2 plan run(s)): 0 beyond the ceiling, 0 first layer (information), 30 clear, 1 UNKNOWN (not evaluated)',
+                        '2 of 2 rules evaluated, 1 task(s) unknown'):
+            self.assertRegex(printed, pattern)
+        self.assertNotRegex('2 of 2 rules evaluated', pattern)
+
+    def test_it_stays_out_of_the_required_checks(self):
+        rules = (ROOT / '.github' / 'rulesets' / 'main.json').read_text(encoding='utf-8')
+        self.assertNotIn('Method gate', rules)
+        self.assertIn('Gates (ubuntu-latest)', rules)
+        self.assertIn('Native verified (ubuntu-latest)', rules)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,465 @@
+#! ia 1.0
+
+@observation drop-door-fallback-evidence
+  meaning
+    says "At tag ia-v1.2.0 the lane skills name no resolve.mjs, the door launcher exists and the changelog states a door tool-list check."
+    answers "What do the public records at ia-v1.2.0 show about dropping the lanes' resolve.mjs fallback?"
+  evidence
+    origin run
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/tree/ia-v1.2.0"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task drop-door-fallback
+    subject-revision "dd03948ae5c29a0c8c53caa46af9f991a7ff4968f7e77f6725375f418f7b0a88"
+    snapshot-revision "63dd2be3ca2da704719b81b4342dd46128b18c07"
+    move Verification
+    verdict success
+  interpretation
+    applies "Tag ia-v1.2.0 is 63dd2be3ca2da704719b81b4342dd46128b18c07 (pull request 12, Release workflow run 41287049465, success). At that tag plugins/ia/scripts/lib/cli.mjs sets PINNED to 3.5.0, plugins/ia/scripts/door.mjs exists, and a search of the three lane skills (work, knowledge, delivery) for resolve.mjs finds no match. plugins/ia/CHANGELOG.md at the tag states that @inventarch/mcp-door@3.5.0 was started over stdio and its tools/list holds ia_session, ia_catalogue and ia_method. docs/smoke/codex-ia-1.2.0.json at the tag has status passed and lists those three tools as seen through Codex."
+    limits "The 2026-11-01 stdio tool-list check is retained only as the changelog's statement and the Codex smoke report; no raw stdio output of the door is kept. resolve.mjs still ships for ia:init, ia:delegate and the kits' cases, as the task says. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-record-decisions-evidence
+  meaning
+    says "Gates run 42511665555 on the merge of pull request 29 concluded success, and the merge holds the 3.6.0 decision and task records."
+    answers "Did the repository checks pass on the merge that added the 3.6.0 decision and work records?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/actions/runs/42511665555"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-record-decisions
+    subject-revision "b94080f5fafbe24e3d30523d4562ba565907b4e4778f087d16015bc0c2eaa4f1"
+    snapshot-revision "40c3c251003bf692dabc9e2ce785d3202fa29ce8"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 29 merged 2026-11-08T18:46:29Z as 40c3c251003bf692dabc9e2ce785d3202fa29ce8. The Gates workflow run 42511665555 on that commit concluded success; its steps include python tools/validate.py and node tools/check-language.mjs, the two commands the task names (.github/workflows/gates.yml). At that commit .ia/src/decisions.ia holds 11 records named public-cli-3-6-0 or beginning with it, docs/decisions.md names public-cli-3-6-0 in 11 rows, docs/roadmap.md mentions cli-3-6-0 in 22 lines, and .ia/src/work.ia holds 18 cli-3-6-0 tasks; public-kit-lookup-installed is present beside public-kit-lookup."
+    limits "The run shows the commands passed, not that each record says the right thing. The command output the task asks for is retained only as this run record. Counts are of lines matching the stated pattern at that commit. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-kit-guidance-evidence
+  meaning
+    says "Pull request 29 changed the four guidance targets the task names, and its Gates run concluded success."
+    answers "Did the install guidance in the kits change in release N, and did the bundle and index checks pass?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/29"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-kit-guidance
+    subject-revision "f2e058c2767ac04a2315298a52cbabe653764f77241be9e3a2b95d780744c8d1"
+    snapshot-revision "40c3c251003bf692dabc9e2ce785d3202fa29ce8"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 29 (merge 40c3c251003bf692dabc9e2ce785d3202fa29ce8) changes kits/ia-authoring/.ia/src/systems/ia-authoring-record/records/conventions.ia, kits/ia-authoring/.ia/src/systems/ia-authoring/records/conventions.ia, kits/ia-authoring/.ia/src/systems/ia-authoring/records/playbooks.ia, kits/ia-kb/.ia/src/systems/ia-kb/records/compliance.ia, kits/ia-kb/.ia/src/systems/ia-kb/records/playbooks.ia, and kits/ia-method/README.md, kits/ia-authoring/README.md and kits/ia-kb/README.md. Those cover the task's named targets: the ia-authoring install convention, the ia-authoring-record convention, the ia-kb playbook and the ia-method README. The pending release note releases/pending/install-bound-kits-before-ia-3-6-0.json in that merge describes the package route. Gates run 42511665555 concluded success, including node tools/bundle-kits.mjs --check and node tools/kit.mjs index --check."
+    limits "The guidance wording is not judged; only that it changed, was bundled and passed the checks. The ia-method README is outside the packed archive. The predecessor task cli-3-6-0-install-migration has no evidence in this catalogue. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-release-notes-n-evidence
+  meaning
+    says "Release pull request 30 folded release N's notes into ia 1.4.0 (minor, from 1.3.0), and its Gates run concluded success."
+    answers "Do the public records show release N's notes written and released as 1.4.0?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/30"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-release-notes-n
+    subject-revision "7054f6aba82b3b8f8c97ee4d77ed593aa9b04ba2848ceba487251f9c30c59579"
+    snapshot-revision "8f32d9fba7399fa2360beab739c164b17b41314e"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 30 (merge 8f32d9fba7399fa2360beab739c164b17b41314e, 2026-11-08T22:49:23Z) states 'ia 1.4.0 (minor, from 1.3.0)' and lists the note 'Install your bound kits before the IA 3.6.0 release', whose source releases/pending/install-bound-kits-before-ia-3-6-0.json (bump minor) tells users to run kit.mjs bind with --install --apply now because the next release's door runs only a kit the repository lock installs. Gates run 42532137017 on that merge concluded success, including node tools/release.mjs check."
+    limits "The wording of the notes is not judged against the task beyond that summary. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-kit-stamp-n-evidence
+  meaning
+    says "Pull request 29 re-cut ia-kb 0.9.3 and ia-authoring 0.1.3; the task's expected ia-method 0.7.3 was not met in release N."
+    answers "Which kits does the public record show re-cut in release N, and what deviates from the task text?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/29"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-kit-stamp-n
+    subject-revision "cb1ce7033a94a3f17c9711a4ee5dd5517a1691ff0a72b8afc462ee9898d23b59"
+    snapshot-revision "40c3c251003bf692dabc9e2ce785d3202fa29ce8"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 40c3c251003bf692dabc9e2ce785d3202fa29ce8 (merge of pull request 29, a merge commit with two parents) kits/ia-kb/releases/0.9.3.json and kits/ia-authoring/releases/0.1.3.json exist, packages/public-kits/package.json reads 1.0.3, and @inventarch/public-kits 1.0.3 has gitHead 40c3c251003bf692dabc9e2ce785d3202fa29ce8 on npm. Gates run 42511665555 concluded success, including node tools/kit.mjs package --check and python tools/consistency.py. This observation claims only ia-kb 0.9.3 and ia-authoring 0.1.3."
+    limits "The task expected ia-method 0.7.3 and that was not met in release N: ia-method stayed at 0.7.2. The pending note releases/pending/install-bound-kits-before-ia-3-6-0.json says: 'ia-method stays at 0.7.2, because its archive is unchanged and only its README text changed'. ia-method 0.7.3 was cut in release N+1 (see the evidence for cli-3-6-0-kit-stamp). The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-host-gates-n-evidence
+  meaning
+    says "The committed Codex smoke report docs/smoke/codex-ia-1.4.0.json records status passed."
+    answers "Is the committed Codex smoke report for release N present and passed?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/blob/40c3c251003bf692dabc9e2ce785d3202fa29ce8/docs/smoke/codex-ia-1.4.0.json"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-host-gates-n
+    subject-revision "de182a5b3ea2e02835b0a97d785ddd1f8b7bc02910bfd5c920d054bd4ae13525"
+    snapshot-revision "40c3c251003bf692dabc9e2ce785d3202fa29ce8"
+    move Verification
+    verdict success
+  interpretation
+    applies "docs/smoke/codex-ia-1.4.0.json, in main through pull request 29 (merge 40c3c251003bf692dabc9e2ce785d3202fa29ce8, added by commit a69d1ad), records status passed, checkedAt 2026-11-08T18:24:08.324Z, codex-cli 0.164.0, repository head efca9659f08c38a9387a6d654b5caa089179959e, not dirty. The task's expected artifact is the Codex smoke report."
+    limits "The report records plugin version 1.3.0, taken at head efca9659 before the release bump; between efca9659 and the ia-v1.4.0 commit plugins/ changes only the two manifests and CHANGELOG.md. It was run on a maintainer machine, not in CI. No public record holds the output of claude plugin validate --strict; only the pull request 29 description says it passed. This record does not claim the Claude half. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-release-n-evidence
+  meaning
+    says "Tag ia-v1.4.0 is the merge of release pull request 30, and @inventarch/public-kits 1.0.3 was published before it merged."
+    answers "Do the public records show release N tagged and its package published first?"
+  evidence
+    origin run
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/releases/tag/ia-v1.4.0"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-release-n
+    subject-revision "ce8ab400feacd4f0a44600a50c6a6bc81b230d0b97f8b84776aafb871555e434"
+    snapshot-revision "8f32d9fba7399fa2360beab739c164b17b41314e"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 30 merged 2026-11-08T22:49:23Z as 8f32d9fba7399fa2360beab739c164b17b41314e; tag ia-v1.4.0 resolves to 8f32d9fba7399fa2360beab739c164b17b41314e; Release workflow run 42532137282 on that commit concluded success. npm lists @inventarch/public-kits 1.0.3 at 2026-11-08T21:35:15Z with gitHead 40c3c251003bf692dabc9e2ce785d3202fa29ce8; Publish public kits run 42511730120 (head 40c3c251003bf692dabc9e2ce785d3202fa29ce8, workflow_dispatch) concluded success. The npm time precedes the merge, as the task requires."
+    limits "The check that a repository installing the kits by the package route returned packets from doors 3.5.x and 3.6.0 is the pull request 29 description, not retained evidence. Who dispatched the runs is not read here. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-pins-evidence
+  meaning
+    says "At the merge of pull request 34 the CLI pins read 3.6.0 and the qualified cohort file exists, and Gates run 42560516872 concluded success."
+    answers "Do the public records show the pins moved to 3.6.0?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/34"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-pins
+    subject-revision "c5aebd37f9c88b5eea019dd292b4c58c689bf4d45605e75d62d1343de65f9081"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 (merge of pull request 34, 2026-11-09T04:12:29Z) package.json pins @inventarch/cli to 3.6.0, plugins/ia/scripts/lib/cli.mjs sets PINNED to 3.6.0, plugins/ia/config/qualified-runtime-3.6.0.json exists, and tools/validate.py requires the released pin 3.6.0. Gates run 42560516872 on that commit concluded success, including python tools/selection.py --check and python tools/validate.py."
+    limits "The task also names the supersedes of public-cli-3-5-0 on public-cli-3-6-0, the status and both rows in docs/decisions.md, AGENTS.md and the .github/dependabot.yml comment; none of these was read here. The task names more files (sources.lock.json, the closure modules, run-native-tests.mjs, verify-native.mjs, export-selection.json, the docs); this record reads the files above and the run, not each one. The command output the task asks to keep is retained only as the run record. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-handoff-guard-evidence
+  meaning
+    says "At the merge of pull request 34 the spawn sites set IA_NO_HANDOFF=1 and a test covers a chosen CLI beside another installed one."
+    answers "Do the public records show the hand-off guard in place and tested?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/34"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-handoff-guard
+    subject-revision "a38a4bd6488f7dabc4784dad344826602e48eb27ef3397348174540844d437f5"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 IA_NO_HANDOFF is set to 1 in plugins/ia/scripts/lib/cli.mjs (runIa spawn, line 97), plugins/ia/scripts/ia.mjs (line 22), plugins/ia/scripts/lib/scratch.mjs, kits/ia-authoring/scripts/lib/scratch.mjs and kits/ia-kb/scripts/check-decisions.mjs. plugins/ia/tests/cli.test.mjs (line 155) asserts that runIa runs the IA_CLI_PATH entry with IA_NO_HANDOFF=1 while the repository installs another @inventarch/cli. Gates run 42560516872 concluded success and its steps include the plugin tests."
+    limits "The test uses a fake CLI that never hands off (the test comment says so); it proves the child's argv and environment, and the real hand-off is judged by the native suite. The method-check and gate-tool spawn sites the task names were not read individually. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-resolver-parity-evidence
+  meaning
+    says "Pull request 29 carries tests that expect the not-installed refusal on the ordinary and the qualified routes, and its Gates run concluded success."
+    answers "Do the public records show the resolver guard covering both routes and tested?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/29"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-resolver-parity
+    subject-revision "fdf34fa2db1d6fd28c5a1283747d2888aa50f7e840a440de6ec8d8d7641d32f3"
+    snapshot-revision "40c3c251003bf692dabc9e2ce785d3202fa29ce8"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 40c3c251003bf692dabc9e2ce785d3202fa29ce8 plugins/ia/tests/install-guard.test.mjs holds tests that resolve and check refuse a bound kit the lock does not install, and tests that qualified resolve and qualified check refuse it before any runtime work. Gates run 42511665555 concluded success and its steps include the plugin tests."
+    limits "The task says it is verified with the install migration, and its predecessor cli-3-6-0-install-migration has no evidence in this catalogue. The qualified tests stop at a named refusal because the fixture is not a cohort-backed native workspace (the test title says so). The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-default-workspace-evidence
+  meaning
+    says "At the merge of pull request 34 tests/closure-native.test.mjs keeps the plural-roots refusal and adds the default-workspace case."
+    answers "Do the public records show the closure default-workspace rule tested?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/34"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-default-workspace
+    subject-revision "f9f3d09beebf4c46aa69bed7843202f54f6f14d4fcd8c88641cc4632b31e9e2c"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 tests/closure-native.test.mjs holds 'native plural workspace roots require separate explicit qualification' (line 38) and 'with no workspace named, the repository default is taken when it is a packaged root or nothing packages a workspace' (line 63). Gates run 42560516872 concluded success."
+    limits "The native cases need Node 22.22.x, which gates.yml sets; the run record is the only evidence they ran. The implementation in closure-native.mjs was not read here. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-kit-sources-evidence
+  meaning
+    says "Pull request 34 changed files under kits/ia-authoring and kits/ia-kb that the task names, and Gates run 42560516872 on its merge concluded success."
+    answers "Do the public records show the kits' sources changed for 3.6.0 in release N+1?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/34"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-kit-sources
+    subject-revision "be8fa8f0bf4c50c3114580c73e3d330438b52318729ea873961ec47636e7695f"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 34 (merge 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2) changes kits/ia-authoring/scripts/lib/scratch.mjs (PINNED 3.6.0, IA_NO_HANDOFF), field-lint.mjs, probe.mjs, ia-authoring-record/records/conventions.ia and playbooks.ia, ia-authoring/records/conventions.ia, and ia-kb/records/conventions.ia and playbooks.ia. Gates run 42560516872 concluded success, including node tools/bundle-kits.mjs --check and node tools/check-language.mjs."
+    limits "Only the changed-file list and the scratch.mjs PINNED 3.6.0 and IA_NO_HANDOFF lines were read. That the conventions, playbooks, field-lint.mjs and probe.mjs now carry 3.6.0 strings is not shown here: their contents were not compared against the task line by line. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-release-notes-evidence
+  meaning
+    says "Release pull request 35 folded release N+1's notes into ia 1.5.0 (minor, from 1.4.0), and tag ia-v1.5.0 is its merge."
+    answers "Do the public records show release N+1's notes written and released as 1.5.0?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/35"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-release-notes
+    subject-revision "27376f79806b7727aec0a987cbfd594f152638c5b01c5bde3cb1b439379b91db"
+    snapshot-revision "e1af262a9bdd92b2e5e82a848211c1454feee41e"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 35 merged 2026-11-09T04:47:57Z as e1af262a9bdd92b2e5e82a848211c1454feee41e; its body states 'ia 1.5.0 (minor, from 1.4.0)' and the note 'Move to IA 3.6.0', which says the door refuses a kit the lock does not install, with the kit.mjs bind --install --apply remedy and that kit.mjs add and bind --install need CLI 3.6.0 where a repository pins the CLI. plugins/ia/CHANGELOG.md at that merge has a 1.5.0 section. Tag ia-v1.5.0 resolves to e1af262a9bdd92b2e5e82a848211c1454feee41e. Gates run 42563767465 concluded success."
+    limits "The note's text was read for the points above, not compared against every clause of the task. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-kit-stamp-evidence
+  meaning
+    says "At the merge of pull request 34 the three kit release files carry the archive digests the task names, and Gates run 42560516872 concluded success."
+    answers "Do the public records show the kits re-cut on 3.6.0 with the stated digests?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/pull/34"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-kit-stamp
+    subject-revision "75197fcd4f7cd9646ad7d69dcec5958cc1abd5562ab5cd2b5142feaad84ec72c"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "At 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 kits/ia-method/releases/0.7.3.json has archive dc9efbf35b56eaf2c14e59eaf680ad479dd518777057a51bc63c0fabc243e7fa, kits/ia-kb/releases/0.9.4.json has 52f0f188c0102a4f3ae392ab1c48c89234d01170126507b2caf23c764b95d398, kits/ia-authoring/releases/0.1.4.json has 9b3d110f098f604426fc6bee3aa470e909d7b2019b5a2bb3b191e935265933f6, and kits/ia-method/.ia/release.json names source.commit 900da4e819766e7c93705888eb51491f1b49c1fd, an ancestor of main. The merge is a merge commit (two parents). @inventarch/public-kits 1.0.4 was published 2026-11-09T04:29:52Z with gitHead 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 (Publish public kits run 42560569469, success). Gates run 42560516872 concluded success, including node tools/kit.mjs package --check, python tools/consistency.py and the Node 22.22.0 tool and plugin tests."
+    limits "The action's local node --test run against the 3.6.0 CLI is not retained; the CI Node tests in the Gates run stand in for it and are not the same run. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-host-gates-evidence
+  meaning
+    says "The committed Codex smoke report docs/smoke/codex-ia-1.5.0.json records status passed."
+    answers "Is the committed Codex smoke report for release N+1 present and passed?"
+  evidence
+    origin check
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/blob/48d4e07d2e475b12420a5ca7bcb9f008d60d18c2/docs/smoke/codex-ia-1.5.0.json"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-host-gates
+    subject-revision "621602d64624da06d429e6e968824e3a21ed65cd6611c33abaf5bfce77f72b51"
+    snapshot-revision "48d4e07d2e475b12420a5ca7bcb9f008d60d18c2"
+    move Verification
+    verdict success
+  interpretation
+    applies "docs/smoke/codex-ia-1.5.0.json, in main through pull request 34 (merge 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2, added by commit cf44252), records status passed, checkedAt 2026-11-09T01:49:16.327Z, codex-cli 0.164.0, repository head 1baaea622456ee574ef1f9e1d39a5ecac2c276b3, plugin version 1.4.0. The task's expected artifact is the Codex smoke report."
+    limits "The report predates commit c52cc1d, which changed the shipped plugins/ia/scripts/lib/cli.mjs and plugins/ia/tests/cli.test.mjs before tag ia-v1.5.0, so it does not cover the released bytes of cli.mjs. It was run on a maintainer machine, not in CI. No public record holds the output of claude plugin validate --strict; only the pull request 34 description says it passed. This record does not claim the Claude half. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
+
+@observation cli-3-6-0-release-and-publish-evidence
+  meaning
+    says "The public records show pull request 34 merged, 1.0.4 published, pull request 35 merged and tag ia-v1.5.0 created."
+    answers "Do the public records show release N+1 released and its package published?"
+  evidence
+    origin run
+    actor "recorded by an AI agent from public PR, CI, tag and npm records"
+    observed-at "2026-11-09T15:10:45Z"
+    captured-at "2026-11-09T15:10:45Z"
+    workspace "inventarch-marketplace"
+    locator "https://github.com/inventarch/marketplace/releases/tag/ia-v1.5.0"
+    revision "unversioned"
+    bundle "not retained"
+    digest "not retained"
+    availability available
+    subject @task cli-3-6-0-release-and-publish
+    subject-revision "d20c8c12f95d3609aa0cb33dc8168a9e50fde6dcf5b2f80d19c8a2e193e15fc4"
+    snapshot-revision "e1af262a9bdd92b2e5e82a848211c1454feee41e"
+    move Verification
+    verdict success
+  interpretation
+    applies "Pull request 34 merged as 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2 (2026-11-09T04:12:29Z). npm lists @inventarch/public-kits 1.0.4 at 2026-11-09T04:29:52Z with gitHead 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2; Publish public kits run 42560569469 (head 48d4e07d2e475b12420a5ca7bcb9f008d60d18c2, workflow_dispatch) concluded success. Pull request 35 merged as e1af262a9bdd92b2e5e82a848211c1454feee41e (2026-11-09T04:47:57Z); tag ia-v1.5.0 resolves to e1af262a9bdd92b2e5e82a848211c1454feee41e; Release workflow run 42563767508 on that commit concluded success."
+    limits "Who dispatched the runs, and the statement that the release pull request was opened by hand, are not read here. The mapping from these public records to the task's exit is an inference by the recording agent, not a maintainer's review. No evidence bundle is kept (durable evidence bundles are deferred), so these fields read not retained and the learning-system consumer cannot read this record."
+    reason "So the method gate reads this closed task as evidenced, from public records a reader can open."
+    basis inference
+  retention
+    status retained
+    explanation "The record is retained; no evidence bundle is."
