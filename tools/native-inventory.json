@@ -169,6 +169,30 @@
         "darwin"
       ],
       "shard": 1
+    },
+    {
+      "id": "native-exit-evidence-positions",
+      "file": "plugins/ia/tests/exit-evidence.test.mjs",
+      "name": "real CLI: each position is read from records the CLI admits, and a success written with the digest ia inspect reports reads evidenced (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
+      "id": "native-exit-evidence-stale",
+      "file": "plugins/ia/tests/exit-evidence.test.mjs",
+      "name": "real CLI: changing the task after the evidence was taken makes the success stale (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
     }
   ],
   "excluded": [
