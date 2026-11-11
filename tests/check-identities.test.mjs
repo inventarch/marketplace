@@ -212,7 +212,8 @@ test('input changes during reading remain not evaluated; payload changes refuse'
   await import(tool.href);
   for (const target of ['registry', 'payload']) {
     const f = fixture(t), original = fs.lstatSync;
-    const selected = target === 'registry' ? f.options.registryPath : join(f.root, 'design.md');
+    // The tool reads the payload under the snapshot's real path (macOS /private/var, Windows long names), so watch that path.
+    const selected = target === 'registry' ? f.options.registryPath : fs.realpathSync.native(join(f.root, 'design.md'));
     let observations = 0;
     t.mock.method(fs, 'lstatSync', function(path, ...args) {
       if (path === selected && ++observations === (target === 'registry' ? 2 : 3)) {
