@@ -1,0 +1,33 @@
+{
+  "format": "inventarch-marketplace.changeset.v1",
+  "plugin": "ia",
+  "version": "1.7.0",
+  "previous": "1.6.0",
+  "bump": "minor",
+  "notes": [
+    {
+      "id": "advisory-method-run-points",
+      "bump": "minor",
+      "title": "Run the method reports as advisory hooks for the method kit",
+      "summary": "The bundled inventarch/ia-method-kit is now 0.9.0, and the public kits package is 1.0.6. The kit ships onwrite.json and handlers.json, which run one new script of the core, scripts/method-advise.mjs, after a write to a .ia record, after a Bash or PowerShell call and at a resumed or compacted session. It reports the ceiling and the exit evidence of the tasks in the changed or uncommitted records (at most 2 from a written file, 3 per call), says how many tasks it evaluated and how many it did not, prints anything it could not evaluate as not evaluated and never as clear, never downloads a CLI, and blocks nothing. It is not a complete check: the full report, scripts/method-gate.mjs, is. A handlers.json run may now be exactly ${PLUGIN}/scripts/method-advise.mjs, an allowlist of that one script, accepted on session and tool post handlers only, run only for a trusted kit inside an IA workspace. The ia-method contract is 0.2.0 with REQ-METHOD-02, the exit evidence of closed tasks. A core older than this release skips the kit's handlers.json with a reason, and its onwrite.json command finds no script and reports nothing; upgrade the plugin with the kit. The method gate script is unchanged; ceiling.mjs now honours IA_CORE_METHOD_READ_TIMEOUT_MS as exit-evidence.mjs does."
+    },
+    {
+      "id": "kit-post-hooks-see-answers",
+      "bump": "patch",
+      "title": "Kit post hooks see the person's answers",
+      "summary": "The ia plugin's PostToolUse hook now also runs for AskUserQuestion, so a kit's post handler that declares AskUserQuestion receives the question and its answers. ia-governance uses this to witness a plan approval or a change acceptance the person gives through a question; before, those answers never reached it, and a ledger whose only cure was the person's acceptance could not be sealed. AskUserQuestion reaches post handlers only: no kit can block or rewrite a question. This widens the qualified hook set for review (decision public-kit-handlers)."
+    },
+    {
+      "id": "re-cut-the-method-kit-0-8",
+      "bump": "patch",
+      "title": "Re-cut the method kit 0.8.0 with declared activation",
+      "summary": "The bundled inventarch/ia-method-kit is now 0.8.0, and the public kits package is 1.0.5. Eleven governance rules declare when they apply, by phase, primitive or move; the two blocking rules stay universal. The lines are declarations: the resolvers do not yet put move, artifact-set or word into the coordinate, so they narrow no delivery today. The kit README adds the activation table, the authoring contract rows as declared and not evaluated, and the open items. Releases up to 0.7.3 are unchanged."
+    },
+    {
+      "id": "the-method-gate-checks-that-the-cli",
+      "bump": "patch",
+      "title": "The method gate checks that the CLI admits the workspace",
+      "summary": "method-gate.mjs asks the CLI to validate the workspace before it runs the reports, and evaluates only a workspace reported as admitted. A refused workspace, any other status, or a validate that cannot run leaves both rules not evaluated and names the error codes, and the JSON carries admission. A child's printed time limit is at least one second. The README says this catalogue's own CI runs the gate as a report, and that a repository that ignores its lock restores it first."
+    }
+  ]
+}
