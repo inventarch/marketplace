@@ -23,6 +23,8 @@ const root = resolve(option('--root') ?? '.');
 const plan = option('--plan');
 const only = option('--task');
 const asJson = args.includes('--json');
+// One CLI read's time limit in milliseconds; the environment can shorten it (the method hooks do).
+const READ_TIMEOUT_MS = Number(process.env.IA_CORE_METHOD_READ_TIMEOUT_MS) > 0 ? Number(process.env.IA_CORE_METHOD_READ_TIMEOUT_MS) : 180_000;
 
 function usage() {
   process.stderr.write('usage: ceiling.mjs [--root <repo>] [--plan <identity>] [--task <identity>] [--json]\n');
@@ -41,7 +43,7 @@ try {
   const graph = {};
   const load = identity => {
     if (identity in graph) return graph[identity];
-    const ran = runIa(root, ['inspect', identity], { cli });
+    const ran = runIa(root, ['inspect', identity], { cli, timeoutMs: READ_TIMEOUT_MS });
     const record = ran.code === 0 ? ran.json?.records?.find(r => r.identity === identity) : undefined;
     graph[identity] = record ? nodeFromInspect(record) : null;
     return graph[identity];

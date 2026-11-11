@@ -1,19 +1,21 @@
 #! ia 1.0
 
 @contract ia-method
-  version "0.1.0"
+  version "0.2.0"
   meaning
-    says "What the IA methodology kit guarantees mechanically, one requirement per blocking law. The ia plugin's ceiling report evaluates each requirement over a workspace's work records; each case names the test that exercises it. The kit's principles, conventions, playbooks and capabilities are guidance an agent applies, and no requirement here covers them."
+    says "What the IA methodology kit guarantees mechanically, one requirement per promise a check can observe. The ia plugin's reports evaluate each requirement over a workspace's work records, as advisory reports that block nothing; each case names the test that exercises it. The principles, conventions, playbooks and capabilities are guidance an agent applies, and no requirement here covers them."
     answers "What does the methodology kit guarantee, and how is each guarantee checked?"
   invariants
     REQ-METHOD-01 "The ceiling report places each task by the longest chain of required tasks between it and a provisional foundation (a cited spec that is not accepted, a required decision with no choice, or a decision with no choice that grounds a cited spec): first layer when it rests on one directly and on no task that rests on one, beyond the ceiling when any task it requires rests on one, and unknown when a record it depends on cannot be read. It names every provisional foundation the task waits on. Checking a task exits 1 beyond the ceiling and 2 when unknown (law method-provisional-foundation-ceiling)."
+    REQ-METHOD-02 "A task whose status is closed is evidenced when an observation names it (as its evidence subject, or through the task's exit-evidence field) with verdict success at the task's current revision and no current refusal on the same revision: a refusal outweighs a success, a success at another revision reads stale, an inconclusive or absent verdict reads no evidence, and a record that cannot be read reads unknown, never evidenced. Every closed task with none of these is a finding, whatever the report's exit status. An observation whose interpretation basis says there was nothing to run is listed beside the findings as the author's own declaration, which no check verifies (principle method-claims-within-evidence)."
   relationships
     governs @law method-provisional-foundation-ceiling
+    cites @principle method-claims-within-evidence
     cites @agent ia-method-steward
 
 @check ia-method-coverage
   meaning
-    says "Checks that every requirement of the ia-method contract has a success case and a failure case. IA evaluates the coverage; the ceiling itself is evaluated by the plugin's ceiling report, which ia validate does not run."
+    says "Checks that every requirement of the ia-method contract has a success case and a failure case. IA evaluates the coverage; the requirements themselves are evaluated by the plugin's ceiling and exit-evidence reports, and ia validate runs neither."
     answers "Is every ia-method requirement covered by cases?"
   check
     runs COMP-COVERAGE
@@ -46,3 +48,29 @@
     evaluator "plugins/ia/tests/ceiling.test.mjs :: REQ-METHOD-01 failure: a second layer is beyond the ceiling"
   relationships
     implements @contract ia-method#REQ-METHOD-01
+
+@case method-req-02-success
+  meaning
+    says "A closed task with a current success observation naming it as its evidence subject is reported evidenced."
+    answers "Does the exit-evidence report accept a current success?"
+  scenario
+    kind success
+    given "Work records: a closed task; an observation whose subject is that task, with verdict success and the task's current revision."
+    request "Run the exit-evidence report for the task."
+    expected "The task is evidenced, naming the observation, and the report exits 0."
+    evaluator "plugins/ia/tests/exit-evidence.test.mjs :: REQ-METHOD-02 success: a current success is evidenced, through evidence.subject; --task exits 0"
+  relationships
+    implements @contract ia-method#REQ-METHOD-02
+
+@case method-req-02-failure
+  meaning
+    says "A closed task that no observation holds a verdict for is reported as a finding, and the exit status does not hide it."
+    answers "Does the exit-evidence report catch a closed task with no evidence?"
+  scenario
+    kind failure
+    given "Work records: a closed task and no observation that names it."
+    request "Run the exit-evidence report."
+    expected "The first line says NO EVIDENCE for the task, and the report still exits 0, so the position and not the exit status is what to read."
+    evaluator "plugins/ia/tests/exit-evidence.test.mjs :: REQ-METHOD-02 failure: a closed task with no observation is a finding, and exit 0 does not hide it: the first line says NO EVIDENCE"
+  relationships
+    implements @contract ia-method#REQ-METHOD-02

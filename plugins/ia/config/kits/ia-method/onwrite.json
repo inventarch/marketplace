@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "onWrite": [
+    {
+      "name": "method-advise",
+      "extensions": [
+        ".ia"
+      ],
+      "argv": [
+        "${NODE}",
+        "${PLUGIN}/scripts/method-advise.mjs"
+      ],
+      "timeout": 25
+    }
+  ]
+}
