@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "patch",
-  "title": "The method gate checks that the CLI admits the workspace",
-  "summary": "method-gate.mjs asks the CLI to validate the workspace before it runs the reports, and evaluates only a workspace reported as admitted. A refused workspace, any other status, or a validate that cannot run leaves both rules not evaluated and names the error codes, and the JSON carries admission. A child's printed time limit is at least one second. The README says this catalogue's own CI runs the gate as a report, and that a repository that ignores its lock restores it first.",
-  "plugins": [
-    "ia"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "patch",
-  "title": "Kit post hooks see the person's answers",
-  "summary": "The ia plugin's PostToolUse hook now also runs for AskUserQuestion, so a kit's post handler that declares AskUserQuestion receives the question and its answers. ia-governance uses this to witness a plan approval or a change acceptance the person gives through a question; before, those answers never reached it, and a ledger whose only cure was the person's acceptance could not be sealed. AskUserQuestion reaches post handlers only: no kit can block or rewrite a question. This widens the qualified hook set for review (decision public-kit-handlers).",
-  "plugins": [
-    "ia"
-  ]
-}
