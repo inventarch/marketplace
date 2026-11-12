@@ -1,7 +1,7 @@
 {
   "format": 2,
   "kit": "inventarch/ia-method-kit",
-  "latest": "0.7.3",
+  "latest": "0.9.0",
   "releases": [
     {
       "version": "0.1.0",
@@ -107,6 +107,32 @@
       "source": {
         "repository": "https://github.com/inventarch/marketplace.git",
         "commit": "900da4e819766e7c93705888eb51491f1b49c1fd"
+      }
+    },
+    {
+      "version": "0.8.0",
+      "archive": "e6c69e6f8aae1d66105b3b6b8d42f8056670d757d696ec2c21b9bfa3c4a561a4",
+      "manifest": "5f05809fe747b4b1388dbc2bf6ea0544ace943a6dd95af9a4a32c068ece12311",
+      "sources": "5ae82f3a225bb32f84b6f30e6c96e41643a105a42fbf875c2f3ef4e0b5f9a914",
+      "language": "inventarch/language ^3.2.0",
+      "cli": "@inventarch/cli 3.6.0",
+      "file": "releases/0.8.0.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "46fb19c0b1384cbdee8d690839a93c15d0a483b8"
+      }
+    },
+    {
+      "version": "0.9.0",
+      "archive": "e63c1bec90bdf6bdfe2f93f170daf9f6e6812d59ed240849d8e2c0a94a747d87",
+      "manifest": "ae735092cc2724c4f4ca3c23799389f9df91fba968d1c166ddb61cfaebc2003f",
+      "sources": "6d1b4091d15a51893790ab3a81c4dbf82698beecd7f4b45ffd4e5449860851b1",
+      "language": "inventarch/language ^3.2.0",
+      "cli": "@inventarch/cli 3.6.0",
+      "file": "releases/0.9.0.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "c8b971bc8242794c48652b4e79d6e650d6331ee9"
       }
     }
   ]

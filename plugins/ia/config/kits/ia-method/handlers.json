@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "session": [
+    {
+      "run": "${PLUGIN}/scripts/method-advise.mjs",
+      "events": [
+        "resume",
+        "compact"
+      ],
+      "timeout": 25
+    }
+  ],
+  "tool": [
+    {
+      "run": "${PLUGIN}/scripts/method-advise.mjs",
+      "phase": "post",
+      "match": "Bash|PowerShell",
+      "timeout": 25
+    }
+  ]
+}

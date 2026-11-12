@@ -9,6 +9,8 @@
     requires "Capture the ten concerns at the smallest useful depth before delivery, and give a reason for each concern marked not applicable. Do not require a brief, decision, spec and plan for every small reversible change; add an artifact when it has an independent job."
   subject
     subject-word spec
+  activation
+    activate when phase is plan
 
 @convention method-handoff-packet
   meaning
@@ -19,6 +21,8 @@
     requires "End every handoff with the seven-part packet, never hand off one that lacks claim labels or a clean-start verification, and leave results and open work in their owning sources rather than in the conversation."
   subject
     subject-word task
+  activation
+    activate when phase is learn
 
 @convention method-reconcile-on-change
   meaning
@@ -29,6 +33,8 @@
     requires "On each listed change, update the owning records and links, the delivery disposition and the next action before moving on."
   subject
     subject-word decision
+  activation
+    activate when phase is learn
 
 @convention method-improvement-lifecycle
   meaning
@@ -39,3 +45,5 @@
     requires "Give every improvement its target, owning system and path, exact before text and digest, candidate, verification and reversal; leave review and application to the target's owner, and treat a target that moved since its digest as stale."
   subject
     subject-word improvement
+  activation
+    activate when phase is learn

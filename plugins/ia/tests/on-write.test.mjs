@@ -10,7 +10,7 @@ import { mkdirSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { MAX_CONTEXT } from '../scripts/on-write.mjs';
+import { matches, MAX_CONTEXT } from '../scripts/on-write.mjs';
 import { envFor, fakeCli, makeKit, recordSources, run, sandbox } from './helpers/fixtures.mjs';
 
 // A check that answers as a hook would, naming the file from its stdin payload.
@@ -92,4 +92,18 @@ test('the answer stays within 8,000 characters however much the checks say', t =
   const text = context(hook('README.md')).additionalContext;
   assert.ok(text.length <= MAX_CONTEXT, `${text.length}`);
   assert.ok(text.endsWith(' [truncated]'));
+});
+
+test('an entry with no marker that runs the core\'s own script matches a record under .ia/src in a workspace with no lock file, and only a .ia file', t => {
+  const { dir, kitsDir } = world(t);
+  const method = makeKit(kitsDir, { folder: 'method', id: 'inventarch/method-kit' });
+  writeFileSync(join(method.dir, 'onwrite.json'), JSON.stringify({ format: 1, onWrite: [{ name: 'method-advise', extensions: ['.ia'], argv: ['${NODE}', '${PLUGIN}/scripts/method-advise.mjs'], timeout: 25 }] }));
+  recordSources(method.dir);
+  const records = join(dir, 'repo', '.ia', 'src', 'systems', 'x', 'records');
+  mkdirSync(records, { recursive: true });
+  const kit = { folder: 'method', dir: method.dir };
+  assert.equal(matches(join(records, 'a.ia'), [kit]).length, 1);
+  assert.equal(matches(join(records, 'a.IA'), [kit]).length, 1, 'extensions match without regard to case');
+  assert.equal(matches(join(records, 'a.md'), [kit]).length, 0);
+  assert.deepEqual(matches(join(records, 'a.ia'), [kit])[0].entry.argv, ['${NODE}', '${PLUGIN}/scripts/method-advise.mjs']);
 });

@@ -73,7 +73,7 @@
       primary Decision
       Attention means "Before each step, re-read the mandate records that bear on it."
       Inference means "Stay inside the mandate's moves and scope at every step; when the work needs more, stop and ask the person."
-      Decision means "This kit reads and applies mandate records only. A change to one goes to its owner as a proposal, and enforcement (gates, recorded evidence, verifiers) is not part of this public kit."
+      Decision means "This kit reads and applies mandate records only. A change to one goes to its owner as a proposal. Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit."
       Learning means "Record where applying a mandate changed or stopped a step."
     learn
       primary Learning

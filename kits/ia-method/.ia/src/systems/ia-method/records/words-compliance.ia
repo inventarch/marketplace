@@ -114,7 +114,7 @@
       primary Decision
       Attention means "Before each step, re-read the check records that bear on it."
       Inference means "Run the checks the workspace already provides, ia validate first, and report each one verbatim."
-      Decision means "This kit reads and applies check records only. A change to one goes to its owner as a proposal, and enforcement (gates, recorded evidence, verifiers) is not part of this public kit."
+      Decision means "This kit reads and applies check records only. A change to one goes to its owner as a proposal. Mechanical checks run as advisory reports (the ceiling and the exit evidence of closed tasks) and block nothing; other enforcement and judgement-based assessment are not part of this public kit."
       Learning means "Record where applying a check changed or stopped a step."
     learn
       primary Learning

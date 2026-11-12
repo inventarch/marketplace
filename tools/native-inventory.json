@@ -193,6 +193,42 @@
         "darwin"
       ],
       "shard": 1
+    },
+    {
+      "id": "native-method-advise-placement",
+      "file": "plugins/ia/tests/method-advise.test.mjs",
+      "name": "real CLI: a written task record is placed by the real reports, from the identity derived from its header (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
+      "id": "native-method-advise-hooks",
+      "file": "plugins/ia/tests/method-advise.test.mjs",
+      "name": "real CLI: the hook entry points deliver the advice for a Write of a .ia file and for a Bash call, with the kit as shipped (opt-in: IA_CORE_TEST_CLI; needs the stamped bundled kit)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
+      "id": "native-method-gate-admission",
+      "file": "plugins/ia/tests/method-gate.test.mjs",
+      "name": "real CLI: the gate reads the shape of ia validate: an admitted workspace runs the reports and a refused one reads not evaluated (opt-in: IA_CORE_TEST_CLI)",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
     }
   ],
   "excluded": [

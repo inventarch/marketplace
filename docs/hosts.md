@@ -20,7 +20,7 @@ In Claude Code the InventArch account is the core's bundled remote MCP server `i
 
 ## Kit trust and process hygiene
 
-The core's hooks and its checker run kit code in three places: `handlers.json` scripts (`scripts/handlers.mjs`), `onwrite.json` commands (`scripts/on-write.mjs`, also run by `handlers.mjs post`) and `checks.json` commands (`scripts/check.mjs`). The same rule decides all three (decision `public-kit-trust`, `scripts/lib/trust.mjs`).
+The core's hooks and its checker run kit code in three places: `handlers.json` scripts (`scripts/handlers.mjs`; a trusted kit's `run` may also be the one script of the core named `${PLUGIN}/scripts/method-advise.mjs`, decision `public-method-advisory-run-points`), `onwrite.json` commands (`scripts/on-write.mjs`, also run by `handlers.mjs post`) and `checks.json` commands (`scripts/check.mjs`). The same rule decides all three (decision `public-kit-trust`, `scripts/lib/trust.mjs`).
 
 **Trust.** A kit runs code only when both hold:
 

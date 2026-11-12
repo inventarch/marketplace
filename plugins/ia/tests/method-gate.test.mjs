@@ -3,7 +3,7 @@
 // blocks. The reports run as child processes against a stand-in CLI.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, realpathSync, rmSync } from 'node:fs';
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -76,6 +76,78 @@ test('a missing CLI leaves both rules not evaluated and says nothing was checked
   assert.equal(json.rules[1].counts, null);
   assert.deepEqual(json.notEvaluated, ['ceiling', 'exit-evidence']);
   assert.match(json.rules[0].reason, /IA-CORE-CLI-MISSING/);
+});
+
+test('a refused workspace reads both rules not evaluated with the error codes, runs no report, and the workflow warning pattern matches', t => {
+  const cli = findings(t, { refused: ['IA-LANG-DISCRIMINATOR-UNREGISTERED', 'IA-LANG-DUPLICATE-IDENTITY'] });
+  const ran = gate(cli);
+  assert.equal(ran.status, 0, ran.stdout + ran.stderr);
+  assert.match(ran.stdout, /CEILING: NOT EVALUATED: workspace not admitted: IA-LANG-DISCRIMINATOR-UNREGISTERED, IA-LANG-DUPLICATE-IDENTITY, run ia validate/);
+  assert.match(ran.stdout, /EXIT-EVIDENCE: NOT EVALUATED: workspace not admitted/);
+  assert.match(ran.stdout, /0 of 2 rules evaluated: nothing was checked/);
+  assert.match(ran.stderr, /0 of 2 rules evaluated: ceiling, exit-evidence NOT EVALUATED; nothing was checked/);
+  assert.match(ran.stdout, /NOT EVALUATED|UNKNOWN|task\(s\) unknown/, 'the workflow grep pattern fires');
+  assert.deepEqual(cli.calls().map(c => c[0]), ['validate'], 'no report ran against a refused workspace');
+  const report = JSON.parse(gate(cli, ['--json']).stdout);
+  assert.deepEqual(report.admission, { status: 'refused', errors: ['IA-LANG-DISCRIMINATOR-UNREGISTERED', 'IA-LANG-DUPLICATE-IDENTITY'] });
+  assert.equal(report.evaluated, 0);
+  assert.equal(report.rules[1].counts, null);
+});
+
+test('an admitted workspace runs the reports and the JSON says so', t => {
+  const report = JSON.parse(gate(findings(t), ['--json']).stdout);
+  assert.deepEqual(report.admission, { status: 'admitted', errors: [] });
+  assert.equal(report.evaluated, 2);
+});
+
+test('a validate that cannot run leaves both rules not evaluated and says to run ia validate', t => {
+  const cli = findings(t, { slow: ['validate'] });
+  const ran = gate(cli, ['--budget', '1', '--json']);
+  assert.equal(ran.status, 0, ran.stdout + ran.stderr);
+  const report = JSON.parse(ran.stdout);
+  assert.equal(report.admission.status, 'unavailable');
+  assert.equal(report.evaluated, 0);
+  assert.match(report.rules[0].reason, /workspace not admitted: ia validate did not answer .*run ia validate/);
+});
+
+test('any status but admitted reads both rules not evaluated and runs no report', t => {
+  const cli = findings(t, { validateStatus: 'partial' });
+  const ran = gate(cli, ['--json']);
+  assert.equal(ran.status, 0, ran.stdout + ran.stderr);
+  const report = JSON.parse(ran.stdout);
+  assert.deepEqual(report.admission, { status: 'partial', errors: [] });
+  assert.equal(report.evaluated, 0);
+  assert.match(report.rules[0].reason, /workspace not admitted: ia validate reported status partial, run ia validate/);
+  assert.deepEqual(cli.calls().map(c => c[0]), ['validate']);
+});
+
+test('a validate that outlasts the budget reads not evaluated with a timeout of at least 1 s, never 0 s', t => {
+  const cli = findings(t, { slow: ['validate'] });
+  const report = JSON.parse(gate(cli, ['--budget', '1', '--json']).stdout);
+  assert.equal(report.admission.status, 'unavailable');
+  assert.match(report.rules[0].reason, /ia validate did not answer \(timed out after 1 s\)/);
+});
+
+const REAL_CLI = process.env.IA_CORE_TEST_CLI;
+
+test('real CLI: the gate reads the shape of ia validate: an admitted workspace runs the reports and a refused one reads not evaluated (opt-in: IA_CORE_TEST_CLI)', { skip: !REAL_CLI && 'set IA_CORE_TEST_CLI to an @inventarch/cli dist/main.js' }, t => {
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-core-gate-e2e-')));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const env = { ...process.env, IA_CLI_PATH: REAL_CLI, IA_NO_HANDOFF: '1' };
+  const init = spawnSync(process.execPath, [REAL_CLI, 'init', root, '--host', 'none', '--apply', '--yes', '--json'], { encoding: 'utf8', env });
+  assert.equal(init.status, 0, init.stdout + init.stderr);
+  const raw = spawnSync(process.execPath, [REAL_CLI, 'validate', '--root', root, '--json'], { encoding: 'utf8', env });
+  const shape = JSON.parse(raw.stdout);
+  assert.equal(typeof shape.status, 'string', 'validate --json has a string status');
+  assert.ok(Array.isArray(shape.findings), 'and a findings array');
+  const admitted = JSON.parse(spawnSync(process.execPath, [SCRIPT, '--root', root, '--json'], { env, encoding: 'utf8' }).stdout);
+  assert.equal(admitted.admission.status, 'admitted', JSON.stringify(shape.findings).slice(0, 1500));
+  writeFileSync(join(root, '.ia', 'src', 'broken.ia'), '#! ia 1.0\n\n@workspace broken-twin\n  meaning\n    says "A second workspace with the same name."\n    answers "Does the gate refuse?"\n  composition\n    systems [@system workspace-system]\n    sources [".ia/src @authored"]\n\n@workspace broken-twin\n  meaning\n    says "Again."\n    answers "Again?"\n  composition\n    systems [@system workspace-system]\n    sources [".ia/src @authored"]\n');
+  const refused = JSON.parse(spawnSync(process.execPath, [SCRIPT, '--root', root, '--json'], { env, encoding: 'utf8' }).stdout);
+  assert.equal(refused.admission.status, 'refused');
+  assert.ok(refused.admission.errors.length > 0, 'the refusal names error codes');
+  assert.equal(refused.evaluated, 0);
+  assert.match(refused.rules[0].reason, /^workspace not admitted: IA-[A-Z-]+/);
 });
 
 test('two --plan values run each rule once per plan', t => {

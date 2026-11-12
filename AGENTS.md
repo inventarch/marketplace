@@ -45,6 +45,6 @@ claude plugin validate --strict plugins/ia && claude plugin validate --strict .
 node tools/smoke-codex.mjs --codex <codex executable> --report <file>   # after a manifest, skill or CODEX.md change
 ```
 
-CI (`.github/workflows/gates.yml`) runs the first eleven on Ubuntu for every pull request into `main`, and on Ubuntu, Windows and macOS for every push to `main` (`public-ci-matrix`), plus the native qualification shards (`tools/run-native-tests.mjs`, with `IA_CORE_TEST_CLI` set). The two host gates stay local.
+CI (`.github/workflows/gates.yml`) runs the first eleven on Ubuntu for every pull request into `main`, and on Ubuntu, Windows and macOS for every push to `main` (`public-ci-matrix`), plus the native qualification shards (`tools/run-native-tests.mjs`, with `IA_CORE_TEST_CLI` set). The two host gates stay local. A separate workflow, `.github/workflows/method-gate.yml`, runs the ia plugin's method gate on this repository's own records for pull requests and pushes to `main` (`public-method-gate-ci`): a report only, not a required check, and not one of the eleven.
 
 Validation and tests never create remotes, push, publish, install, invite or change access. Those are separate, operator-authorized steps. Publishing `@inventarch/public-kits` is one: only an operator dispatches `.github/workflows/publish-public-kits.yml` (decision `public-kits-package`). Starting the release pull request is another: only an operator dispatches `.github/workflows/release-pr.yml`, and only an operator merges what it opens.
