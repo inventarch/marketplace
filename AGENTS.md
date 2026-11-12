@@ -1,6 +1,6 @@
 # Work boundaries
 
-This is the public InventArch marketplace (`inventarch/marketplace`, catalogue name `inventarch`), cut on 2026-10-30 with fresh history (decision `public-catalogue-cut`). Anyone can read every byte here: a method that must stay proprietary does not belong in this repository. Read README.md and docs/decisions.md first. Every decision has a `@decision` record in `.ia/src/decisions.ia` and a row in docs/decisions.md; every Markdown document is a record's `source` or sits under a spec's `covers` path; follow-up work is a `@task` in `.ia/src/work.ia`. `tools/validate.py` refuses a decision or document without its record.
+This is the public InventArch marketplace (`inventarch/marketplace`, catalogue name `inventarch`), cut on 2026-10-30 with fresh history (decision `public-catalogue-cut`). Anyone can read every byte here: a method that must stay proprietary does not belong in this repository. Read README.md and docs/decisions.md first. Every decision has a `@decision` record in `.ia/src/decisions.ia` and a row in docs/decisions.md; every Markdown document is a record's `source` or sits under a spec's `covers` path. Plans, milestones and tasks are not kept here: open work is in the GitHub issues. `tools/validate.py` refuses a decision or document without its record.
 
 It owns one plugin and three kits:
 
