@@ -572,7 +572,7 @@
       "sha256": "518d6941814c26e7c7cd59c890bc30094bb1b6d16fd84218d79f601d685042cd"
     },
     {
-      "path": "plugins/ia/config/qualified-runtime-3.6.0.json",
+      "path": "plugins/ia/config/qualified-runtime-3.8.0.json",
       "sha256": "109eb33888143910d32bc56582a244ad27715e927717967c6db351de4aa967ae"
     },
     {

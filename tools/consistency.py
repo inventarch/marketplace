@@ -235,6 +235,16 @@ def _parents(folder):
             yield folder
 
 
+def caret_admits(range_text, version):
+    """Does the caret range ^X.Y.Z admit version? Within a major from 1 up: same major, and not lower."""
+    match = re.fullmatch(r'\^(\d+)\.(\d+)\.(\d+)', range_text or '')
+    parts = re.fullmatch(r'(\d+)\.(\d+)\.(\d+)', version or '')
+    if not match or not parts:
+        return False
+    low, got = tuple(map(int, match.groups())), tuple(map(int, parts.groups()))
+    return low[0] >= 1 and got[0] == low[0] and got >= low
+
+
 def pins(root, files, texts, problems):
     lock = read_json(root, 'sources.lock.json')
     released = lock['released']
@@ -263,14 +273,17 @@ def pins(root, files, texts, problems):
         if len(packages) != 1 or packages[0].get('version') != language or packages[0].get('archive') != archive:
             got = ', '.join(f"{p.get('version')} ({p.get('archive', '')[:12]})" for p in packages) or 'none'
             problems.append(f'{name}: {LANGUAGE} {got}, sources.lock.json pins {language} ({archive[:12]})')
-        requests = [r.get('range') for r in kit_lock.get('requests', []) if r.get('id') == LANGUAGE]
-        if requests != ['^' + language]:
-            problems.append(f'{name}: requests {LANGUAGE} {requests}, expected ^{language}')
+        # A kit declares the minimum base it is proven on (ia floor --verify), which may be lower than the
+        # base its lock pins: the range must admit the locked base, and the lock must request the same range.
         release_name = kit + '/.ia/release.json'
         release = read_json(root, release_name) if release_name in texts else {}
         ranges = [d.get('range') for d in release.get('dependencies', []) if d.get('id') == LANGUAGE]
-        if ranges != ['^' + language]:
-            problems.append(f'{release_name}: depends on {LANGUAGE} {ranges}, expected ^{language}')
+        declared = ranges[0] if len(ranges) == 1 else None
+        if declared is None or not caret_admits(declared, language):
+            problems.append(f'{release_name}: depends on {LANGUAGE} {ranges}, expected one caret range that admits the locked {language}')
+        requests = [r.get('range') for r in kit_lock.get('requests', []) if r.get('id') == LANGUAGE]
+        if requests != ranges:
+            problems.append(f'{name}: requests {LANGUAGE} {requests}, {release_name} declares {ranges}')
         history_name = kit + '/releases.json'
         if history_name in texts:
             history = read_json(root, history_name)
@@ -279,8 +292,8 @@ def pins(root, files, texts, problems):
                 problems.append(f'{history_name}: latest is {history.get("latest")}, its last release is {latest.get("version")}')
             if latest.get('cli') != f'@inventarch/cli {cli}':
                 problems.append(f'{history_name}: latest release cli is {latest.get("cli")}, expected @inventarch/cli {cli}')
-            if latest.get('language') != f'{LANGUAGE} ^{language}':
-                problems.append(f'{history_name}: latest release language is {latest.get("language")}, expected {LANGUAGE} ^{language}')
+            if latest.get('language') != f'{LANGUAGE} {declared}':
+                problems.append(f'{history_name}: latest release language is {latest.get("language")}, expected {LANGUAGE} {declared}')
             if latest.get('version') != release.get('version'):
                 problems.append(f'{history_name}: latest release {latest.get("version")} is not .ia/release.json\'s {release.get("version")}')
     header = lock['nativeHeader'] + '\n'

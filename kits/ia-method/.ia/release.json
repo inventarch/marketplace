@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-method-kit",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "distribution": "workspace-system/definition/distribution/ia-method-distribution",
   "engine": "^0.1.1",
   "language": [
@@ -10,7 +10,7 @@
   "dependencies": [
     {
       "id": "inventarch/language",
-      "range": "^3.2.0",
+      "range": "^3.0.0",
       "systems": [
         "agent-composition-system",
         "agent-system",

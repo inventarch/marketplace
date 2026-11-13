@@ -13,7 +13,7 @@ import tarfile
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'plugins/ia/config/qualified-runtime-3.6.0.json'
+OUT = ROOT / 'plugins/ia/config/qualified-runtime-3.8.0.json'
 
 
 def canonical(value):
@@ -36,7 +36,7 @@ def main():
             continue
         pin = lock['packages']['node_modules/' + name]
         if name.startswith('@inventarch/'):
-            assert pin['version'] == '3.6.0'
+            assert pin['version'] == '3.8.0'
         assert pin['resolved'].startswith('https://registry.npmjs.org/')
         archive = artifacts / (name.replace('@', '').replace('/', '-') + '-' + pin['version'] + '.tgz')
         if archive.exists():
@@ -65,8 +65,8 @@ def main():
                 files.append({'path': rel, 'sha256': sha(content), 'bytes': len(content)})
                 if rel == 'package.json':
                     metadata = json.loads(content)
-                if name == '@inventarch/cli' and rel == 'assets/base.json':
-                    language = json.loads(content)
+                if name == '@inventarch/cli' and rel == 'assets/bases.json':
+                    carried = json.loads(content)
                 if name == '@inventarch/cli' and rel == 'dist/main.js':
                     cli_entry = sha(content)
         assert metadata['name'] == name and metadata['version'] == pin['version']
@@ -78,7 +78,11 @@ def main():
         packages[name] = {'version': pin['version'], 'integrity': pin['integrity'], 'registry': pin['resolved'],
                           'sha256': sha(canonical(files).encode()), 'files': len(files), 'bytes': total,
                           'dependencies': dependencies}
-    assert language['version'] == '3.2.0'
+    # The CLI carries every published base (assets/bases.json); the cohort is qualified with the one the kits lock.
+    pinned = json.loads((ROOT / 'sources.lock.json').read_text())['released']
+    selected = [base for base in carried if base['id'] == 'inventarch/language' and base['version'] == pinned['languageVersion']]
+    assert len(selected) == 1 and selected[0]['archive'] == pinned['languageArchiveSha256']
+    language = selected[0]
     profile = {'format': 'inventarch.runtime-cohort/1', 'node': '22.22.x', 'cliEntrySha256': cli_entry,
                'language': language, 'packages': packages}
     OUT.write_text(json.dumps(profile, sort_keys=True, indent=2) + '\n', encoding='utf-8', newline='\n')

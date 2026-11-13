@@ -509,7 +509,7 @@
     says "Exactly @inventarch/cli 3.6.0 and @inventarch/mcp-door 3.6.0 from release N+1 (language base inventarch/language 3.2.0, archive 7b36e4b4, unchanged from 3.5.0); every kit is re-cut with it, and the core's launchers, closure modules and qualified runtime cohort name it. Release N first migrates users onto installed kits on the 3.5.x pins (public-cli-3-6-0-door-pin)."
   work
     title "Pin @inventarch/cli 3.6.0"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-11-08"
     ended "2026-11-08"
@@ -760,3 +760,23 @@
     decider "Maintainers"
     choice "A: the method kit's two sidecars, onwrite.json and handlers.json, run one script of the core, scripts/method-advise.mjs, as advisory hooks that block nothing: after a Write, Edit or MultiEdit of a .ia file (onwrite.json, extension .ia, no marker; this path alone covers file writes, so no handlers.json entry names Write or Edit and no write is advised twice), after a Bash or PowerShell call, and at a resumed or compacted session (handlers.json, tool post and session). The script runs the ceiling and exit-evidence reports for the tasks in the changed or uncommitted .ia records under .ia/src (the one just written, or those still uncommitted; in a tracked file only the records that differ from HEAD, and a removed or changed observation puts the task it was about in scope; a new file whole), at most 2 from a written file and 3 per shell or session call, after asking the CLI to admit the workspace, and prints not evaluated instead of findings when it does not. It states how many tasks it evaluated, how many it did not and why, how many came from the cache, and how many sit in unchanged records it did not examine, and says so when git failed and a file was read whole; it prints a task it could not evaluate as not evaluated and never as clear, and the same for a .ia record inside .ia/src that it refuses to read (over 1 MB, unreadable); it never downloads a CLI (it needs @inventarch/cli installed in the repository, or IA_CLI_PATH); each read gets 5 seconds and the run 18. A small cache under the IA home, in a folder named advice, holds the last result per task: a finding is reported once, again after a resume or compact, and kept an hour; a clean result is kept 10 minutes; a not-evaluated result is said once, again after a resume or compact, and kept 5 minutes, and is tried again at once when a CLI can be found; a different file content, git HEAD, plugin version, kit version or CLI starts over. Handler run form: a handlers.json run of exactly ${PLUGIN}/scripts/method-advise.mjs, an allowlist of literal names in lib/handlers.mjs (PLUGIN_RUNS) and not a pattern, is accepted on session and tool post handlers and refused on tool pre, prompt and stop handlers; it takes no arguments, runs only when that script is the plugin's own file once links are followed, only for a trusted kit (public-kit-trust) and only inside an IA workspace, so a repository with no .ia starts no process. A core that predates the form skips such a kit with a reason. Not shipped: any blocking, a pre, stop or prompt handler, a whole-plan run in a hook (scripts/method-gate.mjs is that report), judgement-based assessment and durable receipts. A closed task that was committed with no evidence is not reported by a hook, and a change to a spec or decision does not re-check the tasks that cite it; a removed record is covered only when it was the subject of an observation, which puts the task it was about in scope. The full report is the only complete check, and a hook's silence is not a clear result."
     rationale "The exit-evidence and ceiling rules were only reports an agent had to remember to run; running them where the records change puts the finding next to the work, while a hook budget of seconds rules out the whole plan, so the scope is the records that changed and is always stated. The kit ships no script, because a fetched release carries no executables and the reports already live in the core; an allowlist of one literal name keeps a trusted kit from running any other script of the core. A skipped check must not stand for a pass, so every case that could not run is printed, and nothing here blocks."
+
+# The move to IA 3.8.0 (2026-11-13): one release. Kits declare the language base they are proven on.
+
+@decision public-cli-3-8-0
+  meaning
+    says "Exactly @inventarch/cli 3.8.0 and @inventarch/mcp-door 3.8.0, in one release. The 3.8.0 CLI carries every published 3.x language base and its newest is 3.3.0; the kits stay locked on inventarch/language 3.2.0 (archive 7b36e4b4), which it carries unchanged, and the qualified runtime cohort names that locked base. Every kit is re-cut with it and declares inventarch/language ^3.0.0, the minimum ia floor --verify proves."
+  work
+    title "Pin @inventarch/cli 3.8.0"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-13"
+    ended "2026-11-13"
+    source "docs/decisions.md"
+  decision
+    question "Which IA CLI do the catalogue and its kits target after the 3.8.0 release?"
+    decider "Operator"
+    choice "Exactly @inventarch/cli 3.8.0 and @inventarch/mcp-door 3.8.0, in one release. The 3.8.0 CLI carries every published 3.x language base and its newest is 3.3.0; the kits stay locked on inventarch/language 3.2.0 (archive 7b36e4b4), which it carries unchanged, and the qualified runtime cohort names that locked base. Every kit is re-cut with it and declares inventarch/language ^3.0.0, the minimum ia floor --verify proves."
+    rationale "One exact CLI keeps every packed archive reproducible. From 3.7.0 a CLI carries every published 3.x base, so a kit can declare the minimum it is proven on without locking its users to one CLI release; the lock row stays on 3.2.0 so CLIs up to 3.6.0 still restore the kits."
+  relationships
+    supersedes @decision public-cli-3-6-0

@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 
 // The published release this catalogue pins (sources.lock.json), and the one language base it ships.
-const PINNED = Object.freeze({ cli: '3.6.0', language: { version: '3.2.0', archive: '7b36e4b4959a7bead1c57906cd346b419f32570dac0ac764af805ad20cd63b16' } });
+const PINNED = Object.freeze({ cli: '3.8.0', language: { version: '3.2.0', archive: '7b36e4b4959a7bead1c57906cd346b419f32570dac0ac764af805ad20cd63b16' } });
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const consumer = process.argv[2];

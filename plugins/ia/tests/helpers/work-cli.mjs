@@ -1,5 +1,5 @@
 // A stand-in IA CLI for the method reports: it answers `ia validate`, `ia next` and
-// `ia inspect` from fixtures in the shape the real CLI 3.6.0 reports them.
+// `ia inspect` from fixtures in the shape the real CLI 3.8.0 reports them.
 // Only the opt-in real-CLI cases show that the shape is the real one; the
 // stand-in is what the other cases are told.
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';

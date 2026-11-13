@@ -151,7 +151,7 @@ test('no shipped core file runs an ia on PATH, an unpinned CLI through npx, or a
 });
 
 // public-cli-3-6-0-handoff: the CLI runIa chose is the one that runs. A fake CLI never hands off, so this proves only
-// the child's argv and environment; the real hand-off path is judged by the native suite on 3.6.0.
+// the child's argv and environment; the real hand-off path is judged by the native suite on 3.8.0.
 test('runIa runs the IA_CLI_PATH entry with IA_NO_HANDOFF=1 while the repository installs another @inventarch/cli', t => {
   const dir = tree(t);
   mkdirSync(join(dir, '.git'));

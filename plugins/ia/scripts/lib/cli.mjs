@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 // The CLI the kits' releases were packed with; adoption needs exactly this one.
-export const PINNED = '3.6.0';
+export const PINNED = '3.8.0';
 
 export class CliError extends Error {
   constructor(message, code = 'IA-CORE-CLI') { super(message); this.code = code; }
@@ -42,7 +42,7 @@ function installed(root) {
     if (!existsSync(pkgFile)) continue;
     const pkg = JSON.parse(readFileSync(pkgFile, 'utf8'));
     if (pkg.name !== '@inventarch/cli') throw new CliError(`${pkgFile} names ${pkg.name ?? 'no package'}, not @inventarch/cli: reinstall @inventarch/cli@${PINNED} or set IA_CLI_PATH`, 'IA-CORE-CLI-MISSING');
-    // From 3.6.0 `bin` is the hand-off launcher (dist/bin.js); `main` is the CLI itself, and the qualified runtime admits only it.
+    // From 3.8.0 `bin` is the hand-off launcher (dist/bin.js); `main` is the CLI itself, and the qualified runtime admits only it.
     const entry = typeof pkg.main === 'string' ? pkg.main : typeof pkg.bin === 'string' ? pkg.bin : pkg.bin?.ia ?? 'dist/main.js';
     const main = join(dirname(pkgFile), entry);
     if (!existsSync(main)) throw new CliError(`the installed @inventarch/cli ${pkg.version ?? ''} has no entry ${main}: reinstall it or set IA_CLI_PATH`, 'IA-CORE-CLI-MISSING');

@@ -55,7 +55,7 @@ test('a bound activity resolves to a packet: closure, scope key, instructions of
   assert.equal(p.kitUpdateAvailable, null);
   assert.match(p.digest, /^[a-f0-9]{64}$/);
   assert.equal(p.envelope.kitInstalled, true, 'a bound kit is one the lock installs');
-  assert.equal(p.envelope.cliVersion, '3.6.0');
+  assert.equal(p.envelope.cliVersion, '3.8.0');
   // The capability composes a check, so the packet says the host does not enforce the checker restriction.
   const enforcement = p.missing.find(m => m.kind === 'enforcement');
   assert.deepEqual({ requirement: enforcement.requirement, via: enforcement.via, checks: enforcement.checks }, { requirement: 'constrained-checks', via: 'scripts/check.mjs', checks: ['alpha-gate'] });

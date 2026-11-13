@@ -592,7 +592,7 @@ test('REQ-KB-04 success: releases.json matches the release descriptor and the so
   const releases = JSON.parse(readFileSync(join(KIT, 'releases.json'), 'utf8'));
   assert.equal(releases.kit, KIT_ID);
   assert.equal(releases.releases.at(-1).version, VERSION);
-  assert.equal(releases.releases.at(-1).cli, '@inventarch/cli 3.6.0');
+  assert.equal(releases.releases.at(-1).cli, '@inventarch/cli 3.8.0');
   assert.equal(releases.releases.at(-1).sources, sourcesDigest(KIT));
 });
 

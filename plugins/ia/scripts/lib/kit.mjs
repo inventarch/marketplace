@@ -426,17 +426,18 @@ export function kitOnWrite(kit) {
   });
 }
 
-// A CLI restores offline only the language base it ships; for any other base it
-// asks a registry, which refuses with IA-DIST-ARTIFACT-UNAVAILABLE or, now that
+// A CLI restores offline only the language bases it carries; for any other base
+// it asks a registry, which refuses with IA-DIST-ARTIFACT-UNAVAILABLE or, where
 // the default registry answers with its listing, IA-DIST-CONFLICT "Registry no
-// longer lists the locked release: inventarch/language@<version>" (CLI 3.2.2 and
-// 3.3.0, 2026-10-22). Within a major, too: CLI 3.3.0 ships inventarch/language
-// 3.2.0 and cannot restore a kit locked on 3.1.2, nor 3.2.2 one locked on 3.2.0.
-// CLI 3.4.0 ships the same 3.2.0 (the same archive), so 3.3.0 restores a kit
-// packed with 3.4.0; adopt still needs the packing CLI to reproduce the archive.
-// When the repository's CLI is a known version other than the one the release was
-// packed with, that refusal names the CLI to pin; with that CLI, or an unknown
-// one, the artifact is really missing and the refusal is reported as it is.
+// longer lists the locked release: inventarch/language@<version>". From 3.7.0 a
+// CLI carries every published 3.x base (3.8.0: 3.0.0 to 3.3.0), so it restores
+// any 3.x kit. An older CLI carries one base only: 3.3.0 to 3.6.0 carry
+// inventarch/language 3.2.0, and 3.2.2 carries 3.1.2, so each restores only a
+// kit locked on its own base; adopt still needs the packing CLI to reproduce
+// the archive. When the repository's CLI is a known version other than the one
+// the release was packed with, that refusal names the CLI to pin; with that
+// CLI, or an unknown one, the artifact is really missing and the refusal is
+// reported as it is.
 const baseUnavailable = json => json?.code === 'IA-DIST-ARTIFACT-UNAVAILABLE'
   || (json?.code === 'IA-DIST-CONFLICT' && /no longer lists the locked release: inventarch\/language@/.test(json.message ?? ''));
 function restore(work, cli, kit, catalog) {
@@ -445,7 +446,7 @@ function restore(work, cli, kit, catalog) {
   const packed = /^@inventarch\/cli (\S+)$/.exec(kit.latest?.cli ?? '')?.[1];
   if (baseUnavailable(restored.json) && packed && cli.version && cli.version !== packed) {
     const language = readLock(work)?.packages?.find(p => p.id === 'inventarch/language');
-    throw new KitError(`kit ${kit.id} ${kit.latest?.version ?? kit.version} locks inventarch/language ${language?.version ?? 'an unknown version'}, which this repository's CLI does not ship: it resolves ${cli.version ?? 'an unknown version'} (${cli.source}), and a CLI restores offline only the language base it carries. Pin @inventarch/cli ${packed}, or set IA_CLI_PATH to it`, 'IA-CORE-CLI-UNSUPPORTED');
+    throw new KitError(`kit ${kit.id} ${kit.latest?.version ?? kit.version} locks inventarch/language ${language?.version ?? 'an unknown version'}, which this repository's CLI does not carry: it resolves ${cli.version ?? 'an unknown version'} (${cli.source}), and a CLI restores offline only the language bases it carries. Pin @inventarch/cli ${packed}, or set IA_CLI_PATH to it`, 'IA-CORE-CLI-UNSUPPORTED');
   }
   throw new KitError(`ia restore of the kit workspace failed: ${restored.stderr.trim() || restored.stdout.trim()}`);
 }
@@ -474,8 +475,8 @@ const complete = dir => existsSync(join(dir, '.ia', 'distributions', 'active.jso
 // A kit can be read only with a CLI of the major its latest release was packed
 // with, or a later one: a 3.x release locks a 3.x language base, which an older
 // CLI cannot restore (it would ask a registry for it). A CLI of unknown version
-// is let through. Within the major, restore() refuses a CLI that ships another
-// language base.
+// is let through. Within the major, restore() refuses a CLI that does not
+// carry the kit's language base.
 function supported(kit, cli) {
   const packed = /^@inventarch\/cli ((\d+)\.\S*)$/.exec(kit.latest?.cli ?? '');
   const major = Number(/^(\d+)\./.exec(cli.version ?? '')?.[1]);
