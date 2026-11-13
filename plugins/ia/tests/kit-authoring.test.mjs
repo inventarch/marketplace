@@ -326,7 +326,7 @@ test('the descriptor names the public kit and its licence, and the lock pins the
   assert.deepEqual(source, { repository: 'https://github.com/inventarch/marketplace.git', recipe: 'ustar-v1' });
   assert.deepEqual(descriptor.dependencies.map(d => d.id), ['inventarch/language']);
   const language = descriptor.dependencies.find(d => d.id === 'inventarch/language');
-  assert.equal(language.range, '^3.2.0');
+  assert.equal(language.range, '^3.0.0');
   assert.deepEqual(lock.requests, [{ id: 'inventarch/language', range: language.range }]);
   const pinned = lock.packages.find(p => p.id === 'inventarch/language');
   assert.equal(pinned.version, '3.2.0');
@@ -444,19 +444,19 @@ test('REQ-AUTH-03 failure: a listed asset that is missing is reported', () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-// These two compare the sources with the recorded release, so they pass once 0.1.4 is recorded.
+// These two compare the sources with the recorded release, so they pass once 0.1.5 is recorded.
 test('REQ-AUTH-04 success: the release index names the kit and the recorded release matches the sources', () => {
   assert.deepEqual(releaseProblems(), []);
   const releases = expandReleases(KIT);
   assert.equal(releases.kit, KIT_ID);
-  assert.equal(releases.releases.at(-1).version, '0.1.4');
+  assert.equal(releases.releases.at(-1).version, '0.1.5');
   assert.equal(releases.releases.at(-1).sources, sourcesDigest(KIT));
 });
 
 test('REQ-AUTH-04 failure: a release record that drifts from the sources is reported', () => {
   const dir = scratchCopy(d => writeFileSync(join(d, 'checks.json'), `${readFileSync(join(d, 'checks.json'), 'utf8')}\n`));
   try {
-    assert.deepEqual(releaseProblems(dir), ['release 0.1.4: recorded sources digest differs from the sources']);
+    assert.deepEqual(releaseProblems(dir), ['release 0.1.5: recorded sources digest differs from the sources']);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 

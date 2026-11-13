@@ -821,7 +821,10 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
   const lock = readLock(root);
   const language = (lock?.packages ?? []).find(p => p.id === 'inventarch/language');
   const baseLock = readLock(kit.dir)?.packages.find(p => p.id === 'inventarch/language');
-  const moving = language && baseLock && language.archive !== baseLock.archive;
+  // The base moves only when the repository's own does not satisfy the range the kit declares. A kit declares the
+  // minimum it is proven on, so a repository on another base inside that range keeps its base and its own request.
+  const declared = readDescriptor(kit.dir).dependencies?.find(d => d.id === 'inventarch/language')?.range;
+  const moving = language && baseLock && language.archive !== baseLock.archive && !(declared && satisfies(language.version, declared));
   const upgrades = [kit];
   // Existing core kits on the old language must move in the same native
   // transaction. Only migrate archives this catalogue actually published;
@@ -838,7 +841,7 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
   const dependencies = [];
   for (const entry of upgrades) for (const dep of kitDependencies(entry)) if (!dependencies.some(d => d.id === dep.id) && !upgrades.some(u => u.id === dep.id)) dependencies.push(dep);
   const dependencyRows = dependencies.map(d => ({ kit: d.id, version: d.latest.version, archive: d.latest.archive, origin: d.origin }));
-  if (moving) requests.push(`inventarch/language@${readDescriptor(kit.dir).dependencies.find(d => d.id === 'inventarch/language').range}`);
+  if (moving) requests.push(`inventarch/language@${declared}`);
   const upgraded = upgrades.slice(1).map(k => ({ kit: k.id, version: k.latest.version, archive: k.latest.archive }));
   const builds = [];
   const written = [];
