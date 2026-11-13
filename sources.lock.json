@@ -5,13 +5,13 @@
   },
   "nativeHeader": "#! ia 1.0",
   "released": {
-    "cli": "3.6.0",
+    "cli": "3.8.0",
     "registry": "https://registry.npmjs.org/@inventarch%2Fcli",
-    "cliNpmIntegrity": "sha512-nFdTddZOKj6KGLeCBH3u+EEeVT8Q9iDbQ8HkgU2evjCXEQ3CuVIDBDXOFFJhCRCHQdKvZmKZK2hUUPzLnhfEbA==",
-    "sourceCommit": "63f18449a17e102d74200fc6e62e60e9c5222f1d",
+    "cliNpmIntegrity": "sha512-AUmKC+TkMZRNQp0CI1XPWq52oGSNc1nRtu7isXH7sGA9LZLWgXpUvKWAo0++1wwNyjQlUld6UM9dciiTLkuOKA==",
+    "sourceCommit": "205babfb3df53afe6de3d06ff5a1b8713ada9807",
     "languageVersion": "3.2.0",
     "languageArchiveSha256": "7b36e4b4959a7bead1c57906cd346b419f32570dac0ac764af805ad20cd63b16",
-    "verification": "registry integrity from the root package-lock.json (npm install --ignore-scripts, 2026-11-08); sourceCommit is the inventarch/ia commit 'Release 3.6.0' (63f18449), not yet checked against the package's provenance; the bundled inventarch/language base was observed with the 3.6.0 CLI (assets/base.json: version 3.2.0, archive 7b36e4b4, manifest 03a22656), unchanged from 3.5.0"
+    "verification": "registry integrity from the root package-lock.json (npm install, 2026-11-13); sourceCommit is the inventarch/ia commit 'Release 3.8.0' (205babfb, tag v3.8.0), not yet checked against the package's provenance; the 3.8.0 CLI carries every published 3.x language base (assets/bases.json: 3.0.0 to 3.3.0) and its newest is 3.3.0; the kits stay locked on 3.2.0 (archive 7b36e4b4, manifest 03a22656), which it carries unchanged"
   },
   "sources": [
     {

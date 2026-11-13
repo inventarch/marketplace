@@ -14,7 +14,7 @@ function fixture(t) {
   const kitsDir = join(dir, 'kits'), kit = join(kitsDir, 'ia-kb');
   cpSync(KIT, kit, { recursive: true });
   const cli = resolveCli(dir, { cliPath: CLI });
-  assert.equal(cli.version, '3.6.0');
+  assert.equal(cli.version, '3.8.0');
   // A repository whose lock really installs the kit: a workspace of its own (`ia init`), then `kit.mjs add --apply` (the remedy the
   // installation guard names), which installs the kit's recorded release with this CLI.
   const repo = join(dir, 'consumer');

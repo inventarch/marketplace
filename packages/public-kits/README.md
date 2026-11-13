@@ -7,7 +7,7 @@ The public InventArch method kits as one npm package: `inventarch/ia-method-kit`
 | Path | What it is |
 |---|---|
 | `package.json` `ia.kits` | One row per kit: `id`, `version` (its latest release), `archive` and `manifest` (the sha256 of its IA archive and of that archive's manifest), `sources` (the digest of its folder) and `folder`. A lock entry repeats these. |
-| `archives/<archive>.ia.tgz` | Each kit's recorded IA release, packed again from its sources with `@inventarch/cli` 3.6.0; the build refuses any other bytes. |
+| `archives/<archive>.ia.tgz` | Each kit's recorded IA release, packed again from its sources with `@inventarch/cli` 3.8.0; the build refuses any other bytes. |
 | `archives/<archive>.distribution.json` | That archive's manifest, its `distribution.json`. Its sha256 is the row's `manifest`. |
 | `kits/<folder>/` | Each kit's folder, byte for byte as the plugin bundles it. An archive holds the records and declared assets; the folder also holds the sidecars (`delivery.json`, `bindings.json`, `checks.json`) and the release history. |
 | `index.json` | The catalogue's `kits/index.json` at the published commit. |

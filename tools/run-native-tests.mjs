@@ -16,7 +16,7 @@ function sourceSnapshot() {
 }
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 // The one CLI version the native lane qualifies; tools/consistency.py holds it to sources.lock.json.
-const CLI_VERSION = '3.6.0';
+const CLI_VERSION = '3.8.0';
 export function inspectCli(entry) {
   assert(entry, 'IA_CORE_TEST_CLI is required; use the installed @inventarch/cli/dist/main.js');
   const cli = resolve(entry);

@@ -20,7 +20,7 @@ const PINNED_DOOR = `@inventarch/mcp-door@${PINNED}`;
 test('the .mcp.json runs the launcher with node, and the launcher pins the door to the plugin IA version', () => {
   assert.deepEqual(MCP.mcpServers.ia, { command: 'node', args: ['${CLAUDE_PLUGIN_ROOT}/scripts/door.mjs'], env: { IA_KITS_DIR: '${CLAUDE_PLUGIN_ROOT}/config/kits' } });
   assert.equal(DOOR_PACKAGE, '@inventarch/mcp-door');
-  assert.equal(PINNED, '3.6.0');
+  assert.equal(PINNED, '3.8.0');
 });
 
 test('win32 runs npx-cli.js under node, never a shell, and refuses without it; posix falls back to npx on PATH', () => {

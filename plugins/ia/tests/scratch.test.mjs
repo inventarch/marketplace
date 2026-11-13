@@ -155,7 +155,7 @@ test('invokeIa of the core and of the ia-authoring kit starts the CLI with IA_NO
   const dir = sandbox(t);
   const fake = join(dir, 'fake-ia.mjs');
   writeFileSync(fake, "process.stdout.write(JSON.stringify({ args: process.argv.slice(2), handoff: process.env.IA_NO_HANDOFF ?? null, marker: process.env.IA_TEST_MARKER ?? null }));");
-  const cli = { argv: [process.execPath, fake], version: '3.6.0', source: 'test' };
+  const cli = { argv: [process.execPath, fake], version: '3.8.0', source: 'test' };
   for (const [name, invoke] of [['core', invokeIa], ['ia-authoring kit', kitScratch.invokeIa]]) {
     assert.deepEqual(JSON.parse(invoke(cli, ['capture'])), { args: ['capture'], handoff: '1', marker: null }, name);
     assert.deepEqual(JSON.parse(invoke(cli, ['capture'], { env: { ...process.env, IA_TEST_MARKER: 'kept', IA_NO_HANDOFF: '0' } })), { args: ['capture'], handoff: '1', marker: 'kept' }, `${name}: a caller's env keeps its names, never a hand-off`);

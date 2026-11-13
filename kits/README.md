@@ -25,7 +25,7 @@ Edit `kits/<kit>`, never the copy inside a plugin.
 
 1. Edit the sources and bump `.ia/release.json` `version`. Commit (the sources commit).
 2. Set `.ia/release.json` `source.commit` to that commit and `source.epoch` to its commit time.
-3. `IA_CLI_PATH=<@inventarch/cli 3.6.0 dist/main.js> node tools/kit.mjs pack <kit>` packs it in a scratch copy and records `releases/<version>.json` and the index row (with `source`).
+3. `IA_CLI_PATH=<@inventarch/cli 3.8.0 dist/main.js> node tools/kit.mjs pack <kit>` packs it in a scratch copy and records `releases/<version>.json` and the index row (with `source`).
 4. `node tools/kit.mjs bundle --write`, `node tools/kit.mjs index --write`; add a release note for the core (`node tools/release.mjs note --plugin ia ...`, [releases/README.md](../releases/README.md)): the release pull request bumps its version and CHANGELOG. Raise the version in `packages/public-kits/package.json`, then run `node tools/kit.mjs package --write` ([docs/public-kits-package.md](../docs/public-kits-package.md)), then `python tools/selection.py --write` (the package rewrites `plugins/ia/config/public-kits.json`, which the selection hashes). Commit (the stamp commit).
 
 `node tools/kit.mjs convert <kit folder>` converts a format 1 `releases.json` to format 2 losslessly and verifies the round trip; `--expand` prints the format 1 document back.

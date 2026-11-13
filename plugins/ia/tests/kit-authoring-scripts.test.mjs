@@ -229,7 +229,7 @@ test('probe: a missing, crashing or silent CLI exits 3, never 1, and leaves no s
  // No --cli, no IA_CLI_PATH, no workspace install and npx disabled: nothing resolves, and the refusal says what to do.
  const none=error(run(PROBE,base,{env:probeEnv(tmp),cwd:dir}));
  assert.match(none,/^no IA CLI resolved for .*ws \(npx disabled by IA_CLI_NO_NPX\): install @inventarch\/cli exactly in the workspace/);
- assert.match(none,/npm install --save-dev --save-exact @inventarch\/cli@3.6.0/);
+ assert.match(none,/npm install --save-dev --save-exact @inventarch\/cli@3.8.0/);
  assert.match(none,/the `ia` on the PATH is never used$/);
  // The text form says the same on stderr, after the line naming the CLI that ran, and prints nothing on stdout.
  const p=run(PROBE,base.filter(a=>a!=='--json').concat('--cli',crash),{env:probeEnv(tmp),cwd:dir});

@@ -97,7 +97,7 @@ function kit(dir, { name, id, requires, dependencies }) {
   copyFileSync(LANGUAGE_LOCK, join(dir, '.ia', 'distributions.lock.json'));
 }
 
-const row = (dir, archive, manifest = sha(`manifest ${archive}`)) => ({ version: '0.1.0', archive, manifest, sources: sourcesDigest(dir), language: 'inventarch/language ^3.2.0', cli: '@inventarch/cli 3.6.0', records: kitRecordNames(dir) });
+const row = (dir, archive, manifest = sha(`manifest ${archive}`)) => ({ version: '0.1.0', archive, manifest, sources: sourcesDigest(dir), language: 'inventarch/language ^3.2.0', cli: '@inventarch/cli 3.8.0', records: kitRecordNames(dir) });
 const record = (dir, id, archive, manifest) => writeFileSync(join(dir, 'releases.json'), json({ kit: id, releases: [row(dir, archive, manifest)] }));
 
 // The two kit folders under dir/kits, with stand-in release rows. Returns their folders.
@@ -115,7 +115,7 @@ export function writePair(dir) {
 // fx-app is packed with fx-base vendored.
 export function recordPair(dir, cli) {
   const pair = writePair(dir);
-  const baseKit = { folder: 'fx-base', dir: pair.base, id: BASE_ID, latest: { version: '0.1.0', cli: '@inventarch/cli 3.6.0' } };
+  const baseKit = { folder: 'fx-base', dir: pair.base, id: BASE_ID, latest: { version: '0.1.0', cli: '@inventarch/cli 3.8.0' } };
   const built = buildKit(baseKit, cli);
   try {
     record(pair.base, BASE_ID, built.digest, built.manifest);
@@ -135,7 +135,7 @@ export function recordPair(dir, cli) {
     rmSync(vendor, { recursive: true, force: true });
     rmSync(join(pair.app, '.ia', 'distributions'), { recursive: true, force: true });
     records(pair.app, 'fx-app', ['agent-system', 'workspace-system', 'fx-base']);
-    const appKit = { folder: 'fx-app', dir: pair.app, id: APP_ID, latest: { version: '0.1.0', cli: '@inventarch/cli 3.6.0' } };
+    const appKit = { folder: 'fx-app', dir: pair.app, id: APP_ID, latest: { version: '0.1.0', cli: '@inventarch/cli 3.8.0' } };
     const builtApp = buildKit(appKit, cli, { vendor: [built.archive, built.base.path] });
     try { record(pair.app, APP_ID, builtApp.digest, builtApp.manifest); } finally { builtApp.cleanup(); }
     return { ...pair, baseArchive: built.digest, appArchive: builtApp.digest, lock };

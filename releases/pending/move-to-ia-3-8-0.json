@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Move to IA 3.8.0",
+  "summary": "The plugin, its IA door and its kits now target `@inventarch/cli` and `@inventarch/mcp-door` 3.8.0. A 3.8.0 CLI carries every published 3.x language base, so the kits no longer hold you to one CLI release: ia-authoring 0.1.5, ia-kb 0.9.5 and ia-method 0.9.1 declare `inventarch/language ^3.0.0`, the minimum they are proven on with `ia floor --verify`, and stay locked on 3.2.0 so older CLIs still restore them. Pin 3.8.0 in your repository: `npm install --save-dev --save-exact @inventarch/cli@3.8.0`.",
+  "plugins": [
+    "ia"
+  ]
+}

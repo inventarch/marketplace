@@ -14,7 +14,7 @@ const importNative = specifier => import(pathToFileURL(require.resolve(specifier
 const kit = findKit('ia-kb');
 const descriptor = JSON.parse(readFileSync(join(kit.dir, '.ia/release.json'), 'utf8'));
 const cli = resolveCli(process.cwd());
-assert.equal(cli.version, '3.6.0');
+assert.equal(cli.version, '3.8.0');
 const root = readRoot(kit, { cli });
 const { packDistribution } = await importNative('@inventarch/distribution/pack');
 const nativeManifest = packDistribution(root, descriptor).manifest;

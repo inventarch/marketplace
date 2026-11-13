@@ -21,7 +21,7 @@ The built files sit beside it:
 
 | Path | From |
 |---|---|
-| `archives/<archive>.ia.tgz` | The kit's recorded release, packed again with the pinned `@inventarch/cli` 3.6.0 (`packRelease`). The build refuses bytes whose sha256 is not the recorded `archive`. |
+| `archives/<archive>.ia.tgz` | The kit's recorded release, packed again with the pinned `@inventarch/cli` 3.8.0 (`packRelease`). The build refuses bytes whose sha256 is not the recorded `archive`. |
 | `archives/<archive>.distribution.json` | That archive's manifest. Its sha256 is the recorded `manifest`. |
 | `kits/<folder>/` | `plugins/ia/config/kits/<folder>/`, byte for byte. |
 | `index.json` | `kits/index.json`. |
