@@ -14,7 +14,7 @@
 //                 misspelled clause is admitted and does nothing. With --lint those count as refusals.
 //   --json        one object with a verdict per probe file (how lowered drafts are marked ready or refused)
 //   --cli         the IA CLI's entry, @inventarch/cli/dist/main.js (or set IA_CLI_PATH). Without either, the workspace's
-//                 own node_modules/@inventarch/cli is used, else @inventarch/cli 3.6.0 through npx; never the `ia` on
+//                 own node_modules/@inventarch/cli is used, else @inventarch/cli 3.8.0 through npx; never the `ia` on
 //                 the PATH. One line on stderr says which CLI ran; ia capture (with --lint, or when validate bound a
 //                 check to a runner that is not built in) adds a warning line when the copy has admission errors.
 //

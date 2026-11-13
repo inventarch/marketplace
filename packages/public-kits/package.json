@@ -1,6 +1,6 @@
 {
   "name": "@inventarch/public-kits",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "The public InventArch method kits as one package: each kit's IA archive and manifest, with its folder, for an IA engine to expand (contract C7b).",
   "license": "Apache-2.0",
   "repository": {
@@ -19,26 +19,26 @@
     "kits": [
       {
         "id": "inventarch/ia-authoring-kit",
-        "version": "0.1.4",
-        "archive": "9b3d110f098f604426fc6bee3aa470e909d7b2019b5a2bb3b191e935265933f6",
-        "manifest": "c023d23f4ef3568b348a75713fc28f3f41eb29d3251ff50a5fdfad7e9a08dc6c",
-        "sources": "a3d588c313b455a102d3096318baceac7eb318fd061fa5c68f492b7dbbc77e38",
+        "version": "0.1.5",
+        "archive": "9a30ee07a3fb4d0b669ba7ee22f7aa08577c746bdc09280e1aeb3feb4a612689",
+        "manifest": "6a16b9e1e2c1aff4fe93b2e357871926a7182a52684eea09ec7ce5550122cb31",
+        "sources": "3235bc0e4e8cc994595376fc478968a6715ce4d25a62c935aa1d4476ffc32fb8",
         "folder": "ia-authoring"
       },
       {
         "id": "inventarch/ia-kb-kit",
-        "version": "0.9.4",
-        "archive": "52f0f188c0102a4f3ae392ab1c48c89234d01170126507b2caf23c764b95d398",
-        "manifest": "97fbc4a5786c32b6338c17847c6c57b26e3a928722103320aa5325538fad935b",
-        "sources": "dcbf1887581e49aec26cc45943ba20a40c2be86cff8da8bc42a22f24e732fba4",
+        "version": "0.9.5",
+        "archive": "a203b451c9e5a19d2327a2d149c0b5fc8ffb94ef887ea3e3c9a962ff93aff7f7",
+        "manifest": "5226a75be2079defe54d23fd5c3df8712ad4b753f725dc4b90645c4a2b99b7df",
+        "sources": "a95c48a3ac882b247139e70b0b14092854c3fd11bf787a2b010e7298342529e4",
         "folder": "ia-kb"
       },
       {
         "id": "inventarch/ia-method-kit",
-        "version": "0.9.0",
-        "archive": "e63c1bec90bdf6bdfe2f93f170daf9f6e6812d59ed240849d8e2c0a94a747d87",
-        "manifest": "ae735092cc2724c4f4ca3c23799389f9df91fba968d1c166ddb61cfaebc2003f",
-        "sources": "6d1b4091d15a51893790ab3a81c4dbf82698beecd7f4b45ffd4e5449860851b1",
+        "version": "0.9.1",
+        "archive": "bd635bb4779f648849a8382d314872ebcd777173c5d206ae4b2b1f0c86b61c71",
+        "manifest": "33decfed3c335dfd81ec3866796b57d1cdecff5214079e93c1781e3523fc935d",
+        "sources": "96dfe0edcfd06540035f7be2cf361ce3bd15655239d3fbed15c46913c62f9678",
         "folder": "ia-method"
       }
     ]

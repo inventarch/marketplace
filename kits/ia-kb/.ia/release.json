@@ -76,8 +76,8 @@
   "description": "The IA KB kit, the Knowledge lane's public default: where organisation and repository knowledge lives, where a user's workspaces are saved (~/Documents/ia/<name> by default, never inside ~/.ia), and how a @spec anchor stays bound to one exact body, current, checked and reviewed. An entry capability whose playbook is a whole orient, plan, act and learn procedure; one capability and playbook per stage (place content, bind a document, maintain a document, check, migrate) plus retrieval and review; conventions for placement, workspace location, binding and the locator manifest, lifecycle, role briefs, host adaptation, IA reads and evidence reporting; laws for the blocking rules; librarian, reviewer, curator and gate-runner profiles; declared checks for admission, the decision lifecycle and locator manifests; a contract with cases; and the references, the split-body example and both checkers as assets.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "900da4e819766e7c93705888eb51491f1b49c1fd",
+    "commit": "4c52bc51856e40f93a77ebef80f112ccfb2c6c60",
     "recipe": "ustar-v1",
-    "epoch": 1794182161
+    "epoch": 1794570053
   }
 }
