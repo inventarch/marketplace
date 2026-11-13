@@ -1,6 +1,6 @@
 # Decisions
 
-Every decision here has an `.ia` record in `.ia/src/decisions.ia`, named in the Record column. The records are authoritative; this page is their index. Add the row and the record in the same change.
+Every decision here has an `.ia` record in `.ia/src/decisions.ia`, named in the Record column. The records are authoritative; this page is their index. Add the row and the record in the same change. Decisions that belong to a plan, such as the CLI pins for 3.4.1, 3.5.0 and 3.6.0, are kept with InventArch's other work records, outside this repository.
 
 ## Public catalogue (2026-10-30)
 
@@ -21,7 +21,6 @@ Every decision here has an `.ia` record in `.ia/src/decisions.ia`, named in the 
 | **Derive the Codex manifest from the Claude one.** A Codex manifest is the Claude manifest without displayName and dependencies, plus skills and Codex's interface block (displayName, shortDescription, category); a hook plugin adds the empty hook configuration that keeps its hooks off in Codex. Every plugin ships a CODEX.md, and every skill opens with a bridge line to it. | Maintainers ruling; made | `public-codex-manifest-interface` |
 | **Run the gates before every commit and push.** npm ci installs lefthook, Biome and the pinned @inventarch/cli; lefthook runs validate, selection --check, bundle --check, consistency, lint and the language check before each commit, and again before each push with consistency --base origin/main. CI runs the same and the test suites. | Maintainers ruling; made | `public-local-gates` |
 | **Run CI on Ubuntu for pull requests and on three systems for main.** Ubuntu for every pull request into main; Ubuntu, Windows and macOS for every push to main, including the native qualification shards. | Maintainers ruling; made | `public-ci-matrix` |
-| **Pin @inventarch/cli 3.4.1.** Exactly @inventarch/cli 3.4.1 (language base inventarch/language 3.2.0, archive 7b36e4b4); every changed kit is packed with it; the core's launchers, closure modules and qualified runtime cohort name it. | Maintainers ruling; superseded by public-cli-3-5-0 | `public-cli-3-4-1` |
 | **Release the public core as 1.0.0.** inventarch 1.0.0: the public reset changes the licence, the repository, the kit set (private kits removed, two authoring kit ids retired), the release format and the hooks' behaviour, so it is a breaking release under a fresh history. | Maintainers ruling; made | `public-core-1-0-0` |
 | **Name the one public plugin ia, with three lanes.** The plugin is ia (ia@inventarch; the catalogue stays inventarch, and kit ids do not change). Its model-invocable entry skills are the three lanes, ia:work, ia:knowledge and ia:delivery; the setup skill is the user-invoked ia:init, merged with the CLI-rendered plugin's init steps, beside a user-invoked ia:doctor; its agents are ia:reader, ia:checker and ia:worker; a capability bound to a lane is shown as ia-<lane>:<activity>, the binding key re-spelled, whichever kit supplies it (a lane's entry, <lane>.*, reads ia-<lane>). Until the CLI changes so that ia host adds this marketplace and installs ia@inventarch from it, users remove the CLI-rendered registration of the same catalogue name (claude plugin marketplace remove inventarch) before adding this one. | Operator ruling; made | `public-plugin-ia` |
 
@@ -50,7 +49,6 @@ Every decision here has an `.ia` record in `.ia/src/decisions.ia`, named in the 
 
 | Choice | Standing | Record |
 |---|---|---|
-| **Pin @inventarch/cli 3.5.0.** Exactly @inventarch/cli 3.5.0 (language base inventarch/language 3.2.0, archive 7b36e4b4, as bundled by 3.5.0); every changed kit is packed with it; the core's launchers, the IA door pin (@inventarch/mcp-door 3.5.0), closure modules and qualified runtime cohort name it. ia-method 0.7.1, ia-kb 0.9.1 and ia-authoring 0.1.1 are the re-cut on it, because recorded releases are immutable. | Operator ruling; superseded by public-cli-3-6-0; supersedes public-cli-3-4-1 | `public-cli-3-5-0` |
 | **Ship the upkeep agent.** The core ships the upkeep agent (plugins/ia/agents/upkeep.md, background, isolated in a worktree, model sonnet, a tools allowlist) with its deterministic half scripts/upkeep.mjs. upkeep.mjs stale compares content digests of the inputs a kit's derived.json sidecar declares with the digests recorded in .ia/derived.lock.json, and lists records whose source, cites or grounded-by lines name a changed file; it exits 3 and starts nothing when nothing is stale. The agent acts only on that report and returns a patch from its own worktree: it never edits the caller's tree, commits or pushes, and never overwrites an output a person edited. Limits: staleness is by digest, not meaning; build runs a script the sidecar names only with --allow-code and without the kit trust check handlers take; nothing starts the agent automatically. | Operator ruling; made | `public-upkeep-agent` |
 | **Ship the IA door to Codex.** The Codex manifest of the core names the IA door: mcpServers ./.codex-mcp.json, a file holding server ia run as node ./scripts/door.mjs with cwd ./ (Codex takes a contained ./ command path and cwd, and does not expand CLAUDE_PLUGIN_ROOT, so it cannot use the Claude .mcp.json). The launcher is the same scripts/door.mjs, which starts npx -y @inventarch/mcp-door at the plugin's IA pin and sets IA_KITS_DIR itself. tools/validate.py holds the file to exactly that; tools/smoke-codex.mjs starts the door through Codex (mcpServerStatus/list) and requires ia_session, ia_catalogue and ia_method. Kit handler hooks stay off in Codex (task codex-door-and-handlers). | Operator ruling; made | `public-door-codex` |
 
@@ -65,21 +63,10 @@ Every decision here has an `.ia` record in `.ia/src/decisions.ia`, named in the 
 
 ## The 3.6.0 migration (2026-11-08)
 
-Two releases: release N migrates users onto installed kits on the 3.5.x pins, then release N+1 moves the CLI, the door and the kits to 3.6.0. The plan is `cli-3-6-0-migration` in `docs/roadmap.md`.
+Two releases: release N migrated users onto installed kits on the 3.5.x pins, then release N+1 moved the CLI, the door and the kits to 3.6.0. The migration's plan and its own decisions are kept with InventArch's other work records, outside this repository.
 
 | Choice | Standing | Record |
 |---|---|---|
-| **Pin @inventarch/cli 3.6.0.** Exactly @inventarch/cli 3.6.0 and @inventarch/mcp-door 3.6.0 from release N+1, after release N migrates users onto installed kits on the 3.5.x pins. | Operator ruling; made; supersedes public-cli-3-5-0 | `public-cli-3-6-0` |
-| **The IA door pin and the release sequence.** C migrate first on 3.5.x in release N, move CLI, door and kits to 3.6.0 in release N+1 | Operator ruling; made | `public-cli-3-6-0-door-pin` |
-| **kit.mjs bind when the lock does not install the kit.** E bind installs only with --install, otherwise refuses as B | Operator ruling; made | `public-cli-3-6-0-bind` |
-| **The default kit install route.** B ia init, ia install --package @inventarch/public-kits, then bind | Operator ruling; made | `public-cli-3-6-0-install-route` |
-| **How this repository installs its own kits.** B lock stays ignored; contributor setup runs kit.mjs add for the three kits | Maintainers ruling; made | `public-cli-3-6-0-own-lock` |
-| **The ia plugin version bump for release N+1.** A minor, 1.5.0 | Operator ruling; made | `public-cli-3-6-0-plugin-bump` |
-| **The level of each kit re-cut.** A patch for all three (0.7.3, 0.9.4, 0.1.4) | Maintainers ruling; made | `public-cli-3-6-0-kit-level` |
-| **Guarding the chosen CLI against hand-off.** A every spawn of a resolved CLI | Maintainers ruling; made | `public-cli-3-6-0-handoff` |
-| **The closure path default workspace.** C adopt IA's default only when it is a distribution root; refuse otherwise (a distribution this repository authors; none authored takes the default) | Maintainers ruling; made | `public-cli-3-6-0-default-workspace` |
-| **The plugin resolver and the lock requirement.** A resolve.mjs and qualified-resolve.mjs refuse IA-CORE-KIT-NOT-INSTALLED with the door's message and error.kit, before retaining or writing anything | Maintainers ruling; made | `public-cli-3-6-0-resolver` |
-| **The ia plugin version bump for release N.** B minor, 1.4.0 (N+1 becomes 1.5.0) | Operator ruling; made | `public-cli-3-6-0-release-n-bump` |
 | **Run a bound kit only when the repository installs it.** The core still finds a kit to read in its own config/kits, then in <IA home>/kits/<kit>/<version>/, and keeps public-kit-lookup's verbs (list, add, bind, upgrade, repin, rebind and check in plugins/ia/scripts/kit.mjs; pack, bundle, index and convert in tools/kit.mjs; every write validates first and previews unless --apply) and its kits/index.json broadcast. A key the repository binds runs only a kit the repository's own .ia/distributions.lock.json installs (a packages row or a package entry): this plugin's resolver and checks (resolve.mjs, check.mjs) enforce it from release N, and the IA door enforces it too. | Maintainers ruling; made; supersedes public-kit-lookup | `public-kit-lookup-installed` |
 
 ## The method reports (2026-11-09)

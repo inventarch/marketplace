@@ -100,8 +100,8 @@ class ConsistencyTests(unittest.TestCase):
     # Text hygiene, in every file, shipped or not.
 
     def test_crlf_refuses(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md').replace('\n', '\r\n'))
-        self.assertProblem(r'docs/roadmap\.md: CR line endings')
+        self.write('docs/hosts.md', self.text('docs/hosts.md').replace('\n', '\r\n'))
+        self.assertProblem(r'docs/hosts\.md: CR line endings')
 
     def test_missing_final_newline_refuses(self):
         self.write('tools/package.py', self.text('tools/package.py').rstrip('\n'))
@@ -118,16 +118,16 @@ class ConsistencyTests(unittest.TestCase):
     def test_trailing_whitespace_refuses_outside_markdown(self):
         self.edit('tools/package.py', '\n', ' \n')
         self.assertProblem(r'tools/package\.py:1: trailing whitespace')
-        self.edit('docs/roadmap.md', '\n', '  \n')  # a Markdown line break
-        self.assertFalse(any('docs/roadmap.md' in p for p in check(self.root)))
+        self.edit('docs/hosts.md', '\n', '  \n')  # a Markdown line break
+        self.assertFalse(any('docs/hosts.md' in p for p in check(self.root)))
 
     def test_tab_indentation_refuses_in_python_json_and_yaml(self):
         self.write('.github/workflows/gates.yml', self.text('.github/workflows/gates.yml') + '\tbad: tab\n')
         self.assertProblem(r'\.github/workflows/gates\.yml:\d+: tab indentation')
 
     def test_conflict_marker_refuses(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n')
-        self.assertProblem(r'docs/roadmap\.md:\d+: merge-conflict marker')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n')
+        self.assertProblem(r'docs/hosts\.md:\d+: merge-conflict marker')
 
     # Languages: JSON, Python, Markdown.
 
@@ -144,28 +144,28 @@ class ConsistencyTests(unittest.TestCase):
         self.assertProblem(r'tools/package\.py:\d+: Python syntax')
 
     def test_broken_markdown_link_refuses_outside_plugins(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nSee [the plan](missing-plan.md).\n')
-        self.assertProblem(r'docs/roadmap\.md:\d+: broken link missing-plan\.md')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\nSee [the plan](missing-plan.md).\n')
+        self.assertProblem(r'docs/hosts\.md:\d+: broken link missing-plan\.md')
 
     def test_links_in_code_are_not_links(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\n`[x](nowhere.md)`\n\n```md\n[y](nowhere.md)\n```\n')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\n`[x](nowhere.md)`\n\n```md\n[y](nowhere.md)\n```\n')
         self.assertEqual(check(self.root), [])
 
     def test_broken_heading_anchor_refuses(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nSee [rules](../AGENTS.md#no-such-heading).\n')
-        self.assertProblem(r'docs/roadmap\.md:\d+: broken anchor \.\./AGENTS\.md#no-such-heading')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\nSee [rules](../AGENTS.md#no-such-heading).\n')
+        self.assertProblem(r'docs/hosts\.md:\d+: broken anchor \.\./AGENTS\.md#no-such-heading')
 
     def test_existing_heading_anchor_resolves(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nSee [the gates](../AGENTS.md#gates) and [rules](../AGENTS.md#plugin-rules).\n')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\nSee [the gates](../AGENTS.md#gates) and [rules](../AGENTS.md#plugin-rules).\n')
         self.assertEqual(check(self.root), [])
 
     def test_heading_with_code_span_anchor_resolves(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\n## The `work` skill\n\nSee [it](#the-work-skill).\n')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\n## The `work` skill\n\nSee [it](#the-work-skill).\n')
         self.assertEqual(check(self.root), [])
 
     def test_folder_encoded_and_parenthesised_links_resolve(self):
         self.write('docs/a (b).md', '# A\n')
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\n[root](..) [here](.) [space](a%20(b).md) [paren](a%20(b).md#a)\n')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\n[root](..) [here](.) [space](a%20(b).md) [paren](a%20(b).md#a)\n')
         self.write('README.md', self.text('README.md') + '\n[dot](.)\n')
         self.assertEqual(check(self.root), [])
 
@@ -182,8 +182,8 @@ class ConsistencyTests(unittest.TestCase):
         self.assertEqual(check(self.root), [])
 
     def test_link_leaving_the_repository_refuses(self):
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nSee [elsewhere](../../kb/README.md).\n')
-        self.assertProblem(r'docs/roadmap\.md:\d+: link leaves the repository')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\nSee [elsewhere](../../kb/README.md).\n')
+        self.assertProblem(r'docs/hosts\.md:\d+: link leaves the repository')
 
     # The IA pins agree with sources.lock.json.
 
@@ -233,8 +233,8 @@ class ConsistencyTests(unittest.TestCase):
         self.assertFalse(any('CHANGELOG' in p for p in check(self.root)))
 
     def test_native_header_refuses(self):
-        self.edit('.ia/src/work.ia', '#! ia 1.0\n', '#! ia 2.0\n')
-        self.assertProblem(r'\.ia/src/work\.ia: native header')
+        self.edit('.ia/src/decisions.ia', '#! ia 1.0\n', '#! ia 2.0\n')
+        self.assertProblem(r'\.ia/src/decisions\.ia: native header')
 
     # Plugin versions.
 
@@ -327,7 +327,7 @@ class ConsistencyTests(unittest.TestCase):
         self.write(PLUGIN_FILE, self.text(PLUGIN_FILE) + '\nA shipped change.\n')
         self.rehash()
         self.commit_all('shipped change without a bump')
-        self.write('docs/roadmap.md', self.text('docs/roadmap.md') + '\nA later docs change.\n')
+        self.write('docs/hosts.md', self.text('docs/hosts.md') + '\nA later docs change.\n')
         self.commit_all('docs only')
         self.assertProblem(r'ia: shipped bytes changed', base=base)
 

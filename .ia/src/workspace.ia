@@ -103,3 +103,23 @@
     owner "InventArch maintainers"
     source "releases/README.md"
     covers ["releases/", ".github/workflows/release-pr.yml", ".github/workflows/release.yml"]
+
+@spec publication-identity-screening
+  meaning
+    says "Defines bounded publisher-side screening of exact frozen text artifacts against an external operator-selected private-identity registry, with unavailable input never reported as pass."
+  work
+    title "Publisher identity screening"
+    status draft
+    owner "InventArch maintainers"
+    source "docs/kit-contract/SCREENING-SPEC.md"
+    covers ["tools/check-identities.mjs", "tests/check-identities.test.mjs", "docs/kit-contract/SCREENING-SPEC.md", "docs/kit-contract/screening-review.md", "docs/kit-contract/screening-verification.md"]
+
+@spec kit-contract-public-baseline
+  meaning
+    says "Preserves proposed public kit-contract expectation data and normative context with integrity tests, without claiming behavioral execution, native admission or release permission."
+  work
+    title "Public kit contract expectation baseline"
+    status draft
+    owner "InventArch maintainers"
+    source "docs/kit-contract/SPEC.md"
+    covers ["docs/kit-contract/SPEC.md", "docs/kit-contract/expectations.json", "docs/kit-contract/context.md", "docs/kit-contract/review.md", "docs/kit-contract/verification.md", "tests/kit-contract-baseline.test.mjs"]

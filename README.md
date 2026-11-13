@@ -224,8 +224,8 @@ Your workspaces default to `~/Documents/ia/<domain>` (for example `~/Documents/i
 | [`kits/`](kits/README.md) | The public kit sources, their release history, the bundle map into the core and the kit index. |
 | [`packages/public-kits/`](packages/public-kits/README.md) | The `@inventarch/public-kits` npm package, generated from the bundled kits. |
 | [`releases/`](releases/README.md) | Pending release notes and the changesets of released plugin versions. |
-| [`.ia/src/`](.ia/src/workspace.ia) | This repository's own IA workspace: its specs, [decisions](docs/decisions.md) and [open work](docs/roadmap.md). |
-| [`docs/`](docs/adding-plugins.md) | How to add or change a plugin, [host support](docs/hosts.md), the decision index and the roadmap. |
+| [`.ia/src/`](.ia/src/workspace.ia) | This repository's own IA workspace: its specs and [decisions](docs/decisions.md). |
+| [`docs/`](docs/adding-plugins.md) | How to add or change a plugin, [host support](docs/hosts.md) and the decision index. |
 | `tools/`, `tests/`, `schemas/` | The validator, the consistency check, the kit, release and selection tools, and their tests. |
 | `.claude-plugin/`, `.agents/plugins/` | The Claude Code and Codex catalogue manifests. |
 
@@ -235,7 +235,7 @@ A pull request that changes a file the plugin ships adds a release note (`node t
 
 ## ✅ Contributing and verification
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in [docs/roadmap.md](docs/roadmap.md). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.6.0, and lefthook installs this repository's Git hooks. `npm run kits:install` then installs the three kits this repository's own lanes run (see CONTRIBUTING.md). CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [docs/decisions.md](docs/decisions.md) and [docs/adding-plugins.md](docs/adding-plugins.md) first. Open work is in the [GitHub issues](https://github.com/inventarch/marketplace/issues). You need Python 3.11+ and Node 22.22.x. Run `npm ci` at the root once in each checkout: it installs lefthook, Biome and the pinned `@inventarch/cli` 3.6.0, and lefthook installs this repository's Git hooks. `npm run kits:install` then installs the three kits this repository's own lanes run (see CONTRIBUTING.md). CI runs the same gates on every pull request into `main` (`.github/workflows/gates.yml`):
 
 | Command | What it checks |
 | --- | --- |
