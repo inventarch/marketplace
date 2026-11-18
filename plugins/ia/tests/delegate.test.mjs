@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { command, DEFAULT_TIMEOUT, doorServer, gate } from '../scripts/delegate.mjs';
+import { command, DEFAULT_TIMEOUT, doorServer, gate, GEMINI_DENIED_TOOLS, GEMINI_POLICY_PLACEHOLDER, geminiPolicyToml } from '../scripts/delegate.mjs';
 import { run, sandbox } from './helpers/fixtures.mjs';
 
 function setup(t, config) {
@@ -54,9 +54,21 @@ test('the config file turns it on; the preview names the command, the door, the 
   assert.equal(claude.json.timeoutSeconds, 60);
   const gemini = run('delegate.mjs', args('gemini', ['--timeout', '120']), env);
   assert.equal(gemini.status, 0, gemini.stdout + gemini.stderr);
-  assert.deepEqual(gemini.json.argv.slice(0, 4), ['gemini', '--approval-mode', 'plan', '-p']);
+  assert.deepEqual(gemini.json.argv.slice(0, 8), [
+    'gemini',
+    '--approval-mode', 'plan',
+    '--policy', GEMINI_POLICY_PLACEHOLDER,
+    '--allowed-mcp-server-names', 'ia',
+    '-p',
+  ]);
   assert.equal(gemini.json.mcpSettings.mcpServers.ia.command, 'node');
   assert.match(gemini.json.mcpSettings.mcpServers.ia.args[0], /\/scripts\/door\.mjs$/);
+  assert.deepEqual(gemini.json.mcpSettings.tools.exclude, GEMINI_DENIED_TOOLS);
+  assert.deepEqual(gemini.json.mcpSettings.policyPaths, [GEMINI_POLICY_PLACEHOLDER]);
+  assert.equal(gemini.json.policyToml, geminiPolicyToml());
+  assert.match(gemini.json.policyToml, /toolName = \["exit_plan_mode", "enter_plan_mode", "write_file", "replace", "run_shell_command"\]/);
+  assert.match(gemini.json.policyToml, /decision = "deny"\npriority = 900/);
+  assert.match(gemini.json.policyToml, /mcpName = "ia"\ntoolName = "\*"\ndecision = "allow"\npriority = 800/);
   assert.equal(gemini.json.env.IA_DELEGATION_DEPTH, '1');
   assert.equal(gemini.json.timeoutSeconds, 120);
   assert.equal(run('delegate.mjs', args('claude', ['--timeout', '99999']), env).status, 2);
@@ -66,7 +78,7 @@ test('the config file turns it on; the preview names the command, the door, the 
 test('with --run the delegate gets the packet inline on stdin and the depth one higher, inside its timeout', t => {
   const { dir, env, args } = setup(t, { delegation: true });
   const stub = join(dir, 'stub.mjs');
-  writeFileSync(stub, `import { readFileSync } from 'node:fs'; let input = ''; process.stdin.on('data', d => { input += d; }).on('end', () => { const settings = process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH ? JSON.parse(readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH, 'utf8')) : null; process.stdout.write(JSON.stringify({ depth: process.env.IA_DELEGATION_DEPTH, packet: input.includes('"digest": "${'f'.repeat(64)}"'), brief: input.startsWith('Write the milestone'), args: process.argv.slice(2), settings })); });\n`);
+  writeFileSync(stub, `import { readFileSync } from 'node:fs'; let input = ''; process.stdin.on('data', d => { input += d; }).on('end', () => { const settings = process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH ? JSON.parse(readFileSync(process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH, 'utf8')) : null; const pIdx = process.argv.indexOf('--policy'); const policy = pIdx >= 0 && process.argv[pIdx + 1] ? readFileSync(process.argv[pIdx + 1], 'utf8') : null; process.stdout.write(JSON.stringify({ depth: process.env.IA_DELEGATION_DEPTH, packet: input.includes('"digest": "${'f'.repeat(64)}"'), brief: input.startsWith('Write the milestone'), args: process.argv.slice(2), settings, policy })); });\n`);
   // --bin names a Node script, which stands in for the other model's CLI.
   const ran = run('delegate.mjs', args('claude', ['--bin', stub, '--run']), env);
   assert.equal(ran.status, 0, ran.stdout + ran.stderr);
@@ -80,8 +92,13 @@ test('with --run the delegate gets the packet inline on stdin and the depth one 
   assert.equal(ranGemini.status, 0, ranGemini.stdout + ranGemini.stderr);
   const seenGemini = JSON.parse(ranGemini.json.stdout);
   assert.deepEqual({ depth: seenGemini.depth, packet: seenGemini.packet, brief: seenGemini.brief }, { depth: '1', packet: true, brief: true });
-  assert.deepEqual(seenGemini.args.slice(0, 3), ['--approval-mode', 'plan', '-p']);
+  assert.deepEqual(seenGemini.args.slice(0, 3), ['--approval-mode', 'plan', '--policy']);
+  assert.notEqual(seenGemini.args[3], GEMINI_POLICY_PLACEHOLDER);
+  assert.deepEqual(seenGemini.args.slice(4, 7), ['--allowed-mcp-server-names', 'ia', '-p']);
   assert.equal(seenGemini.settings?.mcpServers?.ia?.command, 'node');
+  assert.deepEqual(seenGemini.settings?.policyPaths, [seenGemini.args[3]]);
+  assert.deepEqual(seenGemini.settings?.tools?.exclude, GEMINI_DENIED_TOOLS);
+  assert.equal(seenGemini.policy, geminiPolicyToml());
   assert.deepEqual(command('codex', { bin: 'x', plugin: '/p' }).slice(-2), ['mcp_servers.ia.env={IA_KITS_DIR="/p/config/kits"}', '-']);
   assert.deepEqual(doorServer('/p'), { command: 'node', args: ['/p/scripts/door.mjs'], env: { IA_KITS_DIR: '/p/config/kits' } });
 });

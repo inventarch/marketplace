@@ -37,7 +37,7 @@
     },
     {
       "path": "plugins/ia/README.md",
-      "sha256": "9750bdf0ce8934e1ed680ee7bc7eb0d2903c3336966c86a2c7aa8082ffb5eb93"
+      "sha256": "e5b3583710162dbbbe509a0a2edc9ec72a4e3764df1f6f739014e3616f64ea3a"
     },
     {
       "path": "plugins/ia/agents/checker.md",
@@ -1013,7 +1013,7 @@
     },
     {
       "path": "plugins/ia/scripts/delegate.mjs",
-      "sha256": "709386c8c5c0cc8dc900bb5f93caefe97e8fed3062d4f999854511e548eda086"
+      "sha256": "f7b55b151e05eae9bea9735b055ffd77d120c3526de8037a97b5dc275cf3ffe7"
     },
     {
       "path": "plugins/ia/scripts/design.mjs",
@@ -1213,7 +1213,7 @@
     },
     {
       "path": "plugins/ia/skills/delegate/SKILL.md",
-      "sha256": "a6ac9e28d9e8a8fc31a143b0b687fa4aead1a1036e2e65db609dee181cb01836"
+      "sha256": "cb04cf3912f318810758b254ec97fa913b6fd23144e614e5abc35059da15f972"
     },
     {
       "path": "plugins/ia/skills/delivery/SKILL.md",
