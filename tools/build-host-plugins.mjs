@@ -90,10 +90,12 @@ function parseFrontmatter(text) {
   return { fields, body };
 }
 
-function mapTools(csv, table) {
+function mapTools(csv, table, host) {
   const out = [];
   for (const token of String(csv ?? '').split(',').map(s => s.trim()).filter(Boolean)) {
-    for (const mapped of table[token] ?? []) {
+    const mcpDoorMatch = host === 'gemini' ? /^mcp__plugin_ia_ia__([A-Za-z0-9_]+)$/.exec(token) : null;
+    const mappedList = mcpDoorMatch ? [`mcp_ia_${mcpDoorMatch[1]}`] : (table[token] ?? []);
+    for (const mapped of mappedList) {
       if (!out.includes(mapped)) out.push(mapped);
     }
   }
@@ -110,7 +112,7 @@ function transformSkill(sourceText, host) {
 
 function transformAgent(sourceText, host) {
   const { fields, body } = parseFrontmatter(sourceText);
-  const tools = mapTools(fields.tools, host === 'antigravity' ? AGY_TOOL_MAP : GEMINI_TOOL_MAP);
+  const tools = mapTools(fields.tools, host === 'antigravity' ? AGY_TOOL_MAP : GEMINI_TOOL_MAP, host);
   const hasMcp = /\bmcp__/.test(String(fields.tools ?? ''));
   const quote = s => JSON.stringify(String(s));
   const lines = ['---'];
@@ -169,7 +171,7 @@ Resolve \`../../\` relative to a loaded \`SKILL.md\` file's containing directory
   - \`inventarch\`: connects to \`https://api.inventarch.dev/mcp\` with OAuth PKCE (\`clientId: "gemini-cli"\`).
 - **Lifecycle hooks (\`hooks/hooks.json\`):** \`scripts/gemini-hook.mjs\` wires \`SessionStart\`, \`BeforeAgent\`, \`BeforeTool\` (fail-closed in \`.ia/governance.json\` workspaces), \`AfterTool\` (running kit post handlers and \`onwrite.json\` checks), and \`AfterAgent\`, emitting strictly one JSON object on stdout.
 - **Tool mapping:** map \`Read\`/\`Grep\`/\`Glob\` to \`read_file\`/\`grep_search\`/\`glob\`, \`Edit\` to \`replace\`, \`Write\` to \`write_file\`, and \`Bash\` to \`run_shell_command\`.
-- **Agents (\`agents/*.md\`):** \`reader\`, \`checker\`, \`worker\` and \`upkeep\` define bounded role briefs and tool allowlists. Never report a check as verified without \`scripts/check.mjs\` output.
+- **Agents (\`agents/*.md\`):** \`reader\`, \`checker\`, \`worker\` and \`upkeep\` define bounded role briefs and tool allowlists (including the IA door's \`mcp_ia_*\` tools). Never report a check as verified without \`scripts/check.mjs\` output.
 - **CLI hygiene:** scripts resolve \`@inventarch/cli@3.8.0\` via \`IA_CLI_PATH\`, the repository install, or \`npx\`, never a bare \`ia\` on \`PATH\` and never a shell (\`ia.mjs init\` and \`ia.mjs doctor\` keep \`--host claude\` on \`@inventarch/cli@3.8.0\`).
 `);
 }

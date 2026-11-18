@@ -1,7 +1,7 @@
 ---
 name: "reader"
 description: "Use this agent when a packet-driven task needs read-only evidence gathered from the repository, its IA records or the bound kit: what a file, record or document says, with path:line or identity and digest for every claim, and what the sources do not settle. Never edits, never runs commands, never plans."
-tools: [read_file, grep_search, glob]
+tools: [read_file, grep_search, glob, mcp_ia_ia_session, mcp_ia_ia_catalogue, mcp_ia_ia_method, mcp_ia_ia_position, mcp_ia_ia_read, mcp_ia_ia_vocabulary]
 ---
 
 # Reader

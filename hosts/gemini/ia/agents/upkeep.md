@@ -1,7 +1,7 @@
 ---
 name: "upkeep"
 description: "Use this agent when scripts/upkeep.mjs stale reports something: it brings the derived outputs a kit declares (a Mermaid map, a spec in another voice, a page) and the records that cite changed files back in step with their sources, as a proposed patch in a scratch worktree, never in the caller's tree. Silent and not started when nothing is stale."
-tools: [read_file, grep_search, glob, replace, write_file, run_shell_command]
+tools: [read_file, grep_search, glob, replace, write_file, run_shell_command, mcp_ia_ia_session, mcp_ia_ia_catalogue, mcp_ia_ia_method, mcp_ia_ia_read]
 ---
 
 # Upkeep

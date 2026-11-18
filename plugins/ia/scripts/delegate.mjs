@@ -22,9 +22,34 @@ import { parseArgs, printJson, refuse, UsageError } from './lib/workspace.mjs';
 
 export const DEFAULT_TIMEOUT = 900;
 export const MAX_TIMEOUT = 3600;
+export const GEMINI_POLICY_PLACEHOLDER = '<ephemeral policy.toml>';
+export const GEMINI_DENIED_TOOLS = ['exit_plan_mode', 'enter_plan_mode', 'write_file', 'replace', 'run_shell_command'];
 const TAIL = 4000;
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url)).replace(/\\/g, '/').replace(/\/+$/, '');
 const SPEC = { to: 'value', packet: 'value', brief: 'value', root: 'value', timeout: 'value', bin: 'value', run: 'flag' };
+
+// Ephemeral user-tier TOML policy (tier 4) passed via `gemini --policy <file>`:
+// - Denies `exit_plan_mode` (which non-interactively switches plan mode to YOLO in gemini-cli),
+//   `enter_plan_mode`, `write_file`, `replace` (including plan.toml's `.md` rules), and `run_shell_command`
+//   at priority 4.900 across all approval modes.
+// - Allows the `ia` MCP door's tools (`mcp_ia_*`) at priority 4.800 across all modes (including headless `plan`).
+export function geminiPolicyToml() {
+  const denied = GEMINI_DENIED_TOOLS.map(name => JSON.stringify(name)).join(', ');
+  return [
+    '[[rule]]',
+    `toolName = [${denied}]`,
+    'decision = "deny"',
+    'priority = 900',
+    'denyMessage = "Gemini delegation runs read-only; mutations and plan-mode transitions are disabled."',
+    '',
+    '[[rule]]',
+    'mcpName = "ia"',
+    'toolName = "*"',
+    'decision = "allow"',
+    'priority = 800',
+    '',
+  ].join('\n');
+}
 
 class DelegateError extends Error {
   constructor(message, code) { super(message); this.code = code; }
@@ -54,7 +79,7 @@ export function prompt(brief, packet) {
 }
 
 // The command for one host: argv. The prompt goes to stdin.
-export function command(to, { bin, plugin = PLUGIN } = {}) {
+export function command(to, { bin, plugin = PLUGIN, policyPath = GEMINI_POLICY_PLACEHOLDER } = {}) {
   const door = doorServer(plugin);
   if (to === 'claude') return [bin ?? 'claude', '-p', '--mcp-config', JSON.stringify({ mcpServers: { ia: door } })];
   if (to === 'codex') {
@@ -65,7 +90,15 @@ export function command(to, { bin, plugin = PLUGIN } = {}) {
       '-c', `mcp_servers.ia.env={IA_KITS_DIR=${toml(door.env.IA_KITS_DIR)}}`,
       '-'];
   }
-  if (to === 'gemini') return [bin ?? 'gemini', '--approval-mode', 'plan', '-p', 'Follow the delegate brief and InventArch packet on stdin.'];
+  if (to === 'gemini') {
+    return [
+      bin ?? 'gemini',
+      '--approval-mode', 'plan',
+      '--policy', policyPath,
+      '--allowed-mcp-server-names', 'ia',
+      '-p', 'Follow the delegate brief and InventArch packet on stdin.',
+    ];
+  }
   throw new UsageError('--to is claude, codex or gemini');
 }
 
@@ -107,26 +140,52 @@ export function plan(argv, env = process.env) {
   const brief = read(options.brief, 'brief');
   if (!brief.trim()) throw new UsageError('--brief is empty');
   const cwd = resolve(options.root ?? '.');
-  const mcpSettings = options.to === 'gemini' ? { mcpServers: { ia: doorServer() } } : null;
+  const mcpSettings = options.to === 'gemini'
+    ? { mcpServers: { ia: doorServer() }, policyPaths: [GEMINI_POLICY_PLACEHOLDER], tools: { exclude: [...GEMINI_DENIED_TOOLS] } }
+    : null;
+  const policyToml = options.to === 'gemini' ? geminiPolicyToml() : null;
   const childEnv = { IA_DELEGATION_DEPTH: String(depth + 1), ...(mcpSettings ? { GEMINI_CLI_SYSTEM_SETTINGS_PATH: '<ephemeral settings.json>' } : {}) };
-  return { to: options.to, argv: argvFor, cwd, env: childEnv, ...(mcpSettings ? { mcpSettings } : {}), timeoutSeconds: timeout, input: prompt(brief, packet), run: Boolean(options.run) };
+  return {
+    to: options.to,
+    argv: argvFor,
+    cwd,
+    env: childEnv,
+    ...(mcpSettings ? { mcpSettings, policyToml } : {}),
+    timeoutSeconds: timeout,
+    input: prompt(brief, packet),
+    run: Boolean(options.run),
+  };
 }
 
 export function delegate(argv, env = process.env) {
   const p = plan(argv, env);
-  const shown = { to: p.to, argv: p.argv, cwd: p.cwd, env: p.env, ...(p.mcpSettings ? { mcpSettings: p.mcpSettings } : {}), timeoutSeconds: p.timeoutSeconds, promptBytes: Buffer.byteLength(p.input), packetDigest: null };
+  const shown = {
+    to: p.to,
+    argv: p.argv,
+    cwd: p.cwd,
+    env: p.env,
+    ...(p.mcpSettings ? { mcpSettings: p.mcpSettings, policyToml: p.policyToml } : {}),
+    timeoutSeconds: p.timeoutSeconds,
+    promptBytes: Buffer.byteLength(p.input),
+    packetDigest: null,
+  };
   try { shown.packetDigest = JSON.parse(p.input.slice(p.input.indexOf('```json\n') + 8, p.input.lastIndexOf('```'))).digest ?? null; } catch { /* a packet without a digest */ }
   if (!p.run) return { ...shown, ran: false, next: 'show the person this command; run it with --run only on their word' };
   let tempDir = null;
   try {
     const runEnv = { ...env, ...p.env };
+    let effectiveArgv = p.argv;
     if (p.mcpSettings) {
       tempDir = mkdtempSync(join(tmpdir(), 'ia-delegate-gemini-'));
+      const policyPath = join(tempDir, 'policy.toml');
+      writeFileSync(policyPath, p.policyToml ?? geminiPolicyToml(), 'utf8');
       const settingsPath = join(tempDir, 'settings.json');
-      writeFileSync(settingsPath, JSON.stringify(p.mcpSettings, null, 2) + '\n', 'utf8');
+      const runtimeSettings = { ...p.mcpSettings, policyPaths: [policyPath] };
+      writeFileSync(settingsPath, JSON.stringify(runtimeSettings, null, 2) + '\n', 'utf8');
       runEnv.GEMINI_CLI_SYSTEM_SETTINGS_PATH = settingsPath;
+      effectiveArgv = p.argv.map(arg => (arg === GEMINI_POLICY_PLACEHOLDER ? policyPath : arg));
     }
-    const spawnArgv = p.to === 'gemini' ? resolveGeminiSpawn(p.argv, runEnv) : p.argv;
+    const spawnArgv = p.to === 'gemini' ? resolveGeminiSpawn(effectiveArgv, runEnv) : effectiveArgv;
     const child = spawnSync(spawnArgv[0], spawnArgv.slice(1), { cwd: p.cwd, input: p.input, encoding: 'utf8', timeout: p.timeoutSeconds * 1000, maxBuffer: 64 * 1024 * 1024, windowsHide: true, env: runEnv });
     const tail = text => (text ?? '').length > TAIL ? `[${text.length - TAIL} characters cut] ${text.slice(-TAIL)}` : (text ?? '');
     const timedOut = child.error?.code === 'ETIMEDOUT';
