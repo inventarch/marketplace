@@ -38,8 +38,8 @@
   "description": "The public base approval kit (approval-system): the approver, approval-rule, docket and approval words with their schemas and authoring guides, intake piece recognition and seal rules, and the offline Ed25519 + RFC 8785 JCS check-seal verifier.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "25e0c9336cafcbf98e4201e0758add4ef9fdd193",
+    "commit": "15e7f3ab0039008206f4b1d785f838c4de814677",
     "recipe": "ustar-v1",
-    "epoch": 1795061343
+    "epoch": 1795129915
   }
 }

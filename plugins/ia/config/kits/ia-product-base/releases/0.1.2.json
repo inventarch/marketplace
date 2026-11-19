@@ -1,0 +1,131 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-product-base-kit",
+  "version": "0.1.2",
+  "archive": "db1cb910ef179cf47002f90c9683fbe68722abb7ecf419c561345362245caab2",
+  "records": [
+    {
+      "system": "product-base-system",
+      "word": "agent",
+      "name": "product-base-system-steward"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-01-failure"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-01-success"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-02-failure"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-02-success"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-03-failure"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-03-success"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-04-failure"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-04-success"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-05-failure"
+    },
+    {
+      "system": "product-base-system",
+      "word": "case",
+      "name": "product-base-req-05-success"
+    },
+    {
+      "system": "product-base-system",
+      "word": "check",
+      "name": "check-prds"
+    },
+    {
+      "system": "product-base-system",
+      "word": "check",
+      "name": "product-base-system-coverage"
+    },
+    {
+      "system": "product-base-system",
+      "word": "check",
+      "name": "product-check-validate"
+    },
+    {
+      "system": "product-base-system",
+      "word": "contract",
+      "name": "product-base-system"
+    },
+    {
+      "system": "product-base-system",
+      "word": "convention",
+      "name": "product-guide-prd"
+    },
+    {
+      "system": "product-base-system",
+      "word": "convention",
+      "name": "product-prd-body-pinning"
+    },
+    {
+      "system": "product-base-system",
+      "word": "convention",
+      "name": "product-prd-decomposition-boundary"
+    },
+    {
+      "system": "product-base-system",
+      "word": "distribution",
+      "name": "ia-product-base-distribution"
+    },
+    {
+      "system": "product-base-system",
+      "word": "law",
+      "name": "product-prd-source-and-supersession-hygiene"
+    },
+    {
+      "system": "product-base-system",
+      "word": "law",
+      "name": "product-ratified-prd-completeness-and-traceability"
+    },
+    {
+      "system": "product-base-system",
+      "word": "mandate",
+      "name": "product-base-system-stewardship"
+    },
+    {
+      "system": "product-base-system",
+      "word": "schema",
+      "name": "prd"
+    },
+    {
+      "system": "product-base-system",
+      "word": "system",
+      "name": "product-base-system"
+    }
+  ],
+  "offers": {
+    "keys": []
+  }
+}

@@ -38,8 +38,8 @@
   "description": "The public base atomic design and pattern-lowering kit (design-base-system): the design-token, level, part, slot, pattern and recipe words with their canonical schemas and authoring guides, atomic composition and semantic-token laws, and the offline check-design-patterns verifier.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "3503c2661d0ef0a80a9b374a3acf8fa7e50ec3d3",
+    "commit": "15e7f3ab0039008206f4b1d785f838c4de814677",
     "recipe": "ustar-v1",
-    "epoch": 1795127293
+    "epoch": 1795129915
   }
 }

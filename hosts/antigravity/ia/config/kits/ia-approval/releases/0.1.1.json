@@ -1,0 +1,171 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-approval-kit",
+  "version": "0.1.1",
+  "archive": "8933c209466c89c5f686729b9690f8aa3bc7ad0552e797c2ea18d9d333e2c358",
+  "records": [
+    {
+      "system": "approval-system",
+      "word": "agent",
+      "name": "approval-system-steward"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-01-failure"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-01-success"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-02-failure"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-02-success"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-03-failure"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-03-success"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-04-failure"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-04-success"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-05-failure"
+    },
+    {
+      "system": "approval-system",
+      "word": "case",
+      "name": "approval-req-05-success"
+    },
+    {
+      "system": "approval-system",
+      "word": "check",
+      "name": "approval-check-validate"
+    },
+    {
+      "system": "approval-system",
+      "word": "check",
+      "name": "approval-system-coverage"
+    },
+    {
+      "system": "approval-system",
+      "word": "check",
+      "name": "check-seal"
+    },
+    {
+      "system": "approval-system",
+      "word": "contract",
+      "name": "approval-system"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-file-naming"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-guide-approval"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-guide-approval-rule"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-guide-approver"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-guide-docket"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-piece-recognition"
+    },
+    {
+      "system": "approval-system",
+      "word": "convention",
+      "name": "approval-seal-asking-list"
+    },
+    {
+      "system": "approval-system",
+      "word": "distribution",
+      "name": "ia-approval-distribution"
+    },
+    {
+      "system": "approval-system",
+      "word": "law",
+      "name": "approval-roster-and-rules-person-merge"
+    },
+    {
+      "system": "approval-system",
+      "word": "law",
+      "name": "approval-seal-exact-statement"
+    },
+    {
+      "system": "approval-system",
+      "word": "law",
+      "name": "approval-seal-target-branch-authority"
+    },
+    {
+      "system": "approval-system",
+      "word": "mandate",
+      "name": "approval-system-stewardship"
+    },
+    {
+      "system": "approval-system",
+      "word": "schema",
+      "name": "approval"
+    },
+    {
+      "system": "approval-system",
+      "word": "schema",
+      "name": "approval-rule"
+    },
+    {
+      "system": "approval-system",
+      "word": "schema",
+      "name": "approver"
+    },
+    {
+      "system": "approval-system",
+      "word": "schema",
+      "name": "docket"
+    },
+    {
+      "system": "approval-system",
+      "word": "system",
+      "name": "approval-system"
+    }
+  ],
+  "offers": {
+    "keys": []
+  }
+}

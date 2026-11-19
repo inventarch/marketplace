@@ -1,7 +1,7 @@
 {
   "format": 2,
   "kit": "inventarch/ia-design-base-kit",
-  "latest": "0.1.1",
+  "latest": "0.1.2",
   "releases": [
     {
       "version": "0.1.0",
@@ -27,6 +27,19 @@
       "source": {
         "repository": "https://github.com/inventarch/marketplace.git",
         "commit": "3503c2661d0ef0a80a9b374a3acf8fa7e50ec3d3"
+      }
+    },
+    {
+      "version": "0.1.2",
+      "archive": "eb1f1021fa99c39c479d471b3ba997db53b8519a27448b61574015c1937c4a9d",
+      "manifest": "863502269b6732ae87bb1894e368da12ffa4f463eecb7685f19b40cff36fab57",
+      "sources": "8666fc6d0f451ccb5ccad9485bfc70a303222c2f622b29be288cc50a9a1541ee",
+      "language": "inventarch/language ^3.0.0",
+      "cli": "@inventarch/cli 3.8.0",
+      "file": "releases/0.1.2.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "15e7f3ab0039008206f4b1d785f838c4de814677"
       }
     }
   ]
