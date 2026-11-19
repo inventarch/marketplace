@@ -11,6 +11,7 @@ import { kitRecordNames } from '../scripts/lib/records.mjs';
 import { expandFolder } from '../scripts/lib/releases.mjs';
 import { FORMAT, STAGE_ORDER, checkDesignPatterns, inspectTokenClassList, isSafeRecipeOutput } from '../config/kits/ia-design-base/scripts/check-design-patterns.mjs';
 import { APPROVALS_DIR, generateSigningKey, keyEntryText, sealRecord } from '../config/kits/ia-approval/scripts/check-seal.mjs';
+import { sequentialSigners } from './helpers/sequential-signers.mjs';
 
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url));
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
@@ -1231,4 +1232,70 @@ test('REQ-DESIGN-BASE-06: forged/zero-signature seals, missing digests and varia
   );
   assert.equal(validRun.status, 0, validRun.stdout + validRun.stderr);
   assert.equal(JSON.parse(validRun.stdout).exitCode, 0);
+});
+
+test('REQ-DESIGN-BASE-07: sequential quorum-2 current-revision seals pass as in check-seal, and a post-seal edit still fails', { skip: SKIP_CLI }, t => {
+  const pair = sequentialSigners(t, {
+    cli: CLI,
+    kit: 'ia-design-base',
+    system: SYSTEM,
+    words: 'pattern, recipe',
+    target: 'design-base-system/definition/recipe/seq-recipe',
+    checkName: 'check-design-patterns',
+    kitId: KIT_ID,
+    records: `#! ia 1.0
+
+@level seq-atom
+  meaning
+    says "Atoms."
+  level
+    rank 1
+    stage atom
+    title "Atom"
+
+@part seq-btn
+  meaning
+    says "Button atom."
+  part
+    name "SeqButton"
+    level @level seq-atom
+    code-export "@acme/ui#SeqButton"
+    standing active
+
+@recipe seq-recipe
+  meaning
+    says "Active recipe sealed by two approvers in turn."
+  recipe
+    name "SeqButton Use"
+    part "design-base-system/definition/part/seq-btn"
+    target "react-tailwind-shadcn"
+    mode use
+    props ["size -> size"]
+    standing active
+`,
+  });
+  pair.sealFirst();
+  const one = pair.check();
+  assert.equal(one.status, 3, one.output);
+  assert.equal(pair.sealPasses(), false);
+  assert.ok(one.findings.some(f => f.code === 'ACTIVE_RECIPE_UNSEALED'), one.output);
+
+  // Control: both signers on the pre-seal revision
+  pair.sealSecond({ onPreSeal: true });
+  const control = pair.check();
+  assert.equal(control.status, 0, control.output);
+  assert.equal(pair.sealPasses(), true);
+
+  // Signer 2 captured after approval 1 was written (the step revision check-seal accepts)
+  pair.sealSecond();
+  const sequential = pair.check();
+  assert.equal(sequential.status, 0, sequential.output);
+  assert.equal(pair.sealPasses(), true);
+
+  // A post-seal edit to a non-approval record leaves no accepted revision
+  pair.edit('later.ia', '#! ia 1.0\n\n@level seq-molecule\n  meaning\n    says "Added after both seals."\n  level\n    rank 2\n    stage molecule\n    title "Molecule"\n');
+  const stale = pair.check();
+  assert.equal(stale.status, 3, stale.output);
+  assert.equal(pair.sealPasses(), false);
+  assert.ok(stale.findings.some(f => f.code === 'ACTIVE_RECIPE_UNSEALED'), stale.output);
 });

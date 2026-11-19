@@ -928,52 +928,81 @@ function stripApprovalBlocks(fullPath) {
   else writeFileSync(fullPath, `${header}${kept.join('')}`);
 }
 
-function computeUnsealedRevisions(command, root, approvalFiles) {
+const APPROVAL_TEXT_FIELDS = [
+  'action',
+  'organisation',
+  'workspace',
+  'record',
+  'record-digest',
+  'revision',
+  'language-version',
+  'base-commit',
+  'signer',
+  'key-id',
+  'key-kind',
+  'via',
+  'request',
+  'signed-at',
+  'algorithm',
+  'signature',
+];
+
+// The revisions a current-revision seal may name, as check-seal accepts them: the full capture, the capture
+// with every @approval stripped, and, when a seal names neither and there are 2+ approvals, each sequential
+// signer's step (well-formed approvals, as check-seal's parseApproval admits them, ordered by signed-at then file; step i strips approvals i..n-1, so signer i+1's
+// capture with approvals 0..i-1 present). Each probe runs on a fresh copy of the authored tree; a failed
+// probe adds nothing and keeps the revisions already found.
+function computeUnsealedRevisions(command, root, approvals) {
   const scratch = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-prd-rev-')));
-  const copy = join(scratch, 'ws');
-  try {
-    mkdirSync(copy, { recursive: true });
-    const skipTop = new Set(['.git', 'node_modules', 'vendor', '.scratch']);
-    const walkCopy = (srcDir, dstDir) => {
-      for (const name of readdirSync(srcDir)) {
-        if (srcDir === root && skipTop.has(name)) continue;
-        const s = join(srcDir, name);
-        const d = join(dstDir, name);
-        if (name === '.ia') {
-          cpSync(s, d, { recursive: true, filter: p => !/[\\/]\.ia[\\/]work(?:[\\/]|$)/.test(p) });
-        } else if (statSync(s).isDirectory() && existsSync(join(s, '.ia'))) {
-          walkCopy(s, d);
+  const skipTop = new Set(['.git', 'node_modules', 'vendor', '.scratch']);
+  const capture = (tag, stripFiles) => {
+    try {
+      const copy = join(scratch, tag);
+      mkdirSync(copy, { recursive: true });
+      const walkCopy = (srcDir, dstDir) => {
+        for (const name of readdirSync(srcDir)) {
+          if (srcDir === root && skipTop.has(name)) continue;
+          const s = join(srcDir, name);
+          const d = join(dstDir, name);
+          if (name === '.ia') {
+            cpSync(s, d, { recursive: true, filter: p => !/[\\/]\.ia[\\/]work(?:[\\/]|$)/.test(p) });
+          } else if (statSync(s).isDirectory() && existsSync(join(s, '.ia'))) {
+            walkCopy(s, d);
+          }
         }
-      }
+      };
+      walkCopy(root, copy);
+      for (const rel of stripFiles) stripApprovalBlocks(join(copy, rel));
+      const ran = spawnSync(command[0], [...command.slice(1), 'capture', '--root', copy], {
+        cwd: copy,
+        env: handoffOff(),
+        encoding: 'utf8',
+        maxBuffer: MAX_BUFFER,
+        windowsHide: true,
+      });
+      if (ran.status !== 0) return null;
+      const snap = JSON.parse(readFileSync(join(copy, '.ia', 'work', 'snapshot', 'current.json'), 'utf8'));
+      return snap.authoredRevision || null;
+    } catch {
+      return null;
+    }
+  };
+  try {
+    const revisions = new Set();
+    const add = rev => {
+      if (rev) revisions.add(rev);
     };
-    walkCopy(root, copy);
-    const revisions = [];
-    const capFull = spawnSync(command[0], [...command.slice(1), 'capture', '--root', copy], {
-      cwd: copy,
-      env: handoffOff(),
-      encoding: 'utf8',
-      maxBuffer: MAX_BUFFER,
-      windowsHide: true,
-    });
-    if (capFull.status === 0) {
-      const snap = JSON.parse(readFileSync(join(copy, '.ia', 'work', 'snapshot', 'current.json'), 'utf8'));
-      if (snap.authoredRevision) revisions.push(snap.authoredRevision);
+    add(capture('full', []));
+    add(capture('unsealed', [...new Set(approvals.map(a => a.file))]));
+    const ordered = approvals
+      .filter(a => a.wellFormed)
+      .sort((a, b) => (a.signedAt < b.signedAt ? -1 : a.signedAt > b.signedAt ? 1 : a.file < b.file ? -1 : 1));
+    if (ordered.length > 1 && ordered.some(a => !revisions.has(a.revision))) {
+      for (let i = 1; i < ordered.length; i++) {
+        add(capture(`step-${i}`, [...new Set(ordered.slice(i).map(a => a.file))]));
+      }
     }
-    for (const rel of approvalFiles) stripApprovalBlocks(join(copy, rel));
-    const capUnsealed = spawnSync(command[0], [...command.slice(1), 'capture', '--root', copy], {
-      cwd: copy,
-      env: handoffOff(),
-      encoding: 'utf8',
-      maxBuffer: MAX_BUFFER,
-      windowsHide: true,
-    });
-    if (capUnsealed.status === 0) {
-      const snap = JSON.parse(readFileSync(join(copy, '.ia', 'work', 'snapshot', 'current.json'), 'utf8'));
-      if (snap.authoredRevision) revisions.push(snap.authoredRevision);
-    }
-    return revisions;
-  } catch {
-    return [];
+    return [...revisions];
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
@@ -1065,8 +1094,26 @@ function enrichSnapshotWithDigests(command, root, result) {
   const hasCurrentRevRule = records.some(
     r => r.discriminator === 'approval-rule' && scalarText(sectionField(r, 'demand.staleness')) === 'current-revision',
   );
-  const approvalFiles = [...new Set(records.filter(r => r.discriminator === 'approval').map(recordFileOf).filter(Boolean))];
-  const validRevisions = hasCurrentRevRule ? computeUnsealedRevisions(command, root, approvalFiles) : [];
+  const approvals = records
+    .filter(r => r.discriminator === 'approval' && recordFileOf(r))
+    .map(r => {
+      const text = key => scalarText(sectionField(r, `seal.${key}`));
+      const listed = key => sectionField(r, `seal.${key}`)?.kind === 'list';
+      // The structural gate check-seal's parseApproval applies before it orders sequential signers
+      const wellFormed =
+        APPROVAL_TEXT_FIELDS.every(key => Boolean(text(key))) &&
+        ['depends-on', 'rules', 'system-versions'].every(listed) &&
+        text('algorithm') === 'ed25519' &&
+        HEX_64_RE.test(text('record-digest')) &&
+        HEX_64_RE.test(text('revision')) &&
+        COMMIT_RE.test(text('base-commit')) &&
+        ['approve', 'delete'].includes(text('action')) &&
+        ['service-held', 'person-held'].includes(text('key-kind')) &&
+        ['desk', 'slack'].includes(text('via')) &&
+        isValidRfc3339Utc(text('signed-at'));
+      return { file: recordFileOf(r), signedAt: text('signed-at'), revision: text('revision'), wellFormed };
+    });
+  const validRevisions = hasCurrentRevRule ? computeUnsealedRevisions(command, root, approvals) : [];
 
   return {
     ...result,

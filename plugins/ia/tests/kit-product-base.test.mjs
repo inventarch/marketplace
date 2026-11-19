@@ -11,6 +11,7 @@ import { kitRecordNames } from '../scripts/lib/records.mjs';
 import { expandFolder } from '../scripts/lib/releases.mjs';
 import { FORMAT, checkPrds, isValidPrdSource } from '../config/kits/ia-product-base/scripts/check-prds.mjs';
 import { APPROVALS_DIR, generateSigningKey, keyEntryText, sealRecord } from '../config/kits/ia-approval/scripts/check-seal.mjs';
+import { sequentialSigners } from './helpers/sequential-signers.mjs';
 
 const PLUGIN = fileURLToPath(new URL('..', import.meta.url));
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
@@ -1055,4 +1056,63 @@ test('REQ-PRODUCT-BASE-06: check-prds refuses forged/zero-signature approvals, e
   );
   assert.equal(validRun.status, 0, validRun.stdout + validRun.stderr);
   assert.equal(JSON.parse(validRun.stdout).exitCode, 0);
+});
+
+test('REQ-PRODUCT-BASE-07: sequential quorum-2 current-revision seals pass as in check-seal, and a post-seal edit still fails', { skip: SKIP_CLI }, t => {
+  const pair = sequentialSigners(t, {
+    cli: CLI,
+    kit: 'ia-product-base',
+    system: SYSTEM,
+    words: 'prd',
+    target: 'product-base-system/definition/prd/seq-prd',
+    checkName: 'check-prds',
+    kitId: KIT_ID,
+    records: `#! ia 1.0
+
+@spec seq-spec
+  meaning
+    says "Checkout specification."
+  work
+    title "Checkout spec"
+    status accepted
+
+@prd seq-prd
+  meaning
+    says "Checkout flow requirements sealed by two approvers in turn."
+    problem "Cart abandonment rises when totals appear late."
+  scope
+    goals ["Show itemized totals upfront"]
+    non-goals ["Subscription billing"]
+    requirements ["CHK-01: Render line-item totals before payment step"]
+  governance
+    status ratified
+    source "docs/prd/checkout.md"
+  relationships
+    grounds @spec seq-spec
+`,
+  });
+  pair.sealFirst();
+  const one = pair.check();
+  assert.equal(one.status, 3, one.output);
+  assert.equal(pair.sealPasses(), false);
+  assert.ok(one.findings.some(f => f.code === 'PRD_UNSEALED'), one.output);
+
+  // Control: both signers on the pre-seal revision
+  pair.sealSecond({ onPreSeal: true });
+  const control = pair.check();
+  assert.equal(control.status, 0, control.output);
+  assert.equal(pair.sealPasses(), true);
+
+  // Signer 2 captured after approval 1 was written (the step revision check-seal accepts)
+  pair.sealSecond();
+  const sequential = pair.check();
+  assert.equal(sequential.status, 0, sequential.output);
+  assert.equal(pair.sealPasses(), true);
+
+  // A post-seal edit to a non-approval record leaves no accepted revision
+  pair.edit('later.ia', '#! ia 1.0\n\n@spec seq-later\n  meaning\n    says "Added after both seals."\n  work\n    title "Later spec"\n    status accepted\n');
+  const stale = pair.check();
+  assert.equal(stale.status, 3, stale.output);
+  assert.equal(pair.sealPasses(), false);
+  assert.ok(stale.findings.some(f => f.code === 'PRD_UNSEALED'), stale.output);
 });

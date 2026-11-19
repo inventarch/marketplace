@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "patch",
+  "title": "Release `ia-design-base` and `ia-product-base` 0.1.1: accept sequential signer revisions in `check-design-patterns` and `check-prds`",
+  "summary": "The bundled `ia-design-base` and `ia-product-base` kits move to 0.1.1, and `@inventarch/public-kits` to 1.2.1. Under a `current-revision` approval rule, their checkers now accept the revision each sequential signer captured with the earlier approvals already present, as `check-seal` does, so a quorum-2 seal that `check-seal` ratifies no longer fails as `ACTIVE_RECIPE_UNSEALED` or `PRD_UNSEALED`.",
+  "plugins": [
+    "ia"
+  ]
+}

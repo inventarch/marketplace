@@ -61,18 +61,19 @@
       "folder": "kits/ia-design-base",
       "releases": "kits/ia-design-base/releases.json",
       "latest": {
-        "version": "0.1.0",
-        "archive": "59f9f5499164c2ff08c1b0f414deb792dd64d7929a2fdf6d0f097f8c9c586019",
+        "version": "0.1.1",
+        "archive": "5d762b10b789636f8abfcff582da960f09b3f0bbfae0b5b887580b8883a03bd4",
         "cli": "@inventarch/cli 3.8.0",
         "language": "inventarch/language ^3.0.0",
-        "file": "kits/ia-design-base/releases/0.1.0.json",
+        "file": "kits/ia-design-base/releases/0.1.1.json",
         "source": {
           "repository": "https://github.com/inventarch/marketplace.git",
-          "commit": "25e0c9336cafcbf98e4201e0758add4ef9fdd193"
+          "commit": "3503c2661d0ef0a80a9b374a3acf8fa7e50ec3d3"
         }
       },
       "versions": [
-        "0.1.0"
+        "0.1.0",
+        "0.1.1"
       ],
       "offers": []
     },
@@ -189,18 +190,19 @@
       "folder": "kits/ia-product-base",
       "releases": "kits/ia-product-base/releases.json",
       "latest": {
-        "version": "0.1.0",
-        "archive": "6cfd206a39f54ae8842f4c341b88a7770493c30c4b6a9fedd733eca56ed95a90",
+        "version": "0.1.1",
+        "archive": "616ce33a2ce477249356db99324fccea0ad441fc930347afe8c68cd975dac882",
         "cli": "@inventarch/cli 3.8.0",
         "language": "inventarch/language ^3.0.0",
-        "file": "kits/ia-product-base/releases/0.1.0.json",
+        "file": "kits/ia-product-base/releases/0.1.1.json",
         "source": {
           "repository": "https://github.com/inventarch/marketplace.git",
-          "commit": "25e0c9336cafcbf98e4201e0758add4ef9fdd193"
+          "commit": "3503c2661d0ef0a80a9b374a3acf8fa7e50ec3d3"
         }
       },
       "versions": [
-        "0.1.0"
+        "0.1.0",
+        "0.1.1"
       ],
       "offers": []
     },
