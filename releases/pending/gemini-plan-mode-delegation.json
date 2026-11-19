@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "patch",
+  "title": "Enforce read-only Gemini plan-mode delegation and map Gemini agent door tools",
+  "summary": "Passes an ephemeral user-tier --policy TOML to gemini --approval-mode plan in delegate.mjs so exit_plan_mode, enter_plan_mode, write_file, replace and run_shell_command are denied while mcp_ia_* door tools are allowed non-interactively; preserves declared mcp_ia_* door tools in generated Gemini CLI agent allowlists; and fixes the README Gemini extension install command.",
+  "plugins": [
+    "ia"
+  ]
+}

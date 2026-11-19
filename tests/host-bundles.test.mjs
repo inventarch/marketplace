@@ -128,5 +128,14 @@ test('Gemini CLI bundle obeys gemini-extension.json, millisecond hooks/hooks.jso
   for (const agentFile of readdirSync(join(ROOT, 'hosts/gemini/ia/agents'))) {
     const text = readFileSync(join(ROOT, 'hosts/gemini/ia/agents', agentFile), 'utf8');
     assert.match(text, /^---\nname: "[^"]+"\ndescription: "[^"]+"\ntools: \[[^\]]+\]\n---\n/);
+    for (const doorTool of ['mcp_ia_ia_session', 'mcp_ia_ia_catalogue', 'mcp_ia_ia_method']) {
+      assert.match(text, new RegExp(`\\b${doorTool}\\b`), `${agentFile} must retain ${doorTool}`);
+    }
   }
+  const geminiReader = readFileSync(join(ROOT, 'hosts/gemini/ia/agents/reader.md'), 'utf8');
+  for (const doorTool of ['mcp_ia_ia_position', 'mcp_ia_ia_read', 'mcp_ia_ia_vocabulary']) {
+    assert.match(geminiReader, new RegExp(`\\b${doorTool}\\b`));
+  }
+  const geminiChecker = readFileSync(join(ROOT, 'hosts/gemini/ia/agents/checker.md'), 'utf8');
+  assert.doesNotMatch(geminiChecker, /\bmcp_ia_ia_position\b/, 'checker retains only declared door tools');
 });

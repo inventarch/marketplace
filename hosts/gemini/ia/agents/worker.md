@@ -1,7 +1,7 @@
 ---
 name: "worker"
 description: "Use this agent when a packet-driven task needs a bounded change made: files or IA records within the packet's scope, following its instructions in order, citing what it read, and reporting requested against effective operations. Never widens the scope, never verifies its own work, never commits or pushes."
-tools: [read_file, grep_search, glob, replace, write_file, run_shell_command]
+tools: [read_file, grep_search, glob, replace, write_file, run_shell_command, mcp_ia_ia_session, mcp_ia_ia_catalogue, mcp_ia_ia_method, mcp_ia_ia_position, mcp_ia_ia_read, mcp_ia_ia_vocabulary]
 ---
 
 # Worker

@@ -1,7 +1,7 @@
 ---
 name: "checker"
 description: "Use this agent when a packet-driven task needs its declared checks run and reported verbatim: it runs only the plugin's scripts/check.mjs with one check name per call, never any other command, and never edits what it checks or reports a pass it did not run."
-tools: [read_file, grep_search, glob, run_shell_command]
+tools: [read_file, grep_search, glob, run_shell_command, mcp_ia_ia_session, mcp_ia_ia_catalogue, mcp_ia_ia_method]
 ---
 
 # Checker
