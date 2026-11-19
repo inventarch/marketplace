@@ -222,6 +222,19 @@
     start "2026-11-01"
     source "docs/roadmap.md"
 
+@task account-connector-hosted-custody
+  meaning
+    says "Migrate plugins/ia (ia:init section 6, scripts/kit-fetch.mjs and hosted lane resolution) from downloading full licensed kit archives into ~/.ia/kits to installing only pinned system definitions and lightweight kit routing specifications locally while invoking proprietary kit bodies remotely on the InventArch API (decision public-systems-and-kits-custody)."
+  work
+    title "Move licensed kits in plugins/ia from archive download to local system/spec pins and hosted execution"
+    status proposed
+    milestone @milestone marketplace-published
+    owner "InventArch maintainers"
+    start "2026-11-19"
+    source "docs/roadmap.md"
+  relationships
+    requires @decision public-systems-and-kits-custody
+
 # The IA 3.6.0 migration (2026-11-08): two releases. Release N migrates on the 3.5.x pins; release N+1 moves to 3.6.0.
 
 @plan cli-3-6-0-migration

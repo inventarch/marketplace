@@ -4,7 +4,7 @@
 
 > The **IA marketplace** is the plugin catalogue `inventarch` for Claude Code and Codex. It ships one plugin, **`ia`**, which gives a coding agent three lanes: Work, Knowledge and Delivery. Each lane delivers the method a repository binds as one packet the agent follows, instead of a prompt it improvises.
 >
-> This is the **public catalogue**: the `ia` plugin, the three public method kits it carries as lane defaults, and the five public base vocabulary kits (`ia-approval`, `ia-repo`, `ia-slack-base`, `ia-design-base`, `ia-product-base`). It is licensed under Apache-2.0 and needs no account. More kits are available with an InventArch account, and they install into your IA home, never into this repository.
+> This is the **public catalogue**: the `ia` plugin, the three public method kits it carries as lane defaults, and the five public base vocabulary kits (`ia-approval`, `ia-repo`, `ia-slack-base`, `ia-design-base`, `ia-product-base`). It is licensed under Apache-2.0 and needs no account. With an InventArch account, repositories also adopt hosted proprietary kits: their required **systems** (vocabulary) and **routing specifications** ("when to call it" and expected inputs/outputs) pin locally, while proprietary kit methodology stays on the InventArch API and never enters this repository.
 
 ## Why the ia plugin
 
@@ -108,9 +108,23 @@ The core carries eight public kits: three lane defaults and five public base voc
 
 Each lane's entry capability is a whole procedure: a request with no specific activity gets all four phases, and `--phase` selects one.
 
-More kits (meetings, governed work, organisation-wide knowledge custody, workspace and system design, and others) are available with an InventArch account. They are served by the InventArch API and installed into your IA home, never into this repository.
-
 All eight carried kits are also published together as the npm package [`@inventarch/public-kits`](packages/public-kits/README.md), for a door or workspace that has no plugin; [docs/public-kits-package.md](docs/public-kits-package.md) describes it.
+
+### Systems, kits and where contributions belong
+
+InventArch separates **vocabulary**, **routing** and **methodology** across distinct layers and repositories (decision `public-systems-and-kits-custody`):
+
+1. **Systems (`@system` and `@schema`s) — always local and pinned.** A system defines vocabulary: what each word represents, its required fields, its permitted relationships and how that word lowers into validation or code execution in the open Engine ([`inventarch/ia`](https://github.com/inventarch/ia)) or hooks into your own application code. Even when a proprietary kit introduces extra systems outside this public catalogue, those **system definitions** download and pin locally under `.ia/` so every repository validates `.ia` files offline and no two accounts declare the same word with incompatible meanings.
+2. **Kit routing specifications — lightweight local contract.** When a repository binds a hosted proprietary kit, a version-pinned routing specification ("use this kit when …", expected inputs and outputs) lets a local harness agent decide when and how to call the hosted service without seeing its internal playbooks (complemented by optional KB-driven intent routing on the hosted side).
+3. **Kit bodies — public starter kits vs. hosted proprietary kits.**
+   - **Public starter and base kits (this repository):** Impart foundational capability and offline verifiers onto public vocabulary so anyone can run a complete baseline locally and experience the intended mission of the words.
+   - **Proprietary advanced kits (InventArch API):** Build on public and extra systems for multi-stage architecture, studio scaffolding, governed delivery and cross-system orchestration. Proprietary kit bodies execute strictly on the InventArch API and isolated execution pods; they are never vendored into repositories or downloaded as kit bodies.
+
+| You want to contribute or build | Where it belongs |
+|---|---|
+| How declared words lower into language validation, mandates, projections, MCP door tools or Engine execution | [`inventarch/ia`](https://github.com/inventarch/ia) (Framework & Engine) |
+| A shared public system and a foundational starter kit built on the open Engine (or an improvement to the `ia` host plugin) | `inventarch/marketplace` (this repository — submit any needed Engine lowering change to `inventarch/ia` alongside your proposed system and starter kit here) |
+| Code that wires IA words to your own backend API, custom MCP server or user authentication, or a proprietary domain kit | Your own repository or private catalogue — never in `inventarch/marketplace` |
 
 ### Kit names
 
@@ -211,7 +225,7 @@ Everything user-facing starts with `ia`: the plugin `ia`; its skills `ia:work`, 
 
 ### An InventArch account
 
-The core bundles the InventArch account connector, an MCP server named `inventarch` (`https://api.inventarch.dev/mcp`) with the public Claude Code OAuth client already filled in, so there is nothing to add by hand. Sign in once through `/mcp` (or `claude mcp login inventarch`); the host runs the OAuth sign-in and keeps the token, and the plugin ships no secret and stores no token. Then run `ia:init`: with the connector's tools available it lists the kits your account offers, downloads each one through a short-lived signed URL, checks the archive's SHA-256, installs it into your IA home and binds it as the kit recommends, previewing each write until you agree. At the start of a session the core points at the sign-in, once, in one line, never blocking and with no network call; it reads none of the host's credentials, so after you sign in it still shows once per session: ignore it, or turn it off. To stop the pointer, set `"accountOffer": false` in `~/.ia/config.json` or `IA_NO_ACCOUNT_OFFER=1`; it never appears when `CI` is set.
+The core bundles the InventArch account connector, an MCP server named `inventarch` (`https://api.inventarch.dev/mcp`) with the public Claude Code OAuth client already filled in, so there is nothing to add by hand. Sign in once through `/mcp` (or `claude mcp login inventarch`); the host runs the OAuth sign-in and keeps the token, and the plugin ships no secret and stores no token. Under the canonical custody model (decision `public-systems-and-kits-custody`), adopting an account-served proprietary kit pins only its required **systems** (vocabulary) and **routing specification** locally while executing the kit's methodology remotely on the InventArch API. *(Transitional 1.x note: until [roadmap](docs/roadmap.md) task `account-connector-hosted-custody` lands, `ia:init` in `plugins/ia` 1.x still uses the `public-account-connector` flow—calling `kit_offerings` and `kit_download` over a short-lived signed URL, verifying SHA-256, installing into `<IA home>/kits` and binding recommended keys after preview.)* At the start of a session the core points at the sign-in, once, in one line, never blocking and with no network call; it reads none of the host's credentials, so after you sign in it still shows once per session: ignore it, or turn it off. To stop the pointer, set `"accountOffer": false` in `~/.ia/config.json` or `IA_NO_ACCOUNT_OFFER=1`; it never appears when `CI` is set.
 
 ### Governed repositories
 

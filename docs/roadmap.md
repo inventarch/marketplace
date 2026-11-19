@@ -20,6 +20,7 @@ Open work for the public catalogue. Each item is a `@task` in `.ia/src/work.ia`,
 | claude plugin validate warns that plugins/ia/.claude-plugin/plugin.json has no privacyPolicyUrl now that the core bundles a remote connector. This repository has no privacy policy page to point at: publish one (on inventarch.com) and add privacyPolicyUrl to the Claude manifest. | proposed | `plugin-privacy-policy-url` |
 | In a real Claude Code session: the plugin's inventarch server appears in /mcp and signs in with client id claude-code on callback port 43822; kit_offerings and kit_download answer under mcp__plugin_ia_inventarch__*; and a downloaded archive is a kit folder tarball that kit.mjs add --from accepts (its releases.json at the root or in its one folder). Record the observed kit_offerings shape in ia:init section 6. | proposed | `qualify-account-connector` |
 | Guard `bind.mjs set` and `recommend` against a kit the lock does not install; the resolver guard catches it at resolve time. | proposed | `cli-3-6-0-bind-mjs-guard` |
+| Migrate `plugins/ia` (`ia:init` section 6, `scripts/kit-fetch.mjs` and hosted lane resolution) from downloading full licensed kit archives into `<IA home>/kits` to installing pinned system definitions and lightweight kit routing specifications locally while executing proprietary kit bodies on the InventArch API (decision `public-systems-and-kits-custody`). | proposed | `account-connector-hosted-custody` |
 
 ## The IA 3.6.0 migration (plan `cli-3-6-0-migration`)
 

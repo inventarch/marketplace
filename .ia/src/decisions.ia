@@ -867,3 +867,22 @@
     decider "Maintainers"
     choice "A when process.platform is win32 and argv[0] is npm, npx, pnpm or yarn, resolve a standalone .exe or the underlying .cmd shim's JS entrypoint (or the entrypoint beside process.execPath) and spawn it directly with process.execPath and shell: false; pass every other command and non-Windows platform through unchanged."
     rationale "Direct execution under process.execPath fixes spawn ENOENT on Windows (issue #32) while keeping cmd.exe completely out of the execution path so environment-variable expansion and batch quote mangling remain impossible."
+
+# Canonical custody of systems, routing specifications and kits (2026-11-19).
+
+@decision public-systems-and-kits-custody
+  meaning
+    says "Separate vocabulary systems, kit routing specifications and kit methodology bodies across the open framework, the public marketplace, hosted platform execution and private estates. Systems (@system and @schema definitions) are always downloadable and pinned locally under .ia/ for offline validation, Engine lowering and cross-account word consistency; public starter and base vocabulary kits ship in inventarch/marketplace; proprietary kit bodies execute strictly on the InventArch API and isolated execution pods rather than downloading to client machines or vendoring into repositories, while adopters pin their required systems and a lightweight routing specification locally. Organisation-specific API, MCP and authentication bindings stay in private estates."
+  work
+    title "Separate locally pinned systems and routing specs from hosted proprietary kit bodies"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-19"
+    ended "2026-11-19"
+    source "docs/decisions.md"
+  decision
+    question "What is downloaded and pinned locally versus executed remotely for kits, and what belongs in inventarch/ia, inventarch/marketplace and private repositories?"
+    options ["A separate systems (always local), kit routing specifications (local stub) and kit bodies (public starter and base kits in marketplace; proprietary kit bodies hosted-only on the InventArch API), while keeping private API/MCP/auth glue out of marketplace", "B download full proprietary kit archives into ~/.ia/kits or vendor/ia on client machines", "C keep both systems and proprietary kits remote-only with no local vocabulary pins"]
+    decider "Owner"
+    choice "A separate systems (always local), kit routing specifications (local stub) and kit bodies (public starter and base kits in marketplace; proprietary kit bodies hosted-only on the InventArch API), while keeping private API/MCP/auth glue out of marketplace"
+    rationale "Earlier choices flip-flopped because vocabulary (@system and @schema) and methodology (playbooks, rubrics and roles) travelled as one archive. Every workspace needs its systems locally to validate .ia files offline, bind words to the open Engine or local code, and prevent two accounts from declaring the same word with incompatible meanings; a local harness agent also needs a lightweight routing specification stating when to call a hosted kit and what inputs apply, without seeing how the proprietary method works internally. Keeping proprietary kit bodies strictly on the InventArch API and execution pods protects proprietary methodology while preserving offline validation. plugins/ia 1.x retains public-account-connector's transitional kit_download path until task account-connector-hosted-custody migrates ia:init to local system and routing-spec installation plus remote execution."
