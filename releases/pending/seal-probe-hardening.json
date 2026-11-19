@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "patch",
+  "title": "Harden seal checking in `check-seal`, `check-design-patterns` and `check-prds`",
+  "summary": "All three verifiers accept a `current-revision` seal on a revision computed with `@approval` records stripped only when every other record keeps its digest and none is added, and only approval-system's `@approval` counts as an approval there, so stripping approvals can never stand in for a change to another record. `check-design-patterns` and `check-prds` also fail a `current-revision` seal when no revision could be computed, and report an `@approval` saved under a file name other than its record, digest and key as `APPROVAL_FILE_MISNAMED`, as `check-seal` does with `seal-malformed`. A workspace whose approvals use another file name, which these two checks passed before, now fails until the files are renamed.",
+  "plugins": [
+    "ia"
+  ]
+}
