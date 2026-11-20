@@ -9,6 +9,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { WHOLE_PROCEDURE } from '../scripts/lib/workspace.mjs';
+import { packetDigest } from '../scripts/lib/packet.mjs';
 import { envFor, fakeCli, installLock, makeKit, makeRepo, run, sandbox, sha256 } from './helpers/fixtures.mjs';
 
 const bindings = (key, kit, capability, extra = {}) => ({ format: 1, bindings: { [key]: { kit, capability } }, ...extra });
@@ -67,6 +68,69 @@ test('a bound activity resolves to a packet: closure, scope key, instructions of
   const wildcard = makeRepo(join(dir, 'repo2'), { bindings: bindings('delivery.*', alpha.id, alpha.capability) });
   const unmapped = resolve(['--entry', 'delivery', '--activity', 'tinker', '--root', wildcard], env()).json;
   assert.deepEqual([unmapped.scope.key.shape, unmapped.scope.key.phase, unmapped.scope.mapped, unmapped.binding.via], ['execution', 'act', false, 'wildcard']);
+});
+
+test('condition-aware method negotiation preserves exact activation and never writes a legacy success pin', t => {
+  const { dir, alpha, env } = world(t);
+  const repo = makeRepo(join(dir, 'repo'), { bindings: bindings('delivery.review', alpha.id, alpha.capability) });
+  const task = join(dir, 'work', 'sample', 'activation');
+  const fixture = JSON.parse(readFileSync(join(alpha.dir, '.ia', 'fake-cli.json'), 'utf8'));
+  const path = join(repo, '.ia', 'fake-cli.json');
+  const action = ['--entry', 'delivery', '--activity', 'review', '--root', repo];
+  const ref = suffix => ({ identity: 'governance-system/governance/law/packet-fixture-' + suffix, digest: 'fixture-' + suffix });
+  fixture.position.omittedRules = [{ ...ref('contradicted'), detail: 'phase is act, request is learn' }];
+  fixture.position.rules = [ref('independent'), ref('matched')];
+  const write = () => writeFileSync(path, JSON.stringify(fixture));
+  write();
+  const initial = resolve(action, env());
+  const explicitLegacy = resolve([...action, '--packet-contract', '1'], env());
+  assert.equal(initial.status, 0);
+  assert.equal(explicitLegacy.status, 0);
+  assert.equal(initial.json.contract, 1);
+  const { envelope: _initialEnvelope, ...packet1 } = initial.json;
+  const { envelope: _explicitEnvelope, ...samePacket } = explicitLegacy.json;
+  assert.deepEqual(samePacket, packet1);
+  assert.equal(packet1.digest, packetDigest(packet1));
+  for (const suffix of ['independent', 'matched']) assert.deepEqual(packet1.references.find(row => row.identity === ref(suffix).identity), { ...ref(suffix), when: 'always' });
+  assert(!packet1.references.some(row => row.identity === ref('contradicted').identity));
+  const pending = { ...ref('pending'), activation: 'move is Observation or move is Verification' };
+  fixture.position.rules.push(pending);
+  write();
+  const blocked = resolve(action, env(task));
+  assert.equal(blocked.status, 1);
+  assert.equal(blocked.json.error.code, 'IA-CORE-CONDITIONAL-PACKET-REQUIRED');
+  assert(!Object.hasOwn(blocked.json, 'references'));
+  assert(!existsSync(join(task, 'binding.json')));
+  assert.equal(resolve([...action, '--packet-contract', '2'], env()).status, 2);
+  assert.equal(resolve([...action, '--qualified', '--packet-contract', '3'], env()).status, 2);
+  const optedIn = [...action, '--packet-contract', '3'];
+  const selected = resolve(optedIn, env(task));
+  assert.equal(selected.status, 0, selected.stdout + selected.stderr);
+  const packet3 = selected.json;
+  assert.equal(packet3.contract, 3);
+  const exact = { ...pending, when: 'activation' };
+  assert.deepEqual(packet3.references, [...packet1.references.slice(0, 2), exact, ...packet1.references.slice(2)]);
+  assert.equal(packet3.digest, packetDigest(packet3));
+  assert.notEqual(packet3.digest, packetDigest({ ...packet3, contract: 1 }));
+  assert.notEqual(packet3.digest, packetDigest({
+    ...packet3,
+    references: packet3.references.map(row => row.identity === pending.identity ? { ...row, activation: 'move is Verification' } : row),
+  }));
+  const pinFile = join(task, 'binding.json');
+  const priorPin = readFileSync(pinFile);
+  const sticky = resolve(action, env(task));
+  assert.equal(sticky.json.error.code, 'IA-CORE-CONDITIONAL-PACKET-REQUIRED');
+  assert.deepEqual(readFileSync(pinFile), priorPin);
+  const replay = resolve(optedIn, env(task));
+  assert.deepEqual([replay.status, replay.json.contract, replay.json.digest, replay.json.binding.revision], [0, 3, packet3.digest, 1]);
+  assert.deepEqual(readFileSync(pinFile), priorPin);
+  fixture.position.omittedRules = null; // Synthetic older CLI answers before activation-aware positions.
+  write();
+  for (const args of [action, [...action, '--packet-contract', '3']]) {
+    const old = resolve(args, env());
+    assert.equal(old.status, 1);
+    assert.equal(old.json.error.code, 'IA-CORE-POSITION-ACTIVATION-UNAVAILABLE');
+  }
 });
 
 test('a capability without checks lists no enforcement requirement; a kit without a profile briefs from the capability', t => {

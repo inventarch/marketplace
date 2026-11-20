@@ -6,6 +6,8 @@
 import { createHash } from 'node:crypto';
 
 export const CONTRACT = 1;
+// The attested, qualified packet/2 is not part of this contract family.
+export const ACTIVATION_PACKET_CONTRACT = 3;
 export const EVIDENCE_STATES = ['proposed', 'attempted', 'executed', 'verified', 'accepted'];
 export const DIGESTED = ['closure', 'scope', 'instructions', 'references', 'role', 'requestedOperations', 'evidence', 'effectiveOperations'];
 
@@ -20,6 +22,7 @@ export function canonical(value) {
 
 export function packetDigest(packet) {
   const subject = {};
+  if (packet.contract === ACTIVATION_PACKET_CONTRACT) subject.contract = ACTIVATION_PACKET_CONTRACT;
   for (const key of DIGESTED) subject[key] = packet[key] ?? null;
   return createHash('sha256').update(canonical(subject)).digest('hex');
 }
@@ -27,9 +30,9 @@ export function packetDigest(packet) {
 // Assembles a packet from its parts and stamps the digest. `runner` is every
 // check the checker runner may run for the kit; `required` the checks the
 // capability composes (the evidence a claim needs), runner by default.
-export function assemblePacket({ resolver, binding, closure, scope, instructions, references, role, requestedOperations, runner, required, missing, envelope, kitUpdateAvailable }) {
+export function assemblePacket({ contract = CONTRACT, resolver, binding, closure, scope, instructions, references, role, requestedOperations, runner, required, missing, envelope, kitUpdateAvailable }) {
   const packet = {
-    contract: CONTRACT,
+    contract,
     resolver,
     binding,
     closure,

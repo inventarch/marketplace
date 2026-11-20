@@ -643,3 +643,17 @@
     decider "Maintainers"
     choice "A when process.platform is win32 and argv[0] is npm, npx, pnpm or yarn, resolve a standalone .exe or the underlying .cmd shim's JS entrypoint (or the entrypoint beside process.execPath) and spawn it directly with process.execPath and shell: false; pass every other command and non-Windows platform through unchanged."
     rationale "Direct execution under process.execPath fixes spawn ENOENT on Windows (issue #32) while keeping cmd.exe completely out of the execution path so environment-variable expansion and batch quote mangling remain impossible."
+
+@decision public-method-packet-activation
+  meaning
+    says "Preserve unresolved rule activation in a separately negotiated method packet contract without changing resolved version-1 packets."
+  work
+    title "Negotiate conditional rule references in method packets"
+    status open
+    owner "InventArch maintainers"
+    source "docs/decisions.md"
+  decision
+    question "How shall the current method packet contract carry rules whose activation is undecided?"
+    decider "Operator"
+    choice "A proposed contract 3 requires explicit receiver negotiation. It preserves the position condition verbatim and hashes the contract and reference. A default contract-1 request with an undecided rule refuses, rather than returning a false unconditional rule. Do not change the qualified packet/2 or switch transports after a refusal."
+    rationale "A resolved version-1 packet keeps its existing bytes. Retained and current authority are independent of a packet, and an old producer cannot recover conditions it did not carry."

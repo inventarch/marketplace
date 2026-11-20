@@ -80,7 +80,7 @@ if (command === 'position') {
   if (p.refuse) { print({ version: 1, ok: false, ...p.refuse, exit: 1 }); process.exit(1); }
   const cells = (p.cells ?? []).filter(c => c.address.includes('#' + phase + '/'));
   const seat = value('--seat') ? { kind: 'record', identity: value('--seat') } : (p.seat ?? { kind: 'workspace', identity: 'workspace-system/definition/workspace/fake' });
-  const body = { format: 'ia.position-body.v1', revision: p.revision ?? 'rev-fake', key: { shape, phase, depth: Number(value('--depth') ?? 1), budget: Number(value('--budget') ?? 16) }, seat, loaded: p.loaded ?? [], rules: p.rules ?? [], pointers: [], cells, mandates: p.mandates ?? [], frontier: [], unknowns: [] };
+  const body = { format: 'ia.position-body.v1', revision: p.revision ?? 'rev-fake', key: { shape, phase, depth: Number(value('--depth') ?? 1), budget: Number(value('--budget') ?? 16) }, seat, loaded: p.loaded ?? [], rules: p.rules ?? [], ...(p.omittedRules === null ? {} : { omittedRules: p.omittedRules ?? [] }), pointers: [], cells, mandates: p.mandates ?? [], frontier: [], unknowns: [] };
   print({ version: 1, ok: true, body, digest: 'digest-fake', hostNote: { revision: body.revision, freshness: 'no-capture', key: body.key } });
   process.exit(0);
 }

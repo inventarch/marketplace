@@ -22,7 +22,7 @@ import { realpathSync } from 'node:fs';
 import { resolveCli, runIa } from './lib/cli.mjs';
 import { readBindings, RENAMED, renamedMessage, selectBinding } from './lib/binding.mjs';
 import { assertPinnedKit, findKit, implementationDigest, installedKit, kitBindings, kitChecks, kitDelivery, listKits, readRoot, requireKitInstalled, sourcesDigest } from './lib/kit.mjs';
-import { assemblePacket } from './lib/packet.mjs';
+import { ACTIVATION_PACKET_CONTRACT, CONTRACT, assemblePacket } from './lib/packet.mjs';
 import { closureStore } from './lib/home.mjs';
 import { kitUpdate, PinError, pinRootFor, readPin, writePin } from './lib/pin.mjs';
 import { retainKit, retainedKit } from './lib/retained.mjs';
@@ -31,7 +31,7 @@ import { resolveQualifiedMethod } from './lib/qualified-resolve.mjs';
 import { findWorkspace, isWholeProcedure, parseArgs, PHASES, printJson, refuse, scopeKey, UsageError } from './lib/workspace.mjs';
 
 export const RESOLVER = 'inventarch/resolve 0.1.0';
-const SPEC = { entry: 'value', activity: 'value', subject: 'value', seat: 'value', root: 'value', shape: 'value', phase: 'value', project: 'value', task: 'value', run: 'value', pin: 'flag', 'no-pin': 'flag', rebind: 'flag', cli: 'value', json: 'flag', host: 'value', kit: 'value', capability: 'value', profile: 'value', qualified: 'flag', qualification: 'value', 'preview-rebind': 'flag' };
+const SPEC = { entry: 'value', activity: 'value', subject: 'value', seat: 'value', root: 'value', shape: 'value', phase: 'value', project: 'value', task: 'value', run: 'value', pin: 'flag', 'no-pin': 'flag', rebind: 'flag', cli: 'value', json: 'flag', host: 'value', kit: 'value', capability: 'value', profile: 'value', qualified: 'flag', 'packet-contract': 'value', qualification: 'value', 'preview-rebind': 'flag' };
 
 class ResolveError extends Error {
   constructor(message, code, extra = {}) { super(message); this.code = code; Object.assign(this, extra); }
@@ -111,6 +111,10 @@ async function main() {
   if (options.pin && options['no-pin']) throw new UsageError('--pin and --no-pin exclude each other');
   if ((options.qualification || options['preview-rebind']) && !options.qualified) throw new UsageError('--qualification and --preview-rebind require --qualified');
   if (options['preview-rebind'] && !options.rebind) throw new UsageError('--preview-rebind requires --rebind');
+  const requestedContract = options['packet-contract'];
+  if (requestedContract !== undefined && requestedContract !== '1' && requestedContract !== '3') throw new UsageError('--packet-contract must be 1 or 3');
+  if (options.qualified && requestedContract !== undefined) throw new UsageError('--qualified uses its own packet format; do not pass --packet-contract');
+  const contract = requestedContract === '3' ? ACTIVATION_PACKET_CONTRACT : CONTRACT;
   // What the packet lacks or the host cannot enforce; every entry has a kind and a message.
   const missing = [];
   const note = (message, extra = {}) => missing.push({ kind: 'note', message, ...extra });
@@ -262,7 +266,17 @@ async function main() {
     throw new ResolveError('the capability declares neither playbooks nor checks; inspection-only execution is not supported by this packet contract', 'IA-CORE-COMPOSITION-MISSING');
   }
   const ref = (r, when) => ({ identity: r.identity, digest: r.digest ?? null, when });
-  const references = [...(governance.rules ?? []).map(r => ref(r, 'always')), ...(governance.mandates ?? []).map(r => ref(r, 'seat')), ...(mandate ? [ref(mandate, 'role')] : []), ...(body.loaded ?? []).filter(r => r.hop > 0).slice(0, 32).map(r => ref(r, 'as-needed'))];
+  // The released 3.8.0 position contract is the minimum: without its omittedRules marker an older
+  // CLI can present rule rows without activation semantics. Do not infer that those rules are unconditional.
+  if (!Array.isArray(governance.omittedRules)) throw new ResolveError('Position does not report rule activation. Use a supported IA CLI and resolve again; no method packet was returned.', 'IA-CORE-POSITION-ACTIVATION-UNAVAILABLE');
+  const ruleReferences = (governance.rules ?? []).map(r => {
+    const activation = r.activation;
+    if (activation === undefined) return ref(r, 'always');
+    if (typeof activation !== 'string' || !activation.trim()) throw new ResolveError('position returned an invalid rule activation', 'IA-CORE-POSITION-INVALID');
+    if (contract !== ACTIVATION_PACKET_CONTRACT) throw new ResolveError('A rule is conditional at this position. Retry only with a receiver that supports packet contract 3; no method packet was returned.', 'IA-CORE-CONDITIONAL-PACKET-REQUIRED');
+    return { ...ref(r, 'activation'), activation };
+  });
+  const references = [...ruleReferences, ...(governance.mandates ?? []).map(r => ref(r, 'seat')), ...(mandate ? [ref(mandate, 'role')] : []), ...(body.loaded ?? []).filter(r => r.hop > 0).slice(0, 32).map(r => ref(r, 'as-needed'))];
   const { checks: runnerChecks, undeclared } = kitChecks(kit);
   if (undeclared.length) note(`checks.json names checks that are not @check records of the kit: ${undeclared.join(', ')}`, { kind: 'checks' });
   const evaluators = {};
@@ -295,6 +309,7 @@ async function main() {
   // 7. The packet, then the pin.
   const scope = { entry: options.entry, activity: options.activity, subject: options.subject ?? null, key: body.key, seat: subjectBody.seat?.identity ?? null, word: null, mapped: key.mapped, workspace: workspaceRoot ? { root: workspaceRoot, revision: subjectBody.revision } : null };
   const packet = assemblePacket({
+    contract,
     resolver: RESOLVER,
     binding: null,
     closure: { kit: effective.kit.id, version: effective.kit.version, archive: effective.kit.archive, sources: effective.kit.sources, implementation: effective.kit.implementation, retained: effective.kit.retained, records },

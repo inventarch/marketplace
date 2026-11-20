@@ -57,3 +57,13 @@ test('required checks and allowed runner changes move the packet digest', () => 
   assert.notEqual(assemblePacket({ ...base(), required: [] }).digest, one.digest);
   assert.notEqual(assemblePacket({ ...base(), runner: ['other'], required: ['gate'] }).digest, one.digest);
 });
+
+test('matches the IA runtime packet digest vector and separates the contracts for identical resolved fields', () => {
+  // Also pinned in IA's packages/runtime/tests/method.test.ts; no live carrier is implied.
+  const reference = { identity: 'example-law', digest: 'b'.repeat(64), when: 'always' };
+  const resolved = { closure: { kit: 'inventarch/synthetic-kit' }, references: [reference] };
+  const pending = [{ ...reference, when: 'activation', activation: 'move is Observation' }];
+  assert.equal(packetDigest({ ...resolved, contract: 1 }), '4d05f14d938d2c38d570082cfb30afe69c79b29f3e72bd090ae90436375a5410');
+  assert.equal(packetDigest({ ...resolved, contract: 3 }), '26379653f4a1c9cbcac1c67ddcee1ce0197430a43bf302165258e30ddff45cb7');
+  assert.equal(packetDigest({ ...resolved, contract: 3, references: pending }), '43d91aebf79ca302ce1af4ccbfe2b508fd45f9a9ddb2241ad25d3c7c5a3353b3');
+});
