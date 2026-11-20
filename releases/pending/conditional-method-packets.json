@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Negotiate conditional method packets",
+  "summary": "Preserve undecided position rules in opt-in contract 3. Contract 1 refuses an unresolved rule without changing resolved responses; qualified packet 2 is unchanged.",
+  "plugins": [
+    "ia"
+  ]
+}
