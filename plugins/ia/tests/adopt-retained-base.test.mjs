@@ -1,9 +1,10 @@
 // Exercise actual CLI restore/pack/install from published archive fixtures.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { pathToFileURL } from 'node:url';
 import { resolveCli, runIa } from '../scripts/lib/cli.mjs';
 import { adopt, findKit, readLock, sha256File } from '../scripts/lib/kit.mjs';
 import { sandbox } from './helpers/fixtures.mjs';
@@ -67,7 +68,7 @@ fs.readFileSync=function(path,...args){
 };
 syncBuiltinESMExports();
 `);
-  const reader = { ...cli, argv: [process.execPath, '--import', preload, entry] };
+  const reader = { ...cli, argv: [process.execPath, '--import', pathToFileURL(preload).href, entry] };
   const corrupt = join(dir, 'corrupt');
   cpSync(bad, corrupt, { recursive: true });
   writeFileSync(join(corrupt, lockPath), JSON.stringify(lock));
@@ -78,11 +79,45 @@ syncBuiltinESMExports();
   assert.equal(existsSync(join(corrupt, 'vendor')), false);
   assert.deepEqual([join(corrupt, lockPath), join(corrupt, '.ia/distributions/active.json'), cacheFile].map(sha256File), beforeRefusal);
 
+
+  // Model the earlier defect: exact kit, unchanged installed generation and
+  // source/build vendor entries, but no retained consumer archive/catalog row.
+  const legacy = join(dir, 'legacy');
+  cpSync(initial, legacy, { recursive: true });
+  rmSync(join(legacy, archive));
+  const earlierCatalog = JSON.stringify(JSON.parse(catalogBefore).filter(x => x.path !== archive), null, 2) + '\n';
+  writeFileSync(join(legacy, catalog), earlierCatalog);
+  const state = root => [join(root, lockPath), join(root, '.ia/distributions/active.json')].map(sha256File);
+  const beforeRepair = state(legacy);
+  const noSource = join(dir, 'no-repair-source');
+  cpSync(legacy, noSource, { recursive: true });
+  rmSync(join(noSource, '.ia/distributions/cache', `${retained.archive}.ia.tgz`), { force: true });
+  assert.throws(() => adopt(noSource, producer, { cli: reader }), { code: 'IA-CORE-RETAINED-BASE' });
+  assert.deepEqual(state(noSource), beforeRepair);
+  assert.equal(readFileSync(join(noSource, catalog), 'utf8'), earlierCatalog);
+  assert.equal(existsSync(join(noSource, archive)), false);
+
+  const preview = adopt(legacy, producer, { cli: reader, dry: true });
+  assert.equal(preview.wouldRepairVendor, true);
+  assert.deepEqual(preview.written, [join(legacy, archive), join(legacy, catalog)]);
+  assert.equal(existsSync(join(legacy, archive)), false);
+  assert.equal(readFileSync(join(legacy, catalog), 'utf8'), earlierCatalog);
+  assert.deepEqual(state(legacy), beforeRepair);
+  const repaired = adopt(legacy, producer, { cli: reader });
+  assert.equal(repaired.already, true);
+  assert.equal(repaired.vendorRepaired, true);
+  assert.deepEqual(repaired.written, preview.written);
+  assert.equal(sha256File(join(legacy, archive)), retained.archive);
+  assert.deepEqual(readFileSync(join(legacy, catalog)), catalogBefore);
+  assert.deepEqual(state(legacy), beforeRepair, 'repair must not reinstall or change the active generation');
+  assert.deepEqual(adopt(legacy, producer, { cli: reader }).written, []);
+  assert.deepEqual(readFileSync(join(legacy, catalog)), catalogBefore);
+
   const other = join(dir, 'other');
   mkdirSync(join(other, '.ia', 'src'), { recursive: true });
   cpSync(join(initial, '.ia/src'), join(other, '.ia/src'), { recursive: true });
   cpSync(join(initial, lockPath), join(other, lockPath));
-  cpSync(join(initial, 'vendor'), join(other, 'vendor'), { recursive: true });
+  cpSync(join(legacy, 'vendor'), join(other, 'vendor'), { recursive: true });
   const home = join(dir, 'fresh-home');
   mkdirSync(home);
   const previous = process.env.IA_HOME;

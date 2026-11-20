@@ -805,7 +805,7 @@ export function kitInstallMatches(root, kit) {
 // workspace, never by restoring over the consumer's active generation. Native
 // restore checks the locked id, version and manifest digest as well as bytes.
 function stageRetainedBase(root, lock, language, cli) {
-  const fail = detail => new KitError(`Cannot vendor the retained ${LANGUAGE_ID}@${language.version} base (${language.archive}): ${detail}. The workspace was not changed.`, 'IA-CORE-RETAINED-BASE');
+  const fail = detail => new KitError(`Cannot vendor the retained ${LANGUAGE_ID}@${language.version} base (${language.archive}): ${detail}. Supply that exact verified base in the workspace vendor or cache, or use the selected CLI with the matching bundled base, then rerun adoption. The workspace was not changed.`, 'IA-CORE-RETAINED-BASE');
   if (![language.archive, language.manifest].every(digest => typeof digest === 'string' && /^[0-9a-f]{64}$/.test(digest))) throw fail('the lock needs exact archive and manifest digests');
   const work = mkdtempSync(join(realpathSync(tmpdir()), 'inventarch-core-retained-base-'));
   const cleanup = () => rmSync(work, { recursive: true, force: true });
@@ -840,6 +840,54 @@ function stageRetainedBase(root, lock, language, cli) {
   }
 }
 
+// Older adoptions wrote the kit and its build base, but omitted the retained
+// consumer base. Repair just that entry; never repack or rerun the installer
+// (it would risk changing a dependency pin or the active generation).
+function repairRetainedBase(root, lock, language, cli, noChange, dry) {
+  const vendor = join(root, 'vendor', 'ia');
+  const catalogPath = join(vendor, 'catalog.json');
+  const input = stageRetainedBase(root, lock, language, cli);
+  try {
+    const name = `${input.archive}.ia.tgz`;
+    const target = join(vendor, name);
+    const relativeTarget = `vendor/ia/${name}`;
+    const requireRegular = (path, directory) => {
+      const stat = lstatSync(path, { throwIfNoEntry: false });
+      if (stat && !(directory ? stat.isDirectory() : stat.isFile())) throw new KitError(`Cannot repair the retained base: ${path} is not a regular ${directory ? 'folder' : 'file'}. Restore the portable vendor tree and rerun adoption.`, 'IA-CORE-RETAINED-BASE');
+      return Boolean(stat);
+    };
+    if (!requireRegular(dirname(vendor), true) || !requireRegular(vendor, true) || !requireRegular(catalogPath, false)) throw new KitError('Cannot repair the retained base without the earlier adoption catalog. Restore vendor/ia from source control, then rerun adoption.', 'IA-CORE-RETAINED-BASE');
+    const existed = requireRegular(target, false);
+    const originalCatalog = readFileSync(catalogPath);
+    let catalog;
+    try { catalog = JSON.parse(originalCatalog); } catch {}
+    if (!Array.isArray(catalog) || catalog.some(entry => typeof entry?.path !== 'string')) throw new KitError('Cannot repair the retained base: vendor/ia/catalog.json is invalid. Restore the earlier adoption catalog, then rerun adoption.', 'IA-CORE-RETAINED-BASE');
+    const entries = catalog.filter(entry => entry.path === relativeTarget);
+    if (entries.some(entry => entry.withdrawn)) throw new KitError('Cannot repair the retained base: its vendor catalog entry is withdrawn. Resolve the withdrawal explicitly before rerunning adoption.', 'IA-CORE-RETAINED-BASE');
+    const archiveMissing = !existed || sha256File(target) !== input.archive;
+    const catalogMissing = entries.length === 0;
+    if (!archiveMissing && !catalogMissing) return noChange;
+    const written = [...(archiveMissing ? [target] : []), ...(catalogMissing ? [catalogPath] : [])];
+    if (dry) return { ...noChange, written, dry: true, wouldRepairVendor: true };
+    const originalArchive = archiveMissing && existed ? readFileSync(target) : null;
+    const restore = [];
+    try {
+      if (archiveMissing) {
+        restore.push(() => originalArchive === null ? rmSync(target, { force: true }) : writeFileSync(target, originalArchive));
+        copyFileSync(input.path, target);
+      }
+      if (catalogMissing) {
+        restore.push(() => writeFileSync(catalogPath, originalCatalog));
+        writeLf(catalogPath, JSON.stringify([...catalog, { path: relativeTarget, withdrawn: false }], null, 2) + '\n');
+      }
+    } catch (error) {
+      for (const undo of restore.reverse()) undo();
+      throw error;
+    }
+    return { ...noChange, written, vendorRepaired: true };
+  } finally { input.cleanup(); }
+}
+
 // Installs a kit's latest recorded release into the IA workspace at root.
 // Writes vendor/ia/<kit>.ia.tgz, vendor/ia/<base>.ia.tgz, vendor/ia/catalog.json
 // and, through ia install, .ia/distributions.lock.json. A kit that depends on
@@ -855,15 +903,19 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
   const release = kit.latest;
   if (!release) throw new KitError(`this plugin build carries no release of ${kit.id}`);
   const resolved = cli ?? resolveCli(root);
-  const current = installedKit(root, kit.id);
-  if (current?.archive === release.archive) return { root, kit: kit.id, version: release.version, archive: release.archive, written: [], upgraded: [], dependencies: [], requests: [], already: true };
+  const current = kitInstallation(root, kit.id);
+  const already = current?.archive === release.archive;
+  const noChange = { root, kit: kit.id, version: release.version, archive: release.archive, written: [], upgraded: [], dependencies: [], requests: [], already: true };
+  if (already && current.via === 'entry') return noChange;
   const lock = readLock(root);
   const language = (lock?.packages ?? []).find(p => p.id === 'inventarch/language');
   const baseLock = readLock(kit.dir)?.packages.find(p => p.id === 'inventarch/language');
   // The base moves only when the repository's own does not satisfy the range the kit declares. A kit declares the
   // minimum it is proven on, so a repository on another base inside that range keeps its base and its own request.
   const declared = readDescriptor(kit.dir).dependencies?.find(d => d.id === 'inventarch/language')?.range;
-  const moving = language && baseLock && language.archive !== baseLock.archive && !(declared && satisfies(language.version, declared));
+  const different = language && baseLock && language.archive !== baseLock.archive;
+  const moving = different && !(declared && satisfies(language.version, declared));
+  if (already) return different && !moving ? repairRetainedBase(root, lock, language, resolved, noChange, dry) : noChange;
   const upgrades = [kit];
   // Existing core kits on the old language must move in the same native
   // transaction. Only migrate archives this catalogue actually published;
