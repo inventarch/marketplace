@@ -2,7 +2,7 @@
 
 [![Gates](https://github.com/inventarch/marketplace/actions/workflows/gates.yml/badge.svg?branch=main)](https://github.com/inventarch/marketplace/actions/workflows/gates.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-green)](../LICENSE)
 
-This folder is the source of truth for every kit the core carries: the three lane defaults `ia-method` (Work), `ia-kb` (Knowledge) and `ia-authoring` (Delivery), and the five public base vocabulary kits `ia-approval` (`approval-system`), `ia-repo` (`repo-system`), `ia-slack-base` (`slack-system`), `ia-design-base` (`design-base-system`) and `ia-product-base` (`product-base-system`). Names follow one pattern (folder `ia-<name>`, id `inventarch/ia-<name>-kit`, systems `ia-<name>` / `<name>-system` and `ia-<name>-<part>`); see the [README](../README.md#kit-names).
+This folder is the source of truth for every public kit the core carries: the three lane defaults `ia-method` (Work), `ia-kb` (Knowledge) and `ia-authoring` (Delivery), and the five public base vocabulary kits `ia-approval` (`approval-system`), `ia-repo` (`repo-system`), `ia-slack-base` (`slack-system`), `ia-design-base` (`design-base-system`) and `ia-product-base` (`product-base-system`). Each public kit imparts baseline vocabulary, offline verifiers or starter methodology; advanced proprietary kit bodies stay on the InventArch API while adopters pin only their required systems and routing specifications locally (decision `public-systems-and-kits-custody`). Names follow one pattern (folder `ia-<name>`, id `inventarch/ia-<name>-kit`, systems `ia-<name>` / `<name>-system` and `ia-<name>-<part>`); see the [README](../README.md#kit-names).
 
 ## A kit folder
 
