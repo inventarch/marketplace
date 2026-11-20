@@ -1101,7 +1101,7 @@
     },
     {
       "path": "plugins/ia/scripts/lib/kit.mjs",
-      "sha256": "e13c6e10c85999598a5590f3ae946fd0149c6ab820e55b2b6e2ee3a580a1b588"
+      "sha256": "a3fff178676774fca7e174fa3118cd8fb9c78e9f2852d4da18bed275c54e9d61"
     },
     {
       "path": "plugins/ia/scripts/lib/method-check.mjs",

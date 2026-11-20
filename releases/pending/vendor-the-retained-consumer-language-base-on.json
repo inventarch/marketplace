@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "patch",
+  "title": "Vendor the retained consumer language base on kit adoption",
+  "summary": "When a compatible workspace keeps its language base, kit adoption vendors that exact verified archive beside the kit and build base for offline restore. If the locked archive cannot be verified, adoption stops before changing the workspace.",
+  "plugins": [
+    "ia"
+  ]
+}

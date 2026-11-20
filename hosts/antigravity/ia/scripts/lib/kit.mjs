@@ -21,8 +21,8 @@
 //   folder, so an agent can read it with `ia position --root` in any
 //   repository, adopted or not. Nothing is written into the install folder.
 // - adopt: packs the sources with the pinned CLI, accepts the archive only
-//   when it hashes to the recorded release, vendors it with the language base
-//   the kit's lock pins, and installs it into an IA workspace.
+//   when it hashes to the recorded release, vendors it with the language bases
+//   the build and installed workspace need, and installs it into an IA workspace.
 import { createHash } from 'node:crypto';
 import { copyFileSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, statSync, writeFileSync, realpathSync } from 'node:fs';
 import { tmpdir, userInfo } from 'node:os';
@@ -801,6 +801,45 @@ export function kitInstallMatches(root, kit) {
   } catch { return false; }
 }
 
+// Verify the retained consumer base with the native reader in an isolated
+// workspace, never by restoring over the consumer's active generation. Native
+// restore checks the locked id, version and manifest digest as well as bytes.
+function stageRetainedBase(root, lock, language, cli) {
+  const fail = detail => new KitError(`Cannot vendor the retained ${LANGUAGE_ID}@${language.version} base (${language.archive}): ${detail}. The workspace was not changed.`, 'IA-CORE-RETAINED-BASE');
+  if (![language.archive, language.manifest].every(digest => typeof digest === 'string' && /^[0-9a-f]{64}$/.test(digest))) throw fail('the lock needs exact archive and manifest digests');
+  const work = mkdtempSync(join(realpathSync(tmpdir()), 'inventarch-core-retained-base-'));
+  const cleanup = () => rmSync(work, { recursive: true, force: true });
+  try {
+    const name = `${language.archive}.ia.tgz`;
+    const cache = join(work, '.ia', 'distributions', 'cache');
+    mkdirSync(cache, { recursive: true });
+    const path = join(cache, name);
+    const candidates = [join(root, 'vendor', 'ia', name), join(root, '.ia', 'distributions', 'cache', name)];
+    for (const source of candidates) {
+      if (!lstatSync(source, { throwIfNoEntry: false })?.isFile()) continue;
+      const bytes = readFileSync(source);
+      if (createHash('sha256').update(bytes).digest('hex') !== language.archive) continue;
+      writeFileSync(path, bytes);
+      break;
+    }
+    const { engine, formatVersion, format } = lock;
+    writeLf(join(work, '.ia', 'distributions.lock.json'), JSON.stringify({
+      engine, formatVersion, format, packages: [language], requests: [{ id: LANGUAGE_ID, range: language.version }],
+    }) + '\n');
+    // If neither local copy is valid, use only the exact archive carried by
+    // the selected CLI. Do not resolve a replacement or fetch from a registry.
+    const ran = runIa(work, ['restore', '--offline', '--apply', '--yes'], { cli });
+    if (ran.code !== 0 || !existsSync(path) || sha256File(path) !== language.archive) {
+      throw fail(ran.json?.message ?? (ran.stderr.trim() || 'no verified exact archive was available in vendor, workspace cache or the selected CLI'));
+    }
+    return { archive: language.archive, path, cleanup };
+  } catch (error) {
+    cleanup();
+    if (error.code === 'IA-CORE-RETAINED-BASE') throw error;
+    throw fail(error.message);
+  }
+}
+
 // Installs a kit's latest recorded release into the IA workspace at root.
 // Writes vendor/ia/<kit>.ia.tgz, vendor/ia/<base>.ia.tgz, vendor/ia/catalog.json
 // and, through ia install, .ia/distributions.lock.json. A kit that depends on
@@ -844,6 +883,7 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
   if (moving) requests.push(`inventarch/language@${declared}`);
   const upgraded = upgrades.slice(1).map(k => ({ kit: k.id, version: k.latest.version, archive: k.latest.archive }));
   const builds = [];
+  let retained;
   const written = [];
   const before = new Map(), createdDirectories = [];
   const installationPaths = ['distributions.lock.json', 'distributions/active.json'].map(p => join(root, '.ia', p));
@@ -858,7 +898,11 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
     const { base } = builds[0].built;
     if (builds.some(b => b.built.base.archive !== base.archive)) throw new KitError(depBuilds.length ? 'the kit and the kits it depends on do not share one language base' : 'core kit upgrades do not share one language base');
     const vendor = join(root, 'vendor', 'ia');
-    const copies = [...builds.map(({ kit: entry, built }) => [built.archive, join(vendor, `${entry.latest.archive}.ia.tgz`), entry.latest.archive]), [base.path, join(vendor, `${base.archive}.ia.tgz`), base.archive]];
+    if (language && !moving && language.archive !== base.archive) retained = stageRetainedBase(root, lock, language, resolved);
+    const copies = [
+      ...builds.map(({ kit: entry, built }) => [built.archive, join(vendor, `${entry.latest.archive}.ia.tgz`), entry.latest.archive]),
+      ...[base, ...(retained ? [retained] : [])].map(entry => [entry.path, join(vendor, `${entry.archive}.ia.tgz`), entry.archive]),
+    ];
     const catalogPath = join(vendor, 'catalog.json');
     // Adopt writes, and on a refusal restores or removes, only real folders and
     // regular files: a link here would send those writes, and the rollback's
@@ -869,7 +913,7 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
       if (stat && (folder ? !stat.isDirectory() : !stat.isFile())) throw new KitError(`${path} is not a regular ${folder ? 'folder' : 'file'} (a link or another kind of entry); adopt writes only real folders and files under vendor/ia. Replace it, then adopt again`);
     }
     const catalog = stats.get(catalogPath) ? JSON.parse(readFileSync(catalogPath, 'utf8')) : [];
-    for (const archive of [...dependencies.map(k => k.latest.archive), ...upgrades.map(k => k.latest.archive), base.archive]) {
+    for (const [, , archive] of copies) {
       const path = `vendor/ia/${archive}.ia.tgz`;
       if (!catalog.some(e => e.path === path)) catalog.push({ path, withdrawn: false });
     }
@@ -898,6 +942,10 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
     }
     for (const entry of upgrades) if (installedKit(root, entry.id)?.archive !== entry.latest.archive) throw new KitError(`after install the lock does not pin ${entry.latest.archive}`);
     for (const dep of dependencies) if (!installedKit(root, dep.id)) throw new KitError(`after install the lock does not carry ${dep.id}, which ${kit.id} depends on`);
+    if (retained) {
+      const pinned = readLock(root)?.packages?.find(p => p.id === LANGUAGE_ID);
+      if (pinned?.archive !== language.archive || pinned.manifest !== language.manifest || pinned.version !== language.version) throw new KitError('after install the lock does not retain the original language base', 'IA-CORE-RETAINED-BASE');
+    }
     written.push(join(root, '.ia', 'distributions.lock.json'));
     return { root, kit: kit.id, version: release.version, archive: release.archive, written, upgraded, dependencies: dependencyRows, requests };
   } catch (error) {
@@ -916,7 +964,10 @@ export function adopt(target, kit, { cli, dry = false, installTimeoutMs } = {}) 
     }
     for (const dir of createdDirectories.reverse()) if (readdirSync(dir).length === 0) rmdirSync(dir);
     throw error;
-  } finally { for (const { built } of builds) built.cleanup(); }
+  } finally {
+    retained?.cleanup();
+    for (const { built } of builds) built.cleanup();
+  }
 }
 
 // A pin is usable only while the complete carried source/sidecar digest and
