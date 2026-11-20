@@ -1,10 +1,17 @@
 import json
+import os
 from pathlib import Path
 import re
+import shutil
+import subprocess
+import tempfile
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / '.github' / 'workflows' / 'gates.yml'
+# The method gate's report step runs on ubuntu-latest under bash; its tests run it where bash can.
+BASH = os.name != 'nt' and shutil.which('bash') is not None
 
 # Every command CI runs, in order (AGENTS.md); a dropped or reordered gate fails here, not silently in CI.
 RUNS = [
@@ -196,9 +203,24 @@ class ReleaseWorkflowTests(unittest.TestCase):
         pinned_actions(self, self.text)
 
 
+def report_step(text):
+    """The report step's shell, dedented as the runner writes it to a script; the job runs it with bash -e, no pipefail."""
+    lines = text.splitlines()
+    name = lines.index('      - name: Method gate report (never blocks)')
+    run = next(at for at in range(name, len(lines)) if lines[at].strip() == 'run: |')
+    depth = len(lines[run]) - len(lines[run].lstrip())
+    body = []
+    for line in lines[run + 1:]:
+        if line.strip() and len(line) - len(line.lstrip()) <= depth:
+            break
+        body.append(line)
+    return textwrap.dedent('\n'.join(body)) + '\n'
+
+
 class MethodGateWorkflowTests(unittest.TestCase):
     """The method gate on this repository's own records (decision public-method-gate-ci): a report, never a block, and
-    not a required check. It reads the workflow as text and asserts on step text, because the report step is one block."""
+    not a required check. It reads the workflow as text and asserts on step text, because the report step is one block,
+    and runs that step's shell with node stubbed."""
 
     def setUp(self):
         self.text = (ROOT / '.github' / 'workflows' / 'method-gate.yml').read_text(encoding='utf-8')
@@ -223,7 +245,7 @@ class MethodGateWorkflowTests(unittest.TestCase):
     def test_every_plan_the_records_author_is_passed_by_its_full_identity(self):
         self.assertIn("grep -rh --include='*.ia' '^@plan ' .ia/src", self.text)
         self.assertIn('--plan work-system/definition/plan/', self.text)
-        self.assertIn('test -n "$plans"', self.text)
+        self.assertIn('test -d .ia/src', self.text)
         self.assertIn('--budget 600', self.text)
 
     def test_the_report_is_shown_and_never_blocks(self):
@@ -244,6 +266,54 @@ class MethodGateWorkflowTests(unittest.TestCase):
                         '2 of 2 rules evaluated, 1 task(s) unknown'):
             self.assertRegex(printed, pattern)
         self.assertNotRegex('2 of 2 rules evaluated', pattern)
+
+    def run_report(self, records):
+        """Runs the report step in a scratch checkout whose .ia/src holds `records` (None: no .ia/src), node stubbed."""
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            if records is not None:
+                (root / '.ia' / 'src').mkdir(parents=True)
+                for name, body in records.items():
+                    (root / '.ia' / 'src' / name).write_text(body, encoding='utf-8')
+            stub = root / 'bin' / 'node'
+            stub.parent.mkdir()
+            stub.write_text('#!/bin/sh\necho "node $*"\n', encoding='utf-8')
+            stub.chmod(0o755)
+            (root / 'runner').mkdir()
+            script = root / 'report.sh'
+            script.write_text(report_step(self.text), encoding='utf-8')
+            summary = root / 'summary.md'
+            env = {**os.environ, 'PATH': f'{stub.parent}{os.pathsep}{os.environ["PATH"]}', 'IA_NO_HANDOFF': '1',
+                   'RUNNER_TEMP': str(root / 'runner'), 'GITHUB_STEP_SUMMARY': str(summary)}
+            done = subprocess.run(['bash', '-e', str(script)], cwd=root, env=env, capture_output=True, text=True)
+            return done.returncode, done.stdout, summary.read_text(encoding='utf-8') if summary.exists() else ''
+
+    @unittest.skipUnless(BASH, 'the report step runs on ubuntu-latest under bash')
+    def test_the_report_step_passes_every_plan_and_shows_the_report(self):
+        code, out, summary = self.run_report({'work.ia': '@plan alpha\n  meaning\n', 'more.ia': '@plan beta  \n'})
+        self.assertEqual(code, 0)
+        self.assertIn('node plugins/ia/scripts/method-gate.mjs --root . ', out)
+        for plan in ('alpha', 'beta'):
+            self.assertIn(f'--plan work-system/definition/plan/{plan} ', out)
+        self.assertIn('--budget 600', out)
+        self.assertIn('Method gate (report only: it never blocks)', summary)
+        self.assertIn('node plugins/ia/scripts/method-gate.mjs', summary)
+
+    @unittest.skipUnless(BASH, 'the report step runs on ubuntu-latest under bash')
+    def test_the_report_step_skips_when_no_plan_is_left(self):
+        code, out, summary = self.run_report({'workspace.ia': '@workspace marketplace\n', 'decisions.ia': '@decision x\n'})
+        self.assertEqual(code, 0)
+        self.assertNotIn('method-gate.mjs', out)
+        note = "No plan record in .ia/src: this repository's plans are kept with InventArch's other work records"
+        self.assertIn(note, out)
+        self.assertIn('Method gate (report only: it never blocks)', summary)
+        self.assertIn(note, summary)
+
+    @unittest.skipUnless(BASH, 'the report step runs on ubuntu-latest under bash')
+    def test_the_report_step_turns_red_without_its_records(self):
+        code, out, _ = self.run_report(None)
+        self.assertNotEqual(code, 0)
+        self.assertNotIn('method-gate.mjs', out)
 
     def test_it_stays_out_of_the_required_checks(self):
         rules = (ROOT / '.github' / 'rulesets' / 'main.json').read_text(encoding='utf-8')

@@ -1,6 +1,6 @@
 {
   "name": "@inventarch/public-kits",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The public InventArch method kits as one package: each kit's IA archive and manifest, with its folder, for an IA engine to expand (contract C7b).",
   "license": "Apache-2.0",
   "repository": {
@@ -35,10 +35,10 @@
       },
       {
         "id": "inventarch/ia-design-base-kit",
-        "version": "0.1.0",
-        "archive": "59f9f5499164c2ff08c1b0f414deb792dd64d7929a2fdf6d0f097f8c9c586019",
-        "manifest": "28eece2090f3ff537e5d18fb012b3ab99183f0cdb2f83e8d8d558234facf87d3",
-        "sources": "79e2f775b2cca68cf0e3a9544b946893a010f509c9e2605ea767db0ee209f67b",
+        "version": "0.1.1",
+        "archive": "5d762b10b789636f8abfcff582da960f09b3f0bbfae0b5b887580b8883a03bd4",
+        "manifest": "d09d429681aee52902468cb9ea83f711b4799e16c93463b52852a87483f1626a",
+        "sources": "9cf1797bc741c0515e2db06a3dfc8ec490f9098faba5d7101bcd8bce827ea435",
         "folder": "ia-design-base"
       },
       {
@@ -59,10 +59,10 @@
       },
       {
         "id": "inventarch/ia-product-base-kit",
-        "version": "0.1.0",
-        "archive": "6cfd206a39f54ae8842f4c341b88a7770493c30c4b6a9fedd733eca56ed95a90",
-        "manifest": "1c92212228fff6166a0ffab393e2bcfc794e07fd494654ec182bc7d4a61cc1f8",
-        "sources": "cd45bcd0fc849fe2c97fc9ff96b4d5abc612d6d2f9b1d868c1bdecf21da07894",
+        "version": "0.1.1",
+        "archive": "616ce33a2ce477249356db99324fccea0ad441fc930347afe8c68cd975dac882",
+        "manifest": "8a3db238ecfadd15a858eb47aedc18f07f8116d7c8aced35e74f4dffffaed3fc",
+        "sources": "6b90f5c4f1608af771fd48b40b89dc47fed3a688dd0fe1cfd98dab7655b33185",
         "folder": "ia-product-base"
       },
       {

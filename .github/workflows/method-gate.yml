@@ -2,8 +2,11 @@
 # ia plugin's method-gate.mjs over every plan the records author and prints the result to the job summary. The job is not
 # one of the required checks (.github/rulesets/main.json), never tolerates a failed step, and exits 0 on findings, so a red job
 # means the setup broke, not that a task lacks evidence. A rule or task the gate could not evaluate raises a warning, because
-# exit 0 alone does not show that everything was checked. The workspace is restored the way CONTRIBUTING.md says
-# (npm run kits:install), since a fresh checkout is not an admitted IA workspace. tests/test_gates.py holds its shape.
+# exit 0 alone does not show that everything was checked. This repository's plans are kept with InventArch's other work
+# records, so .ia/src holds none: the step then says so in the log and the job summary and exits 0 without running the
+# gate, while a missing .ia/src or a grep that fails still turns it red. The workspace is restored the way CONTRIBUTING.md says
+# (npm run kits:install), since a fresh checkout is not an admitted IA workspace. tests/test_gates.py holds its shape and
+# runs the report step's shell.
 name: Method gate
 
 on:
@@ -38,8 +41,17 @@ jobs:
         env:
           IA_NO_HANDOFF: '1'
         run: |
-          plans=$(grep -rh --include='*.ia' '^@plan ' .ia/src | sed 's/[[:space:]]*$//; s/^@plan //; s#^#--plan work-system/definition/plan/#')
-          test -n "$plans"
+          test -d .ia/src || { echo 'No .ia/src in this checkout' >&2; false; }
+          status=0
+          found=$(grep -rh --include='*.ia' '^@plan ' .ia/src) || status=$?
+          if [ "$status" -gt 1 ]; then exit "$status"; fi
+          if [ -z "$found" ]; then
+            note="No plan record in .ia/src: this repository's plans are kept with InventArch's other work records, so the method gate has nothing to report."
+            echo "$note"
+            { echo '### Method gate (report only: it never blocks)'; echo; echo "$note"; } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          plans=$(printf '%s\n' "$found" | sed 's/[[:space:]]*$//; s/^@plan //; s#^#--plan work-system/definition/plan/#')
           node plugins/ia/scripts/method-gate.mjs --root . $plans --budget 600 > "$RUNNER_TEMP/method-gate.txt"
           cat "$RUNNER_TEMP/method-gate.txt"
           { echo '### Method gate (report only: it never blocks)'; echo; echo '```'; cat "$RUNNER_TEMP/method-gate.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
