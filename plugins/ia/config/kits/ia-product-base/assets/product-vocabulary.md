@@ -36,3 +36,4 @@
 - `PRD_SOURCE_INVALID`, `PRD_BODY_DIGEST_FORMAT`, `PRD_DIGEST_WITHOUT_SOURCE`: enforces credential-free, traversal-free `governance.source` locators and 64-hex SHA-256 `governance.body-digest` values paired with a `governance.source`.
 - `PRD_SUPERSEDE_CYCLE`: refuses cycles in `@prd` `supersede` chains.
 - `PRD_UNSEALED`: when an `@approval-rule` in the workspace covers `prd`, requires every `ratified` or `active` `@prd` to carry a matching `@approval` seal.
+- `APPROVAL_FILE_MISNAMED`: refuses an `@approval` saved under a file name other than `<record>.<digest prefix>.<key tag>.ia`, as `check-seal` does (`seal-malformed`); such an approval counts for nothing.

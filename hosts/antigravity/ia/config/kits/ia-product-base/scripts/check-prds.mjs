@@ -515,6 +515,7 @@ function buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef) {
 
   // Parse & cryptographically verify @approval records
   const verifiedSealsByTarget = new Map();
+  const misnamedApprovals = [];
   for (const app of allRecords.filter(r => r.discriminator === 'approval')) {
     const text = k => scalarText(sectionField(app, `seal.${k}`));
     const listFieldVal = k => sectionField(app, `seal.${k}`);
@@ -571,6 +572,7 @@ function buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef) {
       const m = APPROVAL_FILE_RE.exec(fileName);
       const expectedName = recId.split('/').pop() ?? '';
       if (!m || m[1] !== expectedName || m[2] !== recDigest.slice(0, 12) || m[3] !== nameSafeKeyTag(keyId)) {
+        misnamedApprovals.push({ record: app, expected: `${expectedName}.${recDigest.slice(0, 12)}.${nameSafeKeyTag(keyId)}.ia` });
         continue;
       }
       if (authoredRoots.length > 0) {
@@ -671,7 +673,7 @@ function buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef) {
     });
   };
 
-  return prd => {
+  const evaluate = prd => {
     const covering = rulesCoveringPrd(prd);
     if (!hasMalformedRule && covering.length === 0) return { required: false, satisfied: true };
     if (hasMalformedRule || typeof prd?.digest !== 'string' || !HEX_64_RE.test(prd.digest)) {
@@ -702,7 +704,8 @@ function buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef) {
         if (rule.staleness === 'current-revision') {
           if (!lfPinned) continue;
           if (validLanguages.size > 0 && !validLanguages.has(s.language)) continue;
-          if (validRevisions.size > 0 && !validRevisions.has(s.revision)) continue;
+          // As in check-seal, a current-revision seal needs a revision the workspace accepts; an empty set accepts none.
+          if (!validRevisions.has(s.revision)) continue;
         }
         accountsForRule.add(approver.account);
       }
@@ -710,6 +713,7 @@ function buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef) {
     }
     return { required: true, satisfied: true };
   };
+  return { evaluate, misnamedApprovals };
 }
 
 export function checkPrds(snapshot) {
@@ -749,7 +753,12 @@ export function checkPrds(snapshot) {
     }
   }
 
-  const evaluatePrdSeal = buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef);
+  const { evaluate: evaluatePrdSeal, misnamedApprovals } = buildPrdSealEvaluator(snapshot, allRecords, byIdentity, resolveRef);
+  // As in check-seal (seal-malformed), an approval saved under a file name other than its record, digest and key counts
+  // for nothing, and it is reported rather than skipped silently.
+  for (const { record, expected } of misnamedApprovals) {
+    report('APPROVAL_FILE_MISNAMED', record, `@approval ${record.name} counts for nothing: its file name must be ${expected}`);
+  }
 
   const supersedeGraph = new Map();
   for (const p of allRecords.filter(r => r.discriminator === 'prd')) {
@@ -982,17 +991,39 @@ function computeUnsealedRevisions(command, root, approvals) {
       });
       if (ran.status !== 0) return null;
       const snap = JSON.parse(readFileSync(join(copy, '.ia', 'work', 'snapshot', 'current.json'), 'utf8'));
-      return snap.authoredRevision || null;
+      if (!snap.authoredRevision) return null;
+      const records = new Map();
+      for (const entry of snap.records ?? []) {
+        records.set(entry.identity, { digest: entry.digest, approval: entry.system === 'approval-system' && entry.facet === 'approval' });
+      }
+      return { revision: snap.authoredRevision, records };
     } catch {
       return null;
     }
   };
+  // A probe counts only when stripping removed approvals and nothing else: every other record of the full capture
+  // keeps its identity and digest, and the probe adds none. stripApprovalBlocks splits raw lines, so it could also cut
+  // into another record's text, or bring back text hidden inside an approval's value; either way the records differ
+  // from the full capture's, and the probe adds no revision. An approval here is approval-system's word; a local word
+  // that declares the approval facet is compared like any other record.
+  const keepsOtherRecords = (full, probe) => {
+    for (const [identity, record] of full.records) {
+      if (record.approval) continue;
+      if (probe.records.get(identity)?.digest !== record.digest) return false;
+    }
+    for (const [identity, record] of probe.records) {
+      if (!record.approval && !full.records.has(identity)) return false;
+    }
+    return true;
+  };
   try {
     const revisions = new Set();
-    const add = rev => {
-      if (rev) revisions.add(rev);
+    const full = capture('full', []);
+    if (full === null) return [];
+    revisions.add(full.revision);
+    const add = probe => {
+      if (probe !== null && keepsOtherRecords(full, probe)) revisions.add(probe.revision);
     };
-    add(capture('full', []));
     add(capture('unsealed', [...new Set(approvals.map(a => a.file))]));
     const ordered = approvals
       .filter(a => a.wellFormed)

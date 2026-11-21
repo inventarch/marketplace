@@ -1299,3 +1299,36 @@ test('REQ-DESIGN-BASE-07: sequential quorum-2 current-revision seals pass as in 
   assert.equal(pair.sealPasses(), false);
   assert.ok(stale.findings.some(f => f.code === 'ACTIVE_RECIPE_UNSEALED'), stale.output);
 });
+
+test('REQ-DESIGN-BASE-07 failure: a current-revision seal counts for nothing when no revision is accepted', () => {
+  // An empty set of accepted revisions (no revision could be captured) accepts no current-revision seal, as in check-seal
+  const { key } = generateSigningKey();
+  const recDigest = '2'.repeat(64);
+  const ruleDigest = '7'.repeat(64);
+  const rule = synApprovalRule('current-recipe-rule', ['recipe'], 1, ruleDigest);
+  rule.sections[0].fields.push({ key: 'staleness', value: strVal('current-revision') });
+  const recipe = synRecipe('btn-use', {
+    part: 'design-base-system/definition/part/btn',
+    mode: 'use',
+    variants: ['variant=Default -> variant=action'],
+    standing: 'active',
+    digest: recDigest,
+  });
+  const records = [
+    synToken('sem-action', 'semantic', ['bg-action-primary']),
+    synLevel('lvl-atom', 'atom', 10),
+    synPart('btn', 'lvl-atom', { displayName: 'Button', tokens: ['sem-action'], codeExport: '@acme/ui#Button' }),
+    recipe,
+    synApprover('design-lead', 'acct-design', key),
+    rule,
+    synSignedApproval(recipe, recDigest, key, 'acct-design', [{ identity: rule.identity, digest: ruleDigest }]),
+  ];
+  const unsealed = report => report.findings.some(f => f.name === recipe.name && f.code === 'ACTIVE_RECIPE_UNSEALED');
+
+  // Control: the revision synSignedApproval signs is accepted, so the seal counts
+  const accepted = checkDesignPatterns({ revision: '9'.repeat(64), validRevisions: [], records });
+  assert.equal(unsealed(accepted), false, JSON.stringify(accepted.findings));
+
+  const none = checkDesignPatterns({ revision: null, validRevisions: [], records });
+  assert.equal(unsealed(none), true, JSON.stringify(none.findings));
+});

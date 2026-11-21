@@ -24,6 +24,7 @@ export const STATEMENT_PURPOSE = 'inventarch-approval';
 export const STATEMENT_VERSION = 1;
 export const APPROVALS_DIR = '.ia/src/approvals';
 export const APPROVAL_WORD = 'approval';
+const APPROVAL_SYSTEM = 'approval-system';
 export const DOCKET_WORD = 'docket';
 export const DESK_PRODUCER = 'desk';
 export const RAW_PUBLIC_KEY_BYTES = 32;
@@ -2083,7 +2084,24 @@ function stripApprovalRecordsFromFile(fullPath) {
   }
 }
 
-function captureRevisionWithoutApprovalPaths(cli, baseDir, scratchRoot, tag, approvalPathsToStrip) {
+// A probe counts only when stripping removed approvals and nothing else: every other record of the full capture keeps
+// its identity and digest, and the probe adds none. stripApprovalRecordsFromFile splits raw lines, so it could also cut
+// into another record's text, or bring back text hidden inside an approval's value; either way the records differ from
+// the full capture's, and the probe adds no revision. An approval here is approval-system's word; a local word that
+// declares the approval facet is compared like any other record.
+const isApprovalRecord = record => record.system === APPROVAL_SYSTEM && record.facet === APPROVAL_WORD;
+function probeKeepsOtherRecords(full, probe) {
+  for (const [identity, record] of full.records) {
+    if (isApprovalRecord(record)) continue;
+    if (probe.records.get(identity)?.digest !== record.digest) return false;
+  }
+  for (const [identity, record] of probe.records) {
+    if (!isApprovalRecord(record) && !full.records.has(identity)) return false;
+  }
+  return true;
+}
+
+function captureRevisionWithoutApprovalPaths(cli, baseDir, scratchRoot, tag, approvalPathsToStrip, full) {
   const probe = join(scratchRoot, tag);
   mkdirSync(probe, { recursive: true });
   for (const name of readdirSync(baseDir)) {
@@ -2097,7 +2115,8 @@ function captureRevisionWithoutApprovalPaths(cli, baseDir, scratchRoot, tag, app
     stripApprovalRecordsFromFile(join(probe, relPath));
   }
   try {
-    return cli.capture(probe).revision;
+    const probed = cli.capture(probe);
+    return probeKeepsOtherRecords(full, probed) ? probed.revision : null;
   } catch {
     return null;
   }
@@ -2113,7 +2132,7 @@ function populateValidRevisions(cli, directory, view, scratchRoot, label, target
   }
 
   const allApprovalPaths = [...new Set(approvalRecords.map(r => r.sourcePath))];
-  const unsealed = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-unsealed`, allApprovalPaths);
+  const unsealed = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-unsealed`, allApprovalPaths, view);
   if (unsealed !== null) {
     view.unsealedRevision = unsealed;
     validRevisions.add(unsealed);
@@ -2131,7 +2150,7 @@ function populateValidRevisions(cli, directory, view, scratchRoot, label, target
       ),
     ];
     if (newOrEditedPaths.length > 0 && newOrEditedPaths.length < allApprovalPaths.length) {
-      const prePr = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-prepr`, newOrEditedPaths);
+      const prePr = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-prepr`, newOrEditedPaths, view);
       if (prePr !== null) validRevisions.add(prePr);
     }
   }
@@ -2152,7 +2171,7 @@ function populateValidRevisions(cli, directory, view, scratchRoot, label, target
   if (unresolvedTargetRevisions.size > 0 && parsed.length > 1) {
     for (let i = 1; i < parsed.length; i++) {
       const stripFromHere = [...new Set(parsed.slice(i).map(x => x.record.sourcePath))];
-      const stepRev = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-step-${i}`, stripFromHere);
+      const stepRev = captureRevisionWithoutApprovalPaths(cli, directory, scratchRoot, `${label}-step-${i}`, stripFromHere, view);
       if (stepRev !== null) validRevisions.add(stepRev);
     }
   }
