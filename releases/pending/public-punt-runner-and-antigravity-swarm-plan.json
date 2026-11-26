@@ -1,0 +1,9 @@
+{
+  "format": "inventarch-marketplace.release-note.v1",
+  "bump": "minor",
+  "title": "Public punt runner and Antigravity swarm plan sync",
+  "summary": "Add public-kit punt envelope helper and Antigravity local swarm plan.json sync script.",
+  "plugins": [
+    "ia"
+  ]
+}

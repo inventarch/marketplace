@@ -662,3 +662,22 @@
     decider "Owner"
     choice "A separate systems (local source or exact adopted pins), kit routing specifications (local stub) and kit bodies (public starter and base kits in marketplace; proprietary kit bodies hosted-only on the InventArch API), while keeping private API/MCP/auth glue out of marketplace"
     rationale "Earlier choices flip-flopped because vocabulary (@system and @schema) and methodology (playbooks, rubrics and roles) travelled as one archive. The floor reserves its words. For other registrations, the unique highest authority band wins, lower bands may be shadowed, and highest-band ties block the word. Pinning fixes inputs, not word meaning across accounts. Under the target custody model a local harness agent also needs a lightweight routing specification stating when to call a hosted kit and what inputs apply, without seeing how the proprietary method works internally. Keeping proprietary kit bodies strictly on the InventArch API and execution pods protects proprietary methodology while preserving offline validation. plugins/ia 1.x retains public-account-connector's transitional kit_download path pending the hosted custody migration tracked in inventarch/ia-kb#285. This decision does not establish hosted availability."
+
+# Public punt runner and Antigravity local swarm plan sync (2026-11-26).
+
+@decision public-punt-bridge
+  meaning
+    says "The ia plugin ships two zero-dependency helper scripts for public-kit task punting and Antigravity local swarm plan projection: plugins/ia/scripts/punt.mjs validates PublicPuntEnvelopeV1 payloads against the allowlist of public kit ids, verifies single-hash subjectSha256 parity with subjectLabel, resolves methods through scripts/resolve.mjs with fallbackUnbound to inventarch/ia-method-kit#method-operate on IA-CORE-NO-WORKSPACE or IA-CORE-NO-METHOD, runs shell-free repoVerificationCommands under an allowlisted environment, verifies declaredKitChecks receipts and emits WitnessedPuntReceiptV1; plugins/ia/scripts/agy-swarm-sync.mjs validates SwarmControlViewV1 plan fields (goal title 4 to 8 words, goal line at most 12 words, tasks and 1 to 6 threads) and atomically writes plan.json to an explicit --swarm-dir without touching builtin directories or hardcoded OS paths."
+  work
+    title "Ship public punt runner and Antigravity swarm plan sync in plugins/ia"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-26"
+    ended "2026-11-26"
+    source "docs/decisions.md"
+  decision
+    question "How does the public ia plugin execute punted public-kit work envelopes and project swarm plans to Antigravity without bundling proprietary kits or hardcoded host paths?"
+    options ["A ship plugins/ia/scripts/punt.mjs (public-kit allowlist, single-hash subject parity, unbound fallback to inventarch/ia-method-kit#method-operate, shell-free verification receipts) and plugins/ia/scripts/agy-swarm-sync.mjs (explicit --swarm-dir atomic plan.json writer)", "B bundle proprietary orchestration kits into plugins/ia", "C write directly into host builtin or hardcoded user directories"]
+    decider "Operator"
+    choice "A ship plugins/ia/scripts/punt.mjs (public-kit allowlist, single-hash subject parity, unbound fallback to inventarch/ia-method-kit#method-operate, shell-free verification receipts) and plugins/ia/scripts/agy-swarm-sync.mjs (explicit --swarm-dir atomic plan.json writer)"
+    rationale "Keeping the public plugin strictly limited to allowlisted public kits, explicit directory arguments and shell-free verification preserves custody boundaries and offline reproducibility while enabling cross-host punted execution and local Antigravity swarm overview rendering."
