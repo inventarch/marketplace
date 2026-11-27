@@ -43,15 +43,28 @@ export function assertSafeSwarmDir(swarmDir) {
     throw new UsageError('agy-swarm-sync.mjs requires an explicit --swarm-dir <dir>');
   }
   const resolved = resolve(swarmDir);
-  const segments = resolved.split(/[\\/]/).filter(Boolean).map(s => s.toLowerCase());
-  if (segments.includes('builtin')) {
-    throw new SwarmSyncError(`refusing to write inside a builtin directory: ${resolved}`, 'IA-SWARM-SYNC-BUILTIN-REFUSED');
-  }
-  if (existsSync(resolved)) {
-    const stat = lstatSync(resolved);
-    if (stat.isSymbolicLink() || !stat.isDirectory()) {
-      throw new SwarmSyncError(`--swarm-dir must be a non-symlink directory: ${resolved}`, 'IA-SWARM-SYNC-UNSAFE-DIR');
+  const checkSegments = (p) => {
+    const segments = p.split(/[\\/]/).filter(Boolean).map((s) => s.toLowerCase());
+    if (segments.includes('builtin')) {
+      throw new SwarmSyncError('refusing to write inside a builtin directory', 'IA-SWARM-SYNC-BUILTIN-REFUSED');
     }
+  };
+  checkSegments(resolved);
+  // Walk each existing component from deepest existing ancestor up to refuse symlinks and resolved builtin targets.
+  const parts = resolved.split(/[\\/]/).filter(Boolean);
+  let probe = resolved.startsWith('/') ? '/' : parts[0] + sep;
+  const startIdx = resolved.startsWith('/') ? 0 : 1;
+  for (let i = startIdx; i < parts.length; i++) {
+    probe = join(probe, parts[i]);
+    if (!existsSync(probe)) break;
+    const stat = lstatSync(probe);
+    if (stat.isSymbolicLink()) {
+      throw new SwarmSyncError('--swarm-dir path must not traverse a symlink', 'IA-SWARM-SYNC-UNSAFE-DIR');
+    }
+    checkSegments(realpathSync(probe));
+  }
+  if (existsSync(resolved) && !lstatSync(resolved).isDirectory()) {
+    throw new SwarmSyncError('--swarm-dir must be a non-symlink directory', 'IA-SWARM-SYNC-UNSAFE-DIR');
   }
   return resolved;
 }
@@ -83,15 +96,35 @@ export function validateSwarmPlan(payload) {
     throw new SwarmSyncError(`plan.goal.line must have 1 to ${MAX_GOAL_LINE_WORDS} words (got ${lineWords})`, 'IA-SWARM-SYNC-INVALID-PLAN');
   }
 
-  if (!isPlainObject(source.tasks)) {
-    throw new SwarmSyncError('plan.tasks must be an object mapping worker names to short labels', 'IA-SWARM-SYNC-INVALID-PLAN');
-  }
-  const tasks = {};
-  for (const [workerName, label] of Object.entries(source.tasks)) {
-    if (!workerName.trim() || typeof label !== 'string' || !label.trim()) {
-      throw new SwarmSyncError(`plan.tasks["${workerName}"] must have a non-empty worker name and label`, 'IA-SWARM-SYNC-INVALID-PLAN');
+  let tasks;
+  if (isPlainObject(source.tasks)) {
+    tasks = {};
+    for (const [workerName, label] of Object.entries(source.tasks)) {
+      if (!workerName.trim() || typeof label !== 'string' || !label.trim()) {
+        throw new SwarmSyncError(`plan.tasks["${workerName}"] must have a non-empty worker name and label`, 'IA-SWARM-SYNC-INVALID-PLAN');
+      }
+      tasks[workerName.trim()] = label.trim();
     }
-    tasks[workerName.trim()] = label.trim();
+  } else if (Array.isArray(source.checkpoints) || Array.isArray(source.roster)) {
+    tasks = {};
+    if (Array.isArray(source.checkpoints)) {
+      for (const cp of source.checkpoints) {
+        if (isPlainObject(cp) && typeof cp.id === 'string' && cp.id.trim() && typeof cp.title === 'string' && cp.title.trim()) {
+          tasks[cp.id.trim()] = cp.title.trim();
+        }
+      }
+    }
+    if (Array.isArray(source.roster)) {
+      for (const member of source.roster) {
+        if (isPlainObject(member) && typeof member.name === 'string' && member.name.trim()) {
+          const name = member.name.trim();
+          const role = typeof member.role === 'string' && member.role.trim() ? member.role.trim() : name;
+          if (!tasks[name]) tasks[name] = role;
+        }
+      }
+    }
+  } else {
+    throw new SwarmSyncError('plan.tasks must be an object mapping worker names to short labels (or provide SwarmControlViewV1 checkpoints/roster)', 'IA-SWARM-SYNC-INVALID-PLAN');
   }
 
   if (!Array.isArray(source.threads) || source.threads.length < MIN_THREADS || source.threads.length > MAX_THREADS) {

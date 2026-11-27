@@ -981,7 +981,7 @@
     },
     {
       "path": "plugins/ia/scripts/agy-swarm-sync.mjs",
-      "sha256": "2b2d1335f4c857e8b832c60bebb3d75d64c137229a8662d9d40785064c085583"
+      "sha256": "374fe93eaadfacd82401ec29080b1de46237b4a92d88411a84131b8644bfa152"
     },
     {
       "path": "plugins/ia/scripts/bind.mjs",
@@ -1189,7 +1189,7 @@
     },
     {
       "path": "plugins/ia/scripts/punt.mjs",
-      "sha256": "0f411410bdb200b24741df8e9fc136836cc16121023197f1102141f6abd2b4a3"
+      "sha256": "770038d60c8208e27cc94554a551c015d2c541bf72a7ba3eb308fb0890179d54"
     },
     {
       "path": "plugins/ia/scripts/resolve.mjs",

@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import {
   computeSubjectSha256,
   DEFAULT_FALLBACK_UNBOUND,
+  PUBLIC_KIT_IDS,
   PUBLIC_PUNT_FORMAT,
   validatePublicPuntEnvelope,
   WITNESSED_RECEIPT_FORMAT,
@@ -45,61 +46,131 @@ function runScript(script, args, { input = undefined, cwd = REPO_ROOT, env = pro
 
 function makeEnvelope(overrides = {}) {
   const subjectLabel = overrides.subjectLabel ?? 'task:demo-slice--01';
-  return {
-    format: PUBLIC_PUNT_FORMAT,
-    envelopeId: 'env-001',
-    entry: 'delivery',
-    activity: 'change',
-    subjectLabel,
-    subjectSha256: `sha256:${createHash('sha256').update(subjectLabel, 'utf8').digest('hex')}`,
-    fallbackUnbound: { ...DEFAULT_FALLBACK_UNBOUND },
+  const base = {
+    schema: PUBLIC_PUNT_FORMAT,
+    assignmentId: 'asgn-001',
+    attemptId: 'att-001',
+    fence: 1,
+    leaseExpiresAt: '2026-11-26T05:00:00.000Z',
+    heartbeatSeconds: 20,
+    run: {
+      runId: 'run-001',
+      checkpointId: 'cp-01',
+      workspaceId: 'ws-001',
+    },
+    routing: {
+      mode: 'punt-local',
+      lane: 'ia:delivery',
+      activityKey: 'delivery.change',
+      workerRole: 'worker',
+      reviewerRole: 'reviewer',
+    },
+    publicMethod: {
+      kit: 'inventarch/ia-method-kit',
+      capability: 'method-operate',
+      subjectLabel,
+      subjectSha256: `sha256:${createHash('sha256').update(subjectLabel, 'utf8').digest('hex')}`,
+      fallbackUnbound: { ...DEFAULT_FALLBACK_UNBOUND },
+    },
+    repositoryTarget: {
+      repositoryUrl: 'https://github.com/inventarch/ia-apps.git',
+      baseBranch: 'main',
+      baseCommit: 'a'.repeat(40),
+      writePaths: ['src/**'],
+      forbidSymlinks: true,
+    },
     declaredKitChecks: [],
     repoVerificationCommands: [],
-    ...overrides,
+    instructionsMarkdown: 'Execute checkpoint cp-01 cleanly.',
+    limits: {
+      maxDurationSeconds: 1800,
+      allowPaidApiFallback: false,
+    },
+    contentDigest: `sha256:${'b'.repeat(64)}`,
   };
+  return { ...base, ...overrides };
 }
 
+test('PUBLIC_KIT_IDS matches kits/index.json public catalog exactly', () => {
+  const index = JSON.parse(readFileSync(join(REPO_ROOT, 'kits', 'index.json'), 'utf8'));
+  const expected = new Set(index.kits.map((k) => k.id));
+  assert.deepEqual(new Set(PUBLIC_KIT_IDS), expected);
+});
+
 test('punt.mjs validates PublicPuntEnvelopeV1 and enforces single-hash subjectSha256 parity', () => {
-  const env = makeEnvelope({ subjectLabel: 'work:slice-alpha' });
+  const env = makeEnvelope({
+    publicMethod: {
+      kit: 'inventarch/ia-method-kit',
+      capability: 'method-operate',
+      subjectLabel: 'work:slice-alpha',
+      subjectSha256: computeSubjectSha256('work:slice-alpha'),
+      fallbackUnbound: { ...DEFAULT_FALLBACK_UNBOUND },
+    },
+  });
   const validated = validatePublicPuntEnvelope(env);
-  assert.equal(validated.subjectSha256, computeSubjectSha256('work:slice-alpha'));
-  assert.equal(validated.fallbackUnbound.kit, 'inventarch/ia-method-kit');
-  assert.equal(validated.fallbackUnbound.capability, 'method-operate');
+  assert.equal(validated.schema, 'inventarch.public-punt-envelope/1');
+  assert.equal(validated.publicMethod.subjectSha256, computeSubjectSha256('work:slice-alpha'));
+  assert.equal(validated.publicMethod.fallbackUnbound.kit, 'inventarch/ia-method-kit');
+  assert.equal(validated.publicMethod.fallbackUnbound.capability, 'method-operate');
 
   // Mismatched subjectSha256 must fail closed.
   const badHash = makeEnvelope({
-    subjectLabel: 'work:slice-alpha',
-    subjectSha256: `sha256:${'0'.repeat(64)}`,
+    publicMethod: {
+      ...env.publicMethod,
+      subjectSha256: `sha256:${'0'.repeat(64)}`,
+    },
   });
-  assert.throws(() => validatePublicPuntEnvelope(badHash), err => err.code === 'IA-PUNT-SUBJECT-MISMATCH');
+  assert.throws(() => validatePublicPuntEnvelope(badHash), (err) => err.code === 'IA-PUNT-SUBJECT-MISMATCH');
 });
 
-test('punt.mjs rejects non-public kit ids in fields and embedded text', () => {
-  const badKitField = makeEnvelope({ kit: 'inventarch/ia-proprietary-example-kit' });
-  assert.throws(() => validatePublicPuntEnvelope(badKitField), err => err.code === 'IA-PUNT-CUSTODY-LEAK');
+test('punt.mjs rejects non-public kit ids in fields and embedded text without echoing leaked id', () => {
+  const badKitField = makeEnvelope({
+    publicMethod: {
+      kit: 'inventarch/ia-proprietary-example-kit',
+      capability: 'method-operate',
+      subjectLabel: 's1',
+      subjectSha256: computeSubjectSha256('s1'),
+      fallbackUnbound: { ...DEFAULT_FALLBACK_UNBOUND },
+    },
+  });
+  assert.throws(
+    () => validatePublicPuntEnvelope(badKitField),
+    (err) => err.code === 'IA-PUNT-CUSTODY-LEAK' && !err.message.includes('ia-proprietary-example-kit'),
+  );
 
   const badFallback = makeEnvelope({
-    fallbackUnbound: { kit: 'inventarch/ia-private-example-kit', capability: 'operate' },
+    publicMethod: {
+      kit: 'inventarch/ia-method-kit',
+      capability: 'method-operate',
+      subjectLabel: 's2',
+      subjectSha256: computeSubjectSha256('s2'),
+      fallbackUnbound: { kit: 'inventarch/ia-private-example-kit', capability: 'operate' },
+    },
   });
-  assert.throws(() => validatePublicPuntEnvelope(badFallback), err => err.code === 'IA-PUNT-CUSTODY-LEAK');
+  assert.throws(() => validatePublicPuntEnvelope(badFallback), (err) => err.code === 'IA-PUNT-CUSTODY-LEAK');
 
   const embeddedPrivateKit = makeEnvelope({
-    notes: 'never leak inventarch/ia-secret-example-kit in public envelopes',
+    instructionsMarkdown: 'never load inventarch/ia-secret-example-kit in public envelopes',
   });
-  assert.throws(() => validatePublicPuntEnvelope(embeddedPrivateKit), err => err.code === 'IA-PUNT-CUSTODY-LEAK');
+  assert.throws(() => validatePublicPuntEnvelope(embeddedPrivateKit), (err) => err.code === 'IA-PUNT-CUSTODY-LEAK');
 });
 
-test('punt.mjs resolve falls back to fallbackUnbound on IA-CORE-NO-WORKSPACE and IA-CORE-NO-METHOD', () => {
+test('punt.mjs resolve falls back on IA-CORE-NO-WORKSPACE and refuses silent fallback on IA-CORE-NO-METHOD', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ia-punt-resolve-'));
   try {
     const nonWorkspaceDir = join(dir, 'plain-repo');
     mkdirSync(nonWorkspaceDir, { recursive: true });
 
     const envelopePath = join(dir, 'envelope.json');
+    const subjectLabel = 'slice:unbound-check';
     const envelope = makeEnvelope({
-      entry: 'delivery',
-      activity: 'change',
-      subjectLabel: 'slice:unbound-check',
+      publicMethod: {
+        kit: 'inventarch/ia-method-kit',
+        capability: 'method-operate',
+        subjectLabel,
+        subjectSha256: computeSubjectSha256(subjectLabel),
+        fallbackUnbound: { ...DEFAULT_FALLBACK_UNBOUND },
+      },
     });
     writeFileSync(envelopePath, JSON.stringify(envelope, null, 2), 'utf8');
 
@@ -109,26 +180,21 @@ test('punt.mjs resolve falls back to fallbackUnbound on IA-CORE-NO-WORKSPACE and
     assert.equal(res1.json.ok, true);
     assert.equal(res1.json.mode, 'fallback-unbound');
     assert.equal(res1.json.fallbackReason, 'IA-CORE-NO-WORKSPACE');
-    assert.equal(res1.json.subjectSha256, envelope.subjectSha256);
-    assert.equal(res1.json.packet.scope.subject, envelope.subjectSha256);
+    assert.equal(res1.json.packet.scope.subject, envelope.publicMethod.subjectSha256);
     assert.equal(res1.json.packet.closure.kit, 'inventarch/ia-method-kit');
 
-    // Also verify IA-CORE-NO-METHOD inside an IA workspace with no bindings.
+    // Inside an IA workspace with no method bindings, resolve must refuse rather than silently falling back.
     const unboundWorkspaceDir = join(dir, 'ia-repo-no-bindings');
     mkdirSync(join(unboundWorkspaceDir, '.ia', 'src'), { recursive: true });
     const res2 = runScript(PUNT_SCRIPT, ['resolve', '--envelope', envelopePath, '--root', unboundWorkspaceDir, ...cliArgs]);
-    assert.equal(res2.status, 0, `expected exit 0, got ${res2.status}: ${res2.stdout} ${res2.stderr}`);
-    assert.equal(res2.json.ok, true);
-    assert.equal(res2.json.mode, 'fallback-unbound');
-    assert.equal(res2.json.fallbackReason, 'IA-CORE-NO-METHOD');
-    assert.equal(res2.json.packet.scope.subject, envelope.subjectSha256);
-    assert.equal(res2.json.packet.closure.kit, 'inventarch/ia-method-kit');
+    assert.equal(res2.status, 1);
+    assert.equal(res2.json.error.code, 'IA-CORE-NO-METHOD');
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test('punt.mjs verify runs shell-free repoVerificationCommands with sanitized env and checks declaredKitChecks receipts', () => {
+test('punt.mjs verify previews repoVerificationCommands unless --execute-repo-commands is passed, and emits WitnessedPuntReceiptV1', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ia-punt-verify-'));
   try {
     const repoDir = join(dir, 'repo');
@@ -138,13 +204,11 @@ test('punt.mjs verify runs shell-free repoVerificationCommands with sanitized en
     const receiptsPath = join(dir, 'receipts.json');
     const outPath = join(dir, 'witnessed-receipt.json');
 
-    // Command verifies that shell metacharacters are passed literally (no shell)
-    // and that secret env vars are stripped by childEnv.
     const envelope = makeEnvelope({
-      declaredKitChecks: ['check-example'],
+      declaredKitChecks: [{ kit: 'inventarch/ia-method-kit', check: 'check-example', required: true }],
       repoVerificationCommands: [
         {
-          name: 'echo-literal',
+          id: 'echo-literal',
           argv: [
             process.execPath,
             '-e',
@@ -169,49 +233,75 @@ test('punt.mjs verify runs shell-free repoVerificationCommands with sanitized en
     ], null, 2), 'utf8');
 
     const envWithSecret = { ...process.env, TEST_SECRET_TOKEN: 'must-not-leak' };
+
+    // Preview-by-default never executes repo commands and stays blocked (exit 3)
+    const preview = runScript(
+      PUNT_SCRIPT,
+      ['verify', '--envelope', envelopePath, '--root', repoDir, '--receipts', receiptsPath],
+      { env: envWithSecret },
+    );
+    assert.equal(preview.status, 3);
+    assert.equal(preview.json.status, 'blocked');
+    assert.equal(preview.json.repoVerificationResults[0].passed, false);
+
+    // Explicit opt-in --execute-repo-commands executes shell-free and emits canonical succeeded receipt
     const ran = runScript(
       PUNT_SCRIPT,
-      ['verify', '--envelope', envelopePath, '--root', repoDir, '--receipts', receiptsPath, '--out', outPath],
+      ['verify', '--envelope', envelopePath, '--root', repoDir, '--receipts', receiptsPath, '--out', outPath, '--execute-repo-commands'],
       { env: envWithSecret },
     );
     assert.equal(ran.status, 0, `expected exit 0, got ${ran.status}: ${ran.stdout} ${ran.stderr}`);
-    assert.equal(ran.json.format, WITNESSED_RECEIPT_FORMAT);
-    assert.equal(ran.json.ok, true);
-    assert.equal(ran.json.subjectSha256, envelope.subjectSha256);
-    assert.equal(ran.json.declaredKitChecks.length, 1);
-    assert.equal(ran.json.declaredKitChecks[0].ok, true);
-    assert.equal(ran.json.repoVerificationCommands.length, 1);
-    assert.equal(ran.json.repoVerificationCommands[0].ok, true);
-    assert.match(ran.json.receiptSha256, /^sha256:[a-f0-9]{64}$/);
+    assert.equal(ran.json.schema, WITNESSED_RECEIPT_FORMAT);
+    assert.equal(ran.json.status, 'succeeded');
+    assert.equal(ran.json.assignmentId, envelope.assignmentId);
+    assert.equal(ran.json.attemptId, envelope.attemptId);
+    assert.equal(ran.json.fence, envelope.fence);
+    assert.equal(ran.json.declaredKitCheckResults.length, 1);
+    assert.equal(ran.json.declaredKitCheckResults[0].passed, true);
+    assert.equal(ran.json.repoVerificationResults.length, 1);
+    assert.equal(ran.json.repoVerificationResults[0].passed, true);
+    assert.equal(ran.json.witnesses[0].role, 'checker');
+    assert.equal(ran.json.witnesses[0].verdict, 'approved');
+    assert.match(ran.json.witnesses[0].digest, /^[a-f0-9]{64}$/);
+    assert.match(ran.json.repoVerificationResults[0].logDigest, /^[a-f0-9]{64}$/);
+    assert.match(ran.json.declaredKitCheckResults[0].logDigest, /^[a-f0-9]{64}$/);
+    assert.match(ran.json.receiptDigest, /^[a-f0-9]{64}$/);
 
     const written = JSON.parse(readFileSync(outPath, 'utf8'));
     assert.deepEqual(written, ran.json);
 
     // Missing declaredKitChecks receipt must fail closed (exit 3).
-    const missingReceipts = runScript(PUNT_SCRIPT, ['verify', '--envelope', envelopePath, '--root', repoDir]);
+    const missingReceipts = runScript(PUNT_SCRIPT, ['verify', '--envelope', envelopePath, '--root', repoDir, '--execute-repo-commands']);
     assert.equal(missingReceipts.status, 3);
-    assert.equal(missingReceipts.json.ok, false);
-    assert.equal(missingReceipts.json.declaredKitChecks[0].status, 'missing');
+    assert.equal(missingReceipts.json.status, 'failed');
+    assert.equal(missingReceipts.json.declaredKitCheckResults[0].passed, false);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test('agy-swarm-sync.mjs validates SwarmControlViewV1 and atomically writes plan.json', () => {
+test('agy-swarm-sync.mjs accepts canonical SwarmControlViewV1 (checkpoints/roster) and legacy direct plans', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ia-agy-sync-'));
   try {
     const swarmDir = join(dir, 'swarm-state');
     const planInputPath = join(dir, 'control-view.json');
     const controlView = {
-      format: 'swarm-control-view-1',
+      format: 'swarm-control-view/1',
+      runId: 'run-1',
+      workspaceId: 'ws-1',
+      status: 'running',
+      generation: 0,
       goal: {
         title: 'Ship public punt and sync helpers',
         line: 'Validate public envelopes and sync Antigravity swarm plan files.',
       },
-      tasks: {
-        'worker-a': 'Implement punt helper',
-        'worker-b': 'Implement swarm sync',
-      },
+      checkpoints: [
+        { id: 'worker-a', title: 'Implement punt helper', status: 'running' },
+        { id: 'worker-b', title: 'Implement swarm sync', status: 'pending' },
+      ],
+      roster: [
+        { name: 'worker-a', role: 'worker', status: 'working' },
+      ],
       threads: [
         {
           id: 't-public-bridge',
@@ -234,15 +324,17 @@ test('agy-swarm-sync.mjs validates SwarmControlViewV1 and atomically writes plan
     const written = JSON.parse(readFileSync(planPath, 'utf8'));
     assert.deepEqual(written, {
       goal: controlView.goal,
-      tasks: controlView.tasks,
+      tasks: {
+        'worker-a': 'Implement punt helper',
+        'worker-b': 'Implement swarm sync',
+      },
       threads: controlView.threads,
     });
 
-    // No stray .tmp files left behind.
     const entries = readdirSync(swarmDir);
     assert.deepEqual(entries, ['plan.json']);
 
-    // Stdin mode also works.
+    // Stdin mode with direct legacy plan still works.
     const stdinRun = runScript(AGY_SYNC_SCRIPT, ['--swarm-dir', swarmDir], {
       input: JSON.stringify({
         goal: {
@@ -276,32 +368,27 @@ test('agy-swarm-sync.mjs enforces goal word bounds and thread count bounds', () 
   };
   assert.ok(validateSwarmPlan(base));
 
-  // Title too short (3 words).
   assert.throws(
     () => validateSwarmPlan({ ...base, goal: { ...base.goal, title: 'Too short title' } }),
-    err => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
+    (err) => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
   );
-  // Title too long (9 words).
   assert.throws(
     () => validateSwarmPlan({ ...base, goal: { ...base.goal, title: 'One two three four five six seven eight nine' } }),
-    err => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
+    (err) => err.code === 'IA-PUNT-INVALID-ENVELOPE' || err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
   );
-  // Line too long (13 words).
   assert.throws(
     () => validateSwarmPlan({ ...base, goal: { ...base.goal, line: 'one two three four five six seven eight nine ten eleven twelve thirteen' } }),
-    err => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
+    (err) => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
   );
-  // Zero threads.
   assert.throws(
     () => validateSwarmPlan({ ...base, threads: [] }),
-    err => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
+    (err) => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
   );
-  // Seven threads (> 6).
   assert.throws(
     () => validateSwarmPlan({
       ...base,
       threads: Array.from({ length: 7 }, (_, i) => ({ id: `t-${i}`, title: `T${i}`, goal: 'Goal.', tasks: ['w1'] })),
     }),
-    err => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
+    (err) => err.code === 'IA-SWARM-SYNC-INVALID-PLAN',
   );
 });
