@@ -8,7 +8,10 @@ Thank you for considering a contribution. This document explains how the reposit
 - For a security problem, follow [SECURITY.md](SECURITY.md) instead of opening an issue.
 - Everyone taking part is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
 - Everything here is public, and anyone can read every byte. A method that must stay proprietary does not belong in this repository, and no file may carry a machine path, a credential, a tenant's material or another organisation's material.
-- A problem in the `ia` CLI, the language or `@inventarch/mcp-door` belongs in [inventarch/ia](https://github.com/inventarch/ia).
+- Match the repository to the layer you are changing (decision `public-systems-and-kits-custody`):
+  - **Engine and word lowering (`inventarch/ia`):** Changes to `.ia` language rules, schemas, validation, the `ia` CLI, `@inventarch/mcp-door` or how declared words lower into Engine execution belong in [inventarch/ia](https://github.com/inventarch/ia).
+  - **Public systems, starter kits and the `ia` host plugin (`inventarch/marketplace`):** Shared public vocabulary systems and foundational starter kits that impart baseline capability onto those words—using only the open Engine—belong here. If a feature needs both an Engine adjustment and a reusable system and starter kit, submit the Engine adjustment to `inventarch/ia` and the system and starter kit here.
+  - **Private APIs, custom MCP servers and authentication glue:** Code that ties IA words to your own service API, organisation MCP server or account authentication does not belong in this repository; host it in your own repository or private catalogue while keeping shared systems pinned locally under `.ia/`.
 
 ## Prerequisites
 
