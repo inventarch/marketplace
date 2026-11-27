@@ -1,0 +1,191 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-design-base-kit",
+  "version": "0.1.2",
+  "archive": "eb1f1021fa99c39c479d471b3ba997db53b8519a27448b61574015c1937c4a9d",
+  "records": [
+    {
+      "system": "design-base-system",
+      "word": "agent",
+      "name": "design-base-system-steward"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-01-failure"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-01-success"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-02-failure"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-02-success"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-03-failure"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-03-success"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-04-failure"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-04-success"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-05-failure"
+    },
+    {
+      "system": "design-base-system",
+      "word": "case",
+      "name": "design-base-req-05-success"
+    },
+    {
+      "system": "design-base-system",
+      "word": "check",
+      "name": "check-design-patterns"
+    },
+    {
+      "system": "design-base-system",
+      "word": "check",
+      "name": "design-base-system-coverage"
+    },
+    {
+      "system": "design-base-system",
+      "word": "check",
+      "name": "design-check-validate"
+    },
+    {
+      "system": "design-base-system",
+      "word": "contract",
+      "name": "design-base-system"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-atomic-hierarchy-composition"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-design-token"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-level"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-part"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-pattern"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-recipe"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-guide-slot"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-named-words-approval-rule"
+    },
+    {
+      "system": "design-base-system",
+      "word": "convention",
+      "name": "design-pattern-language-and-evidence"
+    },
+    {
+      "system": "design-base-system",
+      "word": "distribution",
+      "name": "ia-design-base-distribution"
+    },
+    {
+      "system": "design-base-system",
+      "word": "law",
+      "name": "design-active-patterns-and-recipes-sealed"
+    },
+    {
+      "system": "design-base-system",
+      "word": "law",
+      "name": "design-semantic-tokens-only"
+    },
+    {
+      "system": "design-base-system",
+      "word": "law",
+      "name": "design-single-claimant-no-order-tiebreak"
+    },
+    {
+      "system": "design-base-system",
+      "word": "mandate",
+      "name": "design-base-system-stewardship"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "design-token"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "level"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "part"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "pattern"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "recipe"
+    },
+    {
+      "system": "design-base-system",
+      "word": "schema",
+      "name": "slot"
+    },
+    {
+      "system": "design-base-system",
+      "word": "system",
+      "name": "design-base-system"
+    }
+  ],
+  "offers": {
+    "keys": []
+  }
+}
