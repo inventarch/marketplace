@@ -1116,3 +1116,28 @@ test('REQ-PRODUCT-BASE-07: sequential quorum-2 current-revision seals pass as in
   assert.equal(pair.sealPasses(), false);
   assert.ok(stale.findings.some(f => f.code === 'PRD_UNSEALED'), stale.output);
 });
+
+test('REQ-PRODUCT-BASE-07 failure: a current-revision seal counts for nothing when no revision is accepted', () => {
+  // An empty set of accepted revisions (no revision could be captured) accepts no current-revision seal, as in check-seal
+  const { key } = generateSigningKey();
+  const prdDigest = '8'.repeat(64);
+  const ruleDigest = '7'.repeat(64);
+  const rule = synApprovalRule('current-prd-rule', ['prd'], 1, ruleDigest);
+  rule.sections[0].fields.push({ key: 'staleness', value: strVal('current-revision') });
+  const prd = synPrd('current-prd', { status: 'active', digest: prdDigest, requirements: ['CUR-01: Seal the current revision'] });
+  const records = [
+    synDecision('current-dec', 'made', ['current-prd']),
+    prd,
+    synApprover('product-lead', 'acct-product', key),
+    rule,
+    synSignedApproval(prd, prdDigest, key, 'acct-product', [{ identity: rule.identity, digest: ruleDigest }]),
+  ];
+  const unsealed = report => report.findings.some(f => f.identity === prd.identity && f.code === 'PRD_UNSEALED');
+
+  // Control: the revision synSignedApproval signs is accepted, so the seal counts
+  const accepted = checkPrds({ revision: '9'.repeat(64), validRevisions: [], records });
+  assert.equal(unsealed(accepted), false, JSON.stringify(accepted.findings));
+
+  const none = checkPrds({ revision: null, validRevisions: [], records });
+  assert.equal(unsealed(none), true, JSON.stringify(none.findings));
+});

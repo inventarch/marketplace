@@ -15,6 +15,18 @@
       "shard": 1
     },
     {
+      "id": "native-adopt-retained-language-base",
+      "file": "plugins/ia/tests/adopt-retained-base.test.mjs",
+      "name": "native adopt vendors the retained consumer base and restores from a fresh workspace",
+      "mode": "native",
+      "platforms": [
+        "linux",
+        "win32",
+        "darwin"
+      ],
+      "shard": 1
+    },
+    {
       "id": "MI-T04",
       "file": "plugins/ia/tests/method-integrity-native.test.mjs",
       "name": "MI-T04 native missing capability refuses without pin",

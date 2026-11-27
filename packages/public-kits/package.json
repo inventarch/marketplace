@@ -1,6 +1,6 @@
 {
   "name": "@inventarch/public-kits",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "The public InventArch method kits as one package: each kit's IA archive and manifest, with its folder, for an IA engine to expand (contract C7b).",
   "license": "Apache-2.0",
   "repository": {
@@ -19,10 +19,10 @@
     "kits": [
       {
         "id": "inventarch/ia-approval-kit",
-        "version": "0.1.0",
-        "archive": "063f07332dbec5100babccac6986588c4577f33a15677549ddc42aafa7317a0e",
-        "manifest": "5911e806396f905f0b889ee816aa3b238cd569fc3fb15f532102c413399d37a7",
-        "sources": "9ee87bb2bf15b2f799a43f6f14fbf8ee6db4dd35415acc4c94f8e2b62ded1c59",
+        "version": "0.1.1",
+        "archive": "8933c209466c89c5f686729b9690f8aa3bc7ad0552e797c2ea18d9d333e2c358",
+        "manifest": "be1af4e13e03a3eb096a8d8a3fb4915eec11bb027861a5f1e650e6fe0ab60800",
+        "sources": "1229af7eced5aa97b3fc115db23947f53056b981121fbace6694b10c1c246b63",
         "folder": "ia-approval"
       },
       {
@@ -35,10 +35,10 @@
       },
       {
         "id": "inventarch/ia-design-base-kit",
-        "version": "0.1.1",
-        "archive": "5d762b10b789636f8abfcff582da960f09b3f0bbfae0b5b887580b8883a03bd4",
-        "manifest": "d09d429681aee52902468cb9ea83f711b4799e16c93463b52852a87483f1626a",
-        "sources": "9cf1797bc741c0515e2db06a3dfc8ec490f9098faba5d7101bcd8bce827ea435",
+        "version": "0.1.2",
+        "archive": "eb1f1021fa99c39c479d471b3ba997db53b8519a27448b61574015c1937c4a9d",
+        "manifest": "863502269b6732ae87bb1894e368da12ffa4f463eecb7685f19b40cff36fab57",
+        "sources": "8666fc6d0f451ccb5ccad9485bfc70a303222c2f622b29be288cc50a9a1541ee",
         "folder": "ia-design-base"
       },
       {
@@ -59,10 +59,10 @@
       },
       {
         "id": "inventarch/ia-product-base-kit",
-        "version": "0.1.1",
-        "archive": "616ce33a2ce477249356db99324fccea0ad441fc930347afe8c68cd975dac882",
-        "manifest": "8a3db238ecfadd15a858eb47aedc18f07f8116d7c8aced35e74f4dffffaed3fc",
-        "sources": "6b90f5c4f1608af771fd48b40b89dc47fed3a688dd0fe1cfd98dab7655b33185",
+        "version": "0.1.2",
+        "archive": "db1cb910ef179cf47002f90c9683fbe68722abb7ecf419c561345362245caab2",
+        "manifest": "9903c12d78182c0bd3e78ac6d53fa36f9b82fc0b98da9975e923d956771daff0",
+        "sources": "9830fcaf569f848ed46596e867ad4cdfc0c8e6fb5e9a716040233f9191c0f3be",
         "folder": "ia-product-base"
       },
       {

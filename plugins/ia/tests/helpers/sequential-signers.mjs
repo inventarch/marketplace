@@ -3,14 +3,15 @@
 // captures before any approval exists, signer 2 captures after approval 1 was
 // written. The design and product checkers must accept the same pair.
 //   sequentialSigners(t, { cli, kit, system, words, records, target, checkName, kitId })
-// returns { ws, env, check(), sealPasses(), sealFirst(), sealSecond({ onPreSeal }), edit(name, text) };
-// sealPasses() runs check-seal's workspace audit on the same workspace, the parity reference.
+// returns { ws, env, check(), sealReport(), sealPasses(), sealFirst(), sealSecond({ onPreSeal }), edit(name, text),
+//   read(name), approvalFileName(who), approvalPath(who) };
+// sealReport() runs check-seal's workspace audit on the same workspace, the parity reference; sealPasses() is its verdict.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { APPROVALS_DIR, IaCli, generateSigningKey, keyEntryText, passes, runWorkspaceAudit, sealRecord } from '../../config/kits/ia-approval/scripts/check-seal.mjs';
+import { dirname, join } from 'node:path';
+import { APPROVALS_DIR, IaCli, generateSigningKey, keyEntryText, nameSafeKeyTag, passes, runWorkspaceAudit, sealRecord } from '../../config/kits/ia-approval/scripts/check-seal.mjs';
 import { adopt, findKit } from '../../scripts/lib/kit.mjs';
 import { PLUGIN } from './fixtures.mjs';
 
@@ -95,14 +96,27 @@ ${approver('signer-b', 'acct-b', keyB)}
     return sealed.path;
   };
 
+  // check-seal's full workspace report: findings carry a name, and unratified ones the record as their subject.
+  const sealReport = () => {
+    const saved = { ...process.env };
+    Object.assign(process.env, env);
+    try {
+      return runWorkspaceAudit([process.execPath, cli], ws);
+    } finally {
+      for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
+      Object.assign(process.env, saved);
+    }
+  };
+
   let preSeal = null;
+  let first = null;
   let second = null;
   return {
     ws,
     env,
     sealFirst() {
       preSeal = iaCli.capture(ws);
-      seal(preSeal, 'acct-a', keyA, '2026-11-18T00:00:00Z');
+      first = seal(preSeal, 'acct-a', keyA, '2026-11-18T00:00:00Z');
     },
     // Signer 2 captures now (approval 1 present), or on signer 1's pre-seal view.
     sealSecond({ onPreSeal = false } = {}) {
@@ -111,17 +125,26 @@ ${approver('signer-b', 'acct-b', keyB)}
       second = seal(view, 'acct-b', keyB, '2026-11-18T01:00:00Z');
     },
     edit(name, text) {
-      writeFileSync(join(ws, '.ia', 'src', name), text);
+      const file = join(ws, '.ia', 'src', name);
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(file, text);
     },
+    read(name) {
+      return readFileSync(join(ws, '.ia', 'src', name), 'utf8');
+    },
+    // The file name signer 'a' or 'b' gives an approval of the target as the target stands now.
+    approvalFileName(who) {
+      const rec = iaCli.capture(ws).records.get(target);
+      assert.ok(rec, 'the target is captured');
+      return `${target.split('/').pop()}.${rec.digest.slice(0, 12)}.${nameSafeKeyTag((who === 'a' ? keyA : keyB).keyId)}.ia`;
+    },
+    // Signer 'a' or 'b''s approval file as written, relative to the workspace.
+    approvalPath(who) {
+      return who === 'a' ? first : second;
+    },
+    sealReport,
     sealPasses() {
-      const saved = { ...process.env };
-      Object.assign(process.env, env);
-      try {
-        return passes(runWorkspaceAudit([process.execPath, cli], ws));
-      } finally {
-        for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
-        Object.assign(process.env, saved);
-      }
+      return passes(sealReport());
     },
     check() {
       const ran = spawnSync(process.execPath, [join(PLUGIN, 'scripts', 'check.mjs'), checkName, '--kit', kitId, '--root', ws, '--cli', cli], {
