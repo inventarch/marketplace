@@ -559,7 +559,7 @@
 
 @decision public-gemini-and-antigravity-hosts
   meaning
-    says "Ship deterministic first-class host bundles for Google Antigravity (hosts/antigravity/ia, registered via .agents/plugins.json) and Gemini CLI (hosts/gemini/ia), backed by agy-hook.mjs and gemini-hook.mjs over the core's bootstrap and kit handler runners, with headless gemini --approval-mode plan -p support in delegate.mjs."
+    says "Ship deterministic first-class host bundles for Google Antigravity (hosts/antigravity/ia, registered via .agents/plugins.json) and Gemini CLI (hosts/gemini/ia), backed by agy-hook.mjs and gemini-hook.mjs over the core's bootstrap and kit handler runners, with headless read-only gemini --approval-mode plan --policy support in delegate.mjs."
   work
     title "Support Google Antigravity and Gemini CLI as first-class hosts"
     status made

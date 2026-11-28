@@ -52,8 +52,10 @@ Google Antigravity (Antigravity 2.0, Antigravity IDE and `agy`):
 Gemini CLI (`@google/gemini-cli`):
 
 ```sh
-gemini extensions install https://github.com/inventarch/marketplace --path hosts/gemini/ia
-# or from a local checkout: gemini extensions link ./hosts/gemini/ia
+# From a local checkout of inventarch/marketplace:
+gemini extensions install ./hosts/gemini/ia
+# or link in place for updates from git pull:
+gemini extensions link ./hosts/gemini/ia
 ```
 
 Installing the plugin also gives Claude Code, Google Antigravity and Gemini CLI the IA door: the plugin's launcher (`scripts/door.mjs`, run with `node`) starts `npx -y @inventarch/mcp-door@3.8.0`, never through a shell (on Windows it runs npm's `npx-cli.js` with `node`), so the first session in a new environment needs network access to fetch it once.
@@ -241,7 +243,7 @@ Only trusted kits run code, through `handlers.json`, `onwrite.json` or `checks.j
 
 ### Delegating to another model
 
-`/ia:delegate` hands one resolved step to `codex exec`, `claude -p` or `gemini --approval-mode plan -p`, with the IA door and the packet, one level deep and with a timeout. It is off until you set `"delegation": true` in `~/.ia/config.json`, and it runs nothing until you confirm the command it shows.
+`/ia:delegate` hands one resolved step to `codex exec`, `claude -p` or `gemini --approval-mode plan --policy <policy.toml> --allowed-mcp-server-names ia -p`, with the IA door and the packet, one level deep and with a timeout. It is off until you set `"delegation": true` in `~/.ia/config.json`, and it runs nothing until you confirm the command it shows.
 
 ### Where workspaces live
 
