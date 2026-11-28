@@ -13,7 +13,7 @@ See [assets/approval-vocabulary.md](assets/approval-vocabulary.md) for the full 
 
 ## Compatibility Rule
 
-Only one composed system in a workspace may mint `approver`, `approval-rule`, `docket`, or `approval`. Workspaces that adopt `inventarch/ia-approval-kit` restore and validate 100% offline with `@inventarch/cli@3.8.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`).
+Only one composed system in a workspace may mint `approver`, `approval-rule`, `docket`, or `approval`. Workspaces that adopt `inventarch/ia-approval-kit` restore and validate 100% offline with `@inventarch/cli@3.10.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`).
 
 ## Declared Checks (`checks.json`)
 

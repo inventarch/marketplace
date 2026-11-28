@@ -430,7 +430,7 @@ export function kitOnWrite(kit) {
 // it asks a registry, which refuses with IA-DIST-ARTIFACT-UNAVAILABLE or, where
 // the default registry answers with its listing, IA-DIST-CONFLICT "Registry no
 // longer lists the locked release: inventarch/language@<version>". From 3.7.0 a
-// CLI carries every published 3.x base (3.8.0: 3.0.0 to 3.3.0), so it restores
+// CLI carries every published 3.x base (3.10.0: 3.0.0 to 3.4.0), so it restores
 // any 3.x kit. An older CLI carries one base only: 3.3.0 to 3.6.0 carry
 // inventarch/language 3.2.0, and 3.2.2 carries 3.1.2, so each restores only a
 // kit locked on its own base; adopt still needs the packing CLI to reproduce

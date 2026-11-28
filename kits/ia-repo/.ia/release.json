@@ -38,8 +38,8 @@
   "description": "The public base repository structure kit (repo-system): the repository, layer, package and area words with their canonical schemas, authoring guidance, public dependency-role grammar, citation consent rows, and the offline check-layers verifier.",
   "source": {
     "repository": "https://github.com/inventarch/marketplace.git",
-    "commit": "5e0af7e5e9344c96e304322d7dfdbf2401416dcd",
+    "commit": "6af434c6de541c753dd9811779357932ea0de50f",
     "recipe": "ustar-v1",
-    "epoch": 1794990895
+    "epoch": 1795830288
   }
 }

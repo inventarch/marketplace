@@ -10,7 +10,7 @@ See [assets/slack-vocabulary.md](assets/slack-vocabulary.md) for the field contr
 
 ## Compatibility Rule
 
-No workspace may compose another system that mints `slack-channel`. Organisation and workspace repositories stand on `inventarch/ia-slack-base-kit` to validate `@slack-channel` settings 100% offline with `@inventarch/cli@3.8.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`), while live Slack Socket Mode connections, directory bindings, and answering runtimes stay outside the public base kit.
+No workspace may compose another system that mints `slack-channel`. Organisation and workspace repositories stand on `inventarch/ia-slack-base-kit` to validate `@slack-channel` settings 100% offline with `@inventarch/cli@3.10.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`), while live Slack Socket Mode connections, directory bindings, and answering runtimes stay outside the public base kit.
 
 ## Declared Checks (`checks.json`)
 

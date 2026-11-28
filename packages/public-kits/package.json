@@ -1,6 +1,6 @@
 {
   "name": "@inventarch/public-kits",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "The public InventArch method kits as one package: each kit's IA archive and manifest, with its folder, for an IA engine to expand (contract C7b).",
   "license": "Apache-2.0",
   "repository": {
@@ -19,66 +19,66 @@
     "kits": [
       {
         "id": "inventarch/ia-approval-kit",
-        "version": "0.1.1",
-        "archive": "8933c209466c89c5f686729b9690f8aa3bc7ad0552e797c2ea18d9d333e2c358",
-        "manifest": "be1af4e13e03a3eb096a8d8a3fb4915eec11bb027861a5f1e650e6fe0ab60800",
-        "sources": "1229af7eced5aa97b3fc115db23947f53056b981121fbace6694b10c1c246b63",
+        "version": "0.1.2",
+        "archive": "135529cf44c7b365a5a85203b93f73b44f1dc8a3ed96ea9626f2bccdf1e5ca15",
+        "manifest": "62ec7af369a214067f6377b7b921a8a779ca6abcfb19fecb6703b8724d4bc7b1",
+        "sources": "bd50735018cd64e8694ba1ebbfafd9865e73bcf942894a07c38e8cb4fd9a6be9",
         "folder": "ia-approval"
       },
       {
         "id": "inventarch/ia-authoring-kit",
-        "version": "0.1.5",
-        "archive": "9a30ee07a3fb4d0b669ba7ee22f7aa08577c746bdc09280e1aeb3feb4a612689",
-        "manifest": "6a16b9e1e2c1aff4fe93b2e357871926a7182a52684eea09ec7ce5550122cb31",
-        "sources": "3235bc0e4e8cc994595376fc478968a6715ce4d25a62c935aa1d4476ffc32fb8",
+        "version": "0.1.6",
+        "archive": "17b62c422522bb0ffa42c9826f652859a7e59b0302ab1d8d828d5769c2afffbd",
+        "manifest": "2bb524d3916145f3ff1b99bf46b72483fd052f614f22175275699fc650f515b3",
+        "sources": "74ecfb8ecd89e1efb580ad74b33644cc74605f6d214cbf72095bf35e5a55cd12",
         "folder": "ia-authoring"
       },
       {
         "id": "inventarch/ia-design-base-kit",
-        "version": "0.1.2",
-        "archive": "eb1f1021fa99c39c479d471b3ba997db53b8519a27448b61574015c1937c4a9d",
-        "manifest": "863502269b6732ae87bb1894e368da12ffa4f463eecb7685f19b40cff36fab57",
-        "sources": "8666fc6d0f451ccb5ccad9485bfc70a303222c2f622b29be288cc50a9a1541ee",
+        "version": "0.1.3",
+        "archive": "ea7a557d3c399d32c9c76982b63a63f4f4119b2036422f170cb5b55340b5bc94",
+        "manifest": "8866297822e8d22ede82bd3527dbae68b5a4190792854ca9987a155777249d04",
+        "sources": "e5478c0f1f01be90ef19e6412be942c9e48fe25de9f9a5e8e121991c3846dbe6",
         "folder": "ia-design-base"
       },
       {
         "id": "inventarch/ia-kb-kit",
-        "version": "0.9.5",
-        "archive": "a203b451c9e5a19d2327a2d149c0b5fc8ffb94ef887ea3e3c9a962ff93aff7f7",
-        "manifest": "5226a75be2079defe54d23fd5c3df8712ad4b753f725dc4b90645c4a2b99b7df",
-        "sources": "a95c48a3ac882b247139e70b0b14092854c3fd11bf787a2b010e7298342529e4",
+        "version": "0.9.6",
+        "archive": "219f80432d03471edaa01d7922dbabb8fa50c613ff91515541a678f055b25b52",
+        "manifest": "c811c2f3913d9d9e76598a8047285e342763d3833f259acfce7bceae9f31fcec",
+        "sources": "f8773bff30cdcc2e58dc464ece800f86ce56a2bf6799e084bd80742b8e203abf",
         "folder": "ia-kb"
       },
       {
         "id": "inventarch/ia-method-kit",
-        "version": "0.9.1",
-        "archive": "bd635bb4779f648849a8382d314872ebcd777173c5d206ae4b2b1f0c86b61c71",
-        "manifest": "33decfed3c335dfd81ec3866796b57d1cdecff5214079e93c1781e3523fc935d",
-        "sources": "96dfe0edcfd06540035f7be2cf361ce3bd15655239d3fbed15c46913c62f9678",
+        "version": "0.9.2",
+        "archive": "dd974e14086eb664d90c6b3d853718dbb4a0f0fadc8e3ad6445da642960994ed",
+        "manifest": "4707838f51dfd8fc27673e0a668bd80f62b0858df322ccc9294a9e1ffee36cc0",
+        "sources": "4ad22119f71a4f1e3192c2f170d9fba156711ddc5978a9925925fc73007461e5",
         "folder": "ia-method"
       },
       {
         "id": "inventarch/ia-product-base-kit",
-        "version": "0.1.2",
-        "archive": "db1cb910ef179cf47002f90c9683fbe68722abb7ecf419c561345362245caab2",
-        "manifest": "9903c12d78182c0bd3e78ac6d53fa36f9b82fc0b98da9975e923d956771daff0",
-        "sources": "9830fcaf569f848ed46596e867ad4cdfc0c8e6fb5e9a716040233f9191c0f3be",
+        "version": "0.1.3",
+        "archive": "cec4d82b2034df757b87d95c3e62282e12be6236c068eefaf0f5df088500aa52",
+        "manifest": "a08b50fc228a157d8b38d0b893bec08311d9b98bc28f7b8a4d91d7d8cca8b447",
+        "sources": "88f9edaa62ec6d4897fbd78e264a386adf3beee6abea1fed1a5644b81c4248a4",
         "folder": "ia-product-base"
       },
       {
         "id": "inventarch/ia-repo-kit",
-        "version": "0.1.0",
-        "archive": "ad5ac8beae1b677553a1916d197425fba9a16b47ea078b0c6e18a5d0c3b0d4e2",
-        "manifest": "1ef8b06d089dc60c17daf39f0725468df12516b00a45c754a39fe7b0791c0bac",
-        "sources": "d4807f1535f28c153a3e5627057d3fdce334cac43a294eab3c3c57223861e58f",
+        "version": "0.1.1",
+        "archive": "bf490641ad8ee634391e3fbeca81a1878f17045156789a63b86fd5685bfdd9fd",
+        "manifest": "609166b547e352507940adefd99aa3814da52e0819622a3f125dded9ec448be3",
+        "sources": "eecc667eae6eda9e9537401767424810e5e9cf45a68fe97982b802dd32706c91",
         "folder": "ia-repo"
       },
       {
         "id": "inventarch/ia-slack-base-kit",
-        "version": "0.1.0",
-        "archive": "5b50870a8bc4e185e4eb1233e54f184b8c0a02a732ee13547908422afd6687e3",
-        "manifest": "d642c8e43132858ae363a46491622ddb8bb0dcbcfe855ad4d11c0865271da7b2",
-        "sources": "720a391033f95e391921bf338e4fc68ca131498fad0ca18cea56825e1606ebb1",
+        "version": "0.1.1",
+        "archive": "62d46ea6f793f578ce3de23cd86a5c115ac46bbab45a2188ff000e223c1e3a20",
+        "manifest": "79932f473b599915b070ce51a1d2ee38e7b69acc69407db5f3cd2fba24a2509c",
+        "sources": "1bbcad5dbc0e708fd121460d9e76113dbe8f19179c94bd409f4454b876f5c6d7",
         "folder": "ia-slack-base"
       }
     ]

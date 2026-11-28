@@ -11,7 +11,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 // The CLI the kits' releases were packed with; adoption needs exactly this one.
-export const PINNED = '3.8.0';
+export const PINNED = '3.10.0';
 
 const WINDOWS_PACKAGE_MANAGERS = Object.freeze({
   npm: ['node_modules/npm/bin/npm-cli.js', '../lib/node_modules/npm/bin/npm-cli.js'],

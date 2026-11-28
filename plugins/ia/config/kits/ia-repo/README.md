@@ -13,7 +13,7 @@ See [assets/repo-vocabulary.md](assets/repo-vocabulary.md) for the full dependen
 
 ## Compatibility Rule
 
-No workspace may compose another system that mints `repository`, `layer`, `package`, or `area`. Layer profiles and repository architectures stand on `inventarch/ia-repo-kit` by authoring `@layer`, `@repository`, `@package`, and `@area` records, and restore and validate 100% offline with `@inventarch/cli@3.8.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`).
+No workspace may compose another system that mints `repository`, `layer`, `package`, or `area`. Layer profiles and repository architectures stand on `inventarch/ia-repo-kit` by authoring `@layer`, `@repository`, `@package`, and `@area` records, and restore and validate 100% offline with `@inventarch/cli@3.10.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`).
 
 ## Declared Checks (`checks.json`)
 

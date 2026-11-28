@@ -1,0 +1,349 @@
+{
+  "cliEntrySha256": "03cf6ad31c5110dc55e2eff8cfe146272d48b632c89c4314cf831c0d0be66da1",
+  "format": "inventarch.runtime-cohort/1",
+  "language": {
+    "archive": "7b36e4b4959a7bead1c57906cd346b419f32570dac0ac764af805ad20cd63b16",
+    "id": "inventarch/language",
+    "manifest": "03a226569c510efaea971dbc41c353998319c33b77ab636d192b549e50f4e732",
+    "version": "3.2.0"
+  },
+  "node": "22.22.x",
+  "packages": {
+    "@inventarch/agent-composition-system": {
+      "bytes": 372382,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/db": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/session-system": "3.10.0",
+        "@inventarch/template-system": "3.10.0",
+        "@inventarch/workspace-runtime": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 73,
+      "integrity": "sha512-7LmeiEqJGhIzx9FqUDE0pfnlToNV2Tywiuk6VVS2o770qDBKTrYGUiyapXM4bUUZeByPjVtW/CFGg5Nv9Qhrfg==",
+      "registry": "https://registry.npmjs.org/@inventarch/agent-composition-system/-/agent-composition-system-3.10.0.tgz",
+      "sha256": "6aec0bc901902d1e4a3fcccb5cd1497bbd5a1f395be519be9cdc0d04c4d4ab65",
+      "version": "3.10.0"
+    },
+    "@inventarch/agent-system": {
+      "bytes": 234149,
+      "dependencies": {
+        "@inventarch/session-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 29,
+      "integrity": "sha512-Lygl/Jc2rr326bZhYzPOuBnFfiJm1qfNb3dPnYOsEhPa9yxukZFCUqdsnc8KluSQ1HCItNEqOPt6bZpmcjVpRA==",
+      "registry": "https://registry.npmjs.org/@inventarch/agent-system/-/agent-system-3.10.0.tgz",
+      "sha256": "fa7b581412adecead0890109713497d8a9c29efb8611c8500d4071911e1974a2",
+      "version": "3.10.0"
+    },
+    "@inventarch/authoring-system": {
+      "bytes": 81882,
+      "dependencies": {
+        "@inventarch/agent-composition-system": "3.10.0",
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/db": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/hook-authoring-system": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/learning-system": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/session-system": "3.10.0",
+        "@inventarch/template-system": "3.10.0",
+        "@inventarch/work-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 13,
+      "integrity": "sha512-X/5k01ZW2LL5bR+eDHJBWJ3OnaI29rKGztd5fOfq5IYfeJEFfEz4BgSBDC32Mxw7txjtLu7Ptue6MgJNltLkrQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/authoring-system/-/authoring-system-3.10.0.tgz",
+      "sha256": "ac1e13a8526fb84c8e085e8fab45dde93962b886a3673b97abde1805cce29a8e",
+      "version": "3.10.0"
+    },
+    "@inventarch/cli": {
+      "bytes": 6644778,
+      "dependencies": {
+        "@inventarch/compliance": "3.10.0",
+        "@inventarch/db": "3.10.0",
+        "@inventarch/distribution": "3.10.0",
+        "@inventarch/kb": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/workspace-runtime": "3.10.0"
+      },
+      "files": 334,
+      "integrity": "sha512-I2BfCYqfxZG0ZuUJfbxxF8DgPsNnCYe8P6kA1qFArUSqquyTtqeDGq91MCG0tTZHuye7bm+o3JngRIibD4tZIQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/cli/-/cli-3.10.0.tgz",
+      "sha256": "6c3870a351ba29365b5808fd3e82536fdf3111250493b807088affe987c956e3",
+      "version": "3.10.0"
+    },
+    "@inventarch/compliance": {
+      "bytes": 1354405,
+      "dependencies": {
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0"
+      },
+      "files": 495,
+      "integrity": "sha512-aMnNjnXnRXwtopwNsFC/k6HOCYUOvdsutoim3D1l2si1b+WNiYvdVXgSD0UhLySssv2NxV5jC3ZhQtzvVowWrQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/compliance/-/compliance-3.10.0.tgz",
+      "sha256": "6a5d019c1a0428dc01fcd888144cce6e160be6c54c627c31f80e242eb4f9e65e",
+      "version": "3.10.0"
+    },
+    "@inventarch/compliance-system": {
+      "bytes": 38328,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-p2ro9MLGEsos0fI2kKbK8h08DT/v3999U+u9KHI1nggYWvbshWWSqoxumGpoyegqlOBwcoO6FASupNcyBKiHxg==",
+      "registry": "https://registry.npmjs.org/@inventarch/compliance-system/-/compliance-system-3.10.0.tgz",
+      "sha256": "cb1ce0328d7d1fb2db3b35764048b63a7273c7f590b3c99daf90a422286d6603",
+      "version": "3.10.0"
+    },
+    "@inventarch/db": {
+      "bytes": 1053108,
+      "dependencies": {
+        "@inventarch/compliance": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "semver": "7.8.5"
+      },
+      "files": 146,
+      "integrity": "sha512-Ieq6dYEqT+lDYgMlrlBcONqFSX27LOGN3wL0bpPKG0MhOP4nqO8lfKJ0srgWZwLQVnacYejIVosZ6vCnJnh8DA==",
+      "registry": "https://registry.npmjs.org/@inventarch/db/-/db-3.10.0.tgz",
+      "sha256": "00d4790efd7d238b9c92b76437484858c7856ee13e8d32f9fff98cbae06076e2",
+      "version": "3.10.0"
+    },
+    "@inventarch/distribution": {
+      "bytes": 1405010,
+      "dependencies": {
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/db": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/steward-hook": "3.10.0",
+        "@inventarch/workspace-runtime": "3.10.0",
+        "jsonc-parser": "3.3.1",
+        "smol-toml": "1.9.0"
+      },
+      "files": 209,
+      "integrity": "sha512-27GUGEiGipHLtqox/6Ag2hLQLRe2FZn2RtkPnVGX70LslWP0Me9ZkVgOmxtKpgM5eS2xDdFFbDt4B2EU0tuovg==",
+      "registry": "https://registry.npmjs.org/@inventarch/distribution/-/distribution-3.10.0.tgz",
+      "sha256": "e0854d13c11045ccdac1acfedf09385e3b11e45b158a300c0e53312b1dadb79d",
+      "version": "3.10.0"
+    },
+    "@inventarch/governance-system": {
+      "bytes": 47909,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-jzKpdzJDOMDPdE9If+o+l3r60uPSbfa1+PEhT1YxPOpoxhW/LnyVY58ELq/0Z0HD3koWJL3JpaPcTPhCE2CNQA==",
+      "registry": "https://registry.npmjs.org/@inventarch/governance-system/-/governance-system-3.10.0.tgz",
+      "sha256": "d13161f7728c9f7ab1e5b6dd9ff8ec770f65234bd55f7718297e258017b07423",
+      "version": "3.10.0"
+    },
+    "@inventarch/graph": {
+      "bytes": 220515,
+      "dependencies": {
+        "@inventarch/language": "3.10.0"
+      },
+      "files": 66,
+      "integrity": "sha512-SUoM7UkBcaHqbTm/gFrg9iE33S86QI1H1c0nyq5FNQJdTQj0ppahcOp4LFEvgugRjiZOEcMNc8BfLjY8DTdunQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/graph/-/graph-3.10.0.tgz",
+      "sha256": "15172a8852cfadfa4c1284df2078ef5de88abeda783fd1896c1e5e1b60deecc4",
+      "version": "3.10.0"
+    },
+    "@inventarch/hook-authoring-system": {
+      "bytes": 37863,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-peNI1MbE1/tLK5E+/lAjkpsx1SHeSmwpE8ClI0yEYb1nHJNt832B88guVcMgRaYW+Yy28BjvjQ/G7HNnabZG/A==",
+      "registry": "https://registry.npmjs.org/@inventarch/hook-authoring-system/-/hook-authoring-system-3.10.0.tgz",
+      "sha256": "18eb9aff7f771b0752f67b7736473e913363e90b54b323829993f5f5cca295ec",
+      "version": "3.10.0"
+    },
+    "@inventarch/kb": {
+      "bytes": 219295,
+      "dependencies": {
+        "@inventarch/db": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/session-system": "3.10.0",
+        "@inventarch/workspace-runtime": "3.10.0"
+      },
+      "files": 62,
+      "integrity": "sha512-W6VFBx0q7Xa+4ZcQSuYAxol4iicLm3y0s+M/1ipPAFyH20zjJ1hdVdXCcTzxLs0/aEAZLllJ3/mI9xXEEe9vmQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/kb/-/kb-3.10.0.tgz",
+      "sha256": "43c44fb3312ac8a992b3d36d9499c0e319882e73cdb547eac0a128f3d031d57b",
+      "version": "3.10.0"
+    },
+    "@inventarch/language": {
+      "bytes": 665582,
+      "dependencies": {},
+      "files": 190,
+      "integrity": "sha512-WvGSjwBUMpDLOgQzpDEtwVuDhT88Y7pwD1C/OMqDpQvFojyPwLRtidxzH7azTFQSzoJVqdCcT2iPSDWiuNWS8A==",
+      "registry": "https://registry.npmjs.org/@inventarch/language/-/language-3.10.0.tgz",
+      "sha256": "eb7770d0e12b436eadf1885a3c210f82881bef9a551a051fa1e12b48fc8440ff",
+      "version": "3.10.0"
+    },
+    "@inventarch/learning-system": {
+      "bytes": 38663,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-FfExDG50gopdOigX/ClOjMQxf7hMAweUycRspQVu/myQx6V3eH+WN6mf4AKOVIafxGZ/XT7BR9JEmV8Lps2igw==",
+      "registry": "https://registry.npmjs.org/@inventarch/learning-system/-/learning-system-3.10.0.tgz",
+      "sha256": "3cfe6ac4998c430aa76ca17f5a245a9bd4f08cc62b06ea4f8ae1e0b11abcde36",
+      "version": "3.10.0"
+    },
+    "@inventarch/runtime": {
+      "bytes": 1485729,
+      "dependencies": {
+        "@inventarch/db": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0"
+      },
+      "files": 218,
+      "integrity": "sha512-rRqaD2nxCgPIt3G6JfE+hcsG5pMdxvQDKWySMRHm6zNrr/kvLHqIorZNaKPsTBcstVxeFEz+27xi7zDshvbRww==",
+      "registry": "https://registry.npmjs.org/@inventarch/runtime/-/runtime-3.10.0.tgz",
+      "sha256": "aa1d798d7f1ac11a55b96f3a81fbda0439243a042bb3e0a5ad8547e230a73310",
+      "version": "3.10.0"
+    },
+    "@inventarch/session-system": {
+      "bytes": 203331,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 37,
+      "integrity": "sha512-j4ajgHJwbkIO0F3wXPbrOYcwknxF0I1qbbheolWhwKQkUmQZUURLvoq2tFovO6kW2zBJVbLbtkODqMteNdRElw==",
+      "registry": "https://registry.npmjs.org/@inventarch/session-system/-/session-system-3.10.0.tgz",
+      "sha256": "ca2aad71081c4715222fab13982e0b8ebc4845e47d2a886256ed2a251a06eff1",
+      "version": "3.10.0"
+    },
+    "@inventarch/steward-hook": {
+      "bytes": 200357,
+      "dependencies": {
+        "@inventarch/db": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/workspace-runtime": "3.10.0"
+      },
+      "files": 14,
+      "integrity": "sha512-PlUKi5MhZQzC33UkGQ1AeG86f0D6kkcZOR0x11ca2fegcAN1JW7E2wIw+V1TPfPRjHJ2B/vzNi26eRHG/b0LMQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/steward-hook/-/steward-hook-3.10.0.tgz",
+      "sha256": "f80936a740600393619c965f471875d0ccf92b0f92d34f0dff9420e02ed7aaee",
+      "version": "3.10.0"
+    },
+    "@inventarch/template-system": {
+      "bytes": 89597,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 29,
+      "integrity": "sha512-0W4jwYgAf5yQBffqNG0orkI9Ggpe6fnHcyrbPYV7jONYAZYOYyaOiTWHnQ6EF44twxq7fLD6qx4nBmsg5d5g/w==",
+      "registry": "https://registry.npmjs.org/@inventarch/template-system/-/template-system-3.10.0.tgz",
+      "sha256": "e74248e9236f76bc286458318dc9ce25ed842c17c4fc9a0a201071a52d23493f",
+      "version": "3.10.0"
+    },
+    "@inventarch/work-system": {
+      "bytes": 39929,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0",
+        "@inventarch/governance-system": "3.10.0",
+        "@inventarch/workspace-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-qF1awdhUUzG9cNS8fxaMfJEhgkBPgltq98D3VALZnjmVGLls50Ul51KsO+McMfrELCvFO4ojF3swNC8R53urrg==",
+      "registry": "https://registry.npmjs.org/@inventarch/work-system/-/work-system-3.10.0.tgz",
+      "sha256": "dc1fef437dd31d6f7c019a8225acb8b18f99988fdc438fefc38ca5716418d859",
+      "version": "3.10.0"
+    },
+    "@inventarch/workspace-runtime": {
+      "bytes": 1132848,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/authoring-system": "3.10.0",
+        "@inventarch/db": "3.10.0",
+        "@inventarch/graph": "3.10.0",
+        "@inventarch/language": "3.10.0",
+        "@inventarch/runtime": "3.10.0",
+        "@inventarch/session-system": "3.10.0",
+        "@inventarch/template-system": "3.10.0"
+      },
+      "files": 210,
+      "integrity": "sha512-ezEh0rMQn4CLWuii2ExZuEzNnn3R3No6zSnx739R7H6kQBWtld7AnFSEdp+/k8eI86B8fiWGK+kX1dxJdTqweQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/workspace-runtime/-/workspace-runtime-3.10.0.tgz",
+      "sha256": "e316dbad30388e5d587a67d064b4f75e93fc9912a6e7c7bedc5802c2d0605ec0",
+      "version": "3.10.0"
+    },
+    "@inventarch/workspace-system": {
+      "bytes": 38173,
+      "dependencies": {
+        "@inventarch/agent-system": "3.10.0",
+        "@inventarch/compliance-system": "3.10.0"
+      },
+      "files": 9,
+      "integrity": "sha512-q43zxmjlsmubacW9vFdsdXrI/0hLz8IOE0HwsOmtUcyWHwEAAacjOv4izab8Ix0wYZGPotPc4qai30GgfKL8kQ==",
+      "registry": "https://registry.npmjs.org/@inventarch/workspace-system/-/workspace-system-3.10.0.tgz",
+      "sha256": "5b422e0b1d58e5f3357c5f89c95f668190269e0d2b0aa31196fe46fd495fcbc8",
+      "version": "3.10.0"
+    },
+    "jsonc-parser": {
+      "bytes": 212821,
+      "dependencies": {},
+      "files": 19,
+      "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==",
+      "registry": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+      "sha256": "8c24025f9d145aeb15f681dbf64e0d67b59d0d73c048b01881c0bd9ed08b66b6",
+      "version": "3.3.1"
+    },
+    "semver": {
+      "bytes": 101065,
+      "dependencies": {},
+      "files": 53,
+      "integrity": "sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==",
+      "registry": "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz",
+      "sha256": "f4c5275d0c5ad3f0b76e1fc21065400d00d991b519ba225c20ca0490658aa598",
+      "version": "7.8.5"
+    },
+    "smol-toml": {
+      "bytes": 139963,
+      "dependencies": {},
+      "files": 19,
+      "integrity": "sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==",
+      "registry": "https://registry.npmjs.org/smol-toml/-/smol-toml-1.9.0.tgz",
+      "sha256": "d8285ebd0165fbe8453551c790cbf81b0a791b86b2b3cc3f0ef5432c3fd2bc1a",
+      "version": "1.9.0"
+    }
+  }
+}

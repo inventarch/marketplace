@@ -1,0 +1,166 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-repo-kit",
+  "version": "0.1.1",
+  "archive": "bf490641ad8ee634391e3fbeca81a1878f17045156789a63b86fd5685bfdd9fd",
+  "records": [
+    {
+      "system": "repo-system",
+      "word": "agent",
+      "name": "repo-system-steward"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-01-failure"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-01-success"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-02-failure"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-02-success"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-03-failure"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-03-success"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-04-failure"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-04-success"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-05-failure"
+    },
+    {
+      "system": "repo-system",
+      "word": "case",
+      "name": "repo-req-05-success"
+    },
+    {
+      "system": "repo-system",
+      "word": "check",
+      "name": "check-layers"
+    },
+    {
+      "system": "repo-system",
+      "word": "check",
+      "name": "repo-check-validate"
+    },
+    {
+      "system": "repo-system",
+      "word": "check",
+      "name": "repo-system-coverage"
+    },
+    {
+      "system": "repo-system",
+      "word": "contract",
+      "name": "repo-system"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-guide-area"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-guide-layer"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-guide-package"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-guide-repository"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-package-kind-roles"
+    },
+    {
+      "system": "repo-system",
+      "word": "convention",
+      "name": "repo-schema-vs-checker-standing"
+    },
+    {
+      "system": "repo-system",
+      "word": "distribution",
+      "name": "ia-repo-distribution"
+    },
+    {
+      "system": "repo-system",
+      "word": "law",
+      "name": "repo-canonical-paths-and-locators"
+    },
+    {
+      "system": "repo-system",
+      "word": "law",
+      "name": "repo-downward-acyclic-dependencies"
+    },
+    {
+      "system": "repo-system",
+      "word": "law",
+      "name": "repo-single-word-owner"
+    },
+    {
+      "system": "repo-system",
+      "word": "mandate",
+      "name": "repo-system-stewardship"
+    },
+    {
+      "system": "repo-system",
+      "word": "schema",
+      "name": "area"
+    },
+    {
+      "system": "repo-system",
+      "word": "schema",
+      "name": "layer"
+    },
+    {
+      "system": "repo-system",
+      "word": "schema",
+      "name": "package"
+    },
+    {
+      "system": "repo-system",
+      "word": "schema",
+      "name": "repository"
+    },
+    {
+      "system": "repo-system",
+      "word": "system",
+      "name": "repo-system"
+    }
+  ],
+  "offers": {
+    "keys": []
+  }
+}

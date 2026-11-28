@@ -1,0 +1,136 @@
+{
+  "format": 2,
+  "kit": "inventarch/ia-slack-base-kit",
+  "version": "0.1.1",
+  "archive": "62d46ea6f793f578ce3de23cd86a5c115ac46bbab45a2188ff000e223c1e3a20",
+  "records": [
+    {
+      "system": "slack-system",
+      "word": "agent",
+      "name": "slack-system-steward"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-01-failure"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-01-success"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-02-failure"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-02-success"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-03-failure"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-03-success"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-04-failure"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-04-success"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-05-failure"
+    },
+    {
+      "system": "slack-system",
+      "word": "case",
+      "name": "slack-base-req-05-success"
+    },
+    {
+      "system": "slack-system",
+      "word": "check",
+      "name": "check-slack-channels"
+    },
+    {
+      "system": "slack-system",
+      "word": "check",
+      "name": "slack-check-validate"
+    },
+    {
+      "system": "slack-system",
+      "word": "check",
+      "name": "slack-system-coverage"
+    },
+    {
+      "system": "slack-system",
+      "word": "contract",
+      "name": "slack-system"
+    },
+    {
+      "system": "slack-system",
+      "word": "convention",
+      "name": "slack-bot-non-execution-bounds"
+    },
+    {
+      "system": "slack-system",
+      "word": "convention",
+      "name": "slack-decision-answer-named-person"
+    },
+    {
+      "system": "slack-system",
+      "word": "convention",
+      "name": "slack-guide-slack-channel"
+    },
+    {
+      "system": "slack-system",
+      "word": "convention",
+      "name": "slack-text-is-data"
+    },
+    {
+      "system": "slack-system",
+      "word": "distribution",
+      "name": "ia-slack-base-distribution"
+    },
+    {
+      "system": "slack-system",
+      "word": "law",
+      "name": "slack-channel-audience-disclosure"
+    },
+    {
+      "system": "slack-system",
+      "word": "law",
+      "name": "slack-user-bound-before-served"
+    },
+    {
+      "system": "slack-system",
+      "word": "mandate",
+      "name": "slack-system-stewardship"
+    },
+    {
+      "system": "slack-system",
+      "word": "schema",
+      "name": "slack-channel"
+    },
+    {
+      "system": "slack-system",
+      "word": "system",
+      "name": "slack-system"
+    }
+  ],
+  "offers": {
+    "keys": []
+  }
+}
