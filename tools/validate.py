@@ -563,7 +563,7 @@ def validate(root=ROOT):
     record_coverage(root)
     host_run_checks(root)
     host_bundles(root)
-    require(pins['released']['cli'] == '3.8.0' and 'pending' not in pins, 'release standing: sources.lock.json pins the released 3.8.0 and no unreleased build')
+    require(pins['released']['cli'] == '3.10.0' and 'pending' not in pins, 'release standing: sources.lock.json pins the released 3.10.0 and no unreleased build')
     schema_check(load(root / 'examples/review-dossier.json'), load(root / 'schemas/review-dossier.schema.json'))
     return {'status':'passed', 'plugins':len(PLUGINS), 'selectedFiles':len(entries), 'skills':skills,
             'hostQualified':False, 'policyRatified':False}

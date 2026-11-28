@@ -807,7 +807,7 @@ test('REQ-APPROVAL-05 success: target-branch authority, valid dockets and check.
   assert.equal(init.status, 0, init.stdout + init.stderr);
 
   const kitObj = findKit('ia-approval');
-  adopt(ws, kitObj, { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, kitObj, { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
 
   // Compose approval-system in workspace.ia and author an approver, rule, decision and valid seal
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
@@ -1006,7 +1006,7 @@ test('REQ-APPROVAL-05 failure: head-only authority, bad dockets and broken works
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsText = readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system approval-system]');
   writeFileSync(wsFile, wsText);
@@ -1690,7 +1690,7 @@ test('REQ-APPROVAL-09: moves, nested workspaces, checkWorkspace quorum, small-or
   assert.ok(wsRep.findings.some(f => f.name === 'unratified' && f.subject === engSpec.identity));
 });
 
-test('REQ-APPROVAL-10: real Git + CLI 3.8.0 current-revision seals pass and re-filed notice resets the 7-day timer', { skip: SKIP_CLI }, t => {
+test('REQ-APPROVAL-10: real Git + CLI 3.10.0 current-revision seals pass and re-filed notice resets the 7-day timer', { skip: SKIP_CLI }, t => {
   const base = realpathSync.native(mkdtempSync(join(tmpdir(), 'ia-approval-git-live-')));
   t.after(() => rmSync(base, { recursive: true, force: true }));
   const repo = join(base, 'repo');
@@ -1709,7 +1709,7 @@ test('REQ-APPROVAL-10: real Git + CLI 3.8.0 current-revision seals pass and re-f
   };
 
   spawnSync(process.execPath, [CLI, 'init', repo, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(repo, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(repo, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(repo, '.ia', 'src', 'workspace.ia');
   const wsText = readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system approval-system]');
   writeFileSync(wsFile, wsText);
@@ -1824,7 +1824,7 @@ test('REQ-APPROVAL-10: real Git + CLI 3.8.0 current-revision seals pass and re-f
     title "Pinned decision"
     status made
   decision
-    question "Does current-revision pass on real CLI 3.8.0?"
+    question "Does current-revision pass on real CLI 3.10.0?"
     decider "Sole Operator"
     choice "Yes, via pre-seal corpus revision"
     rationale "Approvals inside .ia/src cannot hash themselves."

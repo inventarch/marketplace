@@ -109,7 +109,7 @@
       "modules": [
         {
           "path": "config/kits/ia-authoring/scripts/field-lint.mjs",
-          "sha256": "90de5bf661527f01c9fe96aa202df2282f57df8e65e77d67120b6d658aca008f",
+          "sha256": "921e7e60c2f04679beef2bb4e2c11194e73efd0edbb6327a166b25d5b9e0346e",
           "imports": [
             "node:fs",
             "./lib/scratch.mjs",
@@ -119,7 +119,7 @@
         },
         {
           "path": "config/kits/ia-authoring/scripts/lib/scratch.mjs",
-          "sha256": "cc38308fc1f65eebd3d1e1492b7d390e279cf19a14c67ffea7bb466392468cea",
+          "sha256": "686768bae1ea9f14dd28b51f40f610899f5f5efd3121277202b7a2a1902c5dc5",
           "imports": [
             "node:assert/strict",
             "node:child_process",
@@ -139,7 +139,7 @@
           "selection": "IA_CLI_PATH forced to attested entry; npx disabled"
         }
       ],
-      "review": "Carried from the field-lint helper qualified before the public cut: the same argv, cwd and subprocesses. Its capture helper is now the kit's own scripts/lib/scratch.mjs (the copy-workspace, CLI-resolution and capture code the core's helper and lib/cli.mjs held), so no module lies outside the kit folder; the helper pins 3.8.0 and starts the CLI with IA_NO_HANDOFF=1, so the attested entry is the one that runs."
+      "review": "Carried from the field-lint helper qualified before the public cut: the same argv, cwd and subprocesses. Its capture helper is now the kit's own scripts/lib/scratch.mjs (the copy-workspace, CLI-resolution and capture code the core's helper and lib/cli.mjs held), so no module lies outside the kit folder; the helper pins 3.10.0 and starts the CLI with IA_NO_HANDOFF=1, so the attested entry is the one that runs."
     }
   }
 }

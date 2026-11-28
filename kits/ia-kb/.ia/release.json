@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-kb-kit",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "distribution": "workspace-system/definition/distribution/ia-kb-distribution",
   "engine": "^0.1.1",
   "language": [

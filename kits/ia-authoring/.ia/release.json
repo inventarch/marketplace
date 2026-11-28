@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-authoring-kit",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "distribution": "workspace-system/definition/distribution/ia-authoring-distribution",
   "engine": "^0.1.1",
   "language": [

@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "id": "inventarch/ia-slack-base-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "distribution": "workspace-system/definition/distribution/ia-slack-base-distribution",
   "engine": "^0.1.1",
   "language": [

@@ -24,8 +24,8 @@ export function sequentialSigners(t, { cli, kit, system, words, records, target,
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: cli, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [cli, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit(kit), { cli: { argv: [process.execPath, cli], version: '3.8.0' }, env });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, cli], version: '3.8.0' }, env });
+  adopt(ws, findKit(kit), { cli: { argv: [process.execPath, cli], version: '3.10.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, cli], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsText = readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, `systems [$1, @system approval-system, @system ${system}]`);
   writeFileSync(wsFile, wsText);
