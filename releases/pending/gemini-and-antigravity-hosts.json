@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "minor",
-  "title": "Add Google Antigravity and Gemini CLI host support",
-  "summary": "Ships deterministic Google Antigravity and Gemini CLI host bundles under hosts/, lifecycle hook adapters (agy-hook.mjs and gemini-hook.mjs), --to gemini (--approval-mode plan) in delegate.mjs, and demand-driven ia inspect --path preloading in the ceiling and exit-evidence reports.",
-  "plugins": [
-    "ia"
-  ]
-}

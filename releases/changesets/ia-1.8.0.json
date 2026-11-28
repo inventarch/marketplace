@@ -1,0 +1,69 @@
+{
+  "format": "inventarch-marketplace.changeset.v1",
+  "plugin": "ia",
+  "version": "1.8.0",
+  "previous": "1.7.0",
+  "bump": "minor",
+  "notes": [
+    {
+      "id": "design-product-sequential-signers",
+      "bump": "patch",
+      "title": "Release `ia-design-base` and `ia-product-base` 0.1.1: accept sequential signer revisions in `check-design-patterns` and `check-prds`",
+      "summary": "The bundled `ia-design-base` and `ia-product-base` kits move to 0.1.1, and `@inventarch/public-kits` to 1.2.1. Under a `current-revision` approval rule, their checkers now accept the revision each sequential signer captured with the earlier approvals already present, as `check-seal` does, so a quorum-2 seal that `check-seal` ratifies no longer fails as `ACTIVE_RECIPE_UNSEALED` or `PRD_UNSEALED`."
+    },
+    {
+      "id": "gemini-and-antigravity-hosts",
+      "bump": "minor",
+      "title": "Add Google Antigravity and Gemini CLI host support",
+      "summary": "Ships deterministic Google Antigravity and Gemini CLI host bundles under hosts/, lifecycle hook adapters (agy-hook.mjs and gemini-hook.mjs), --to gemini (--approval-mode plan) in delegate.mjs, and demand-driven ia inspect --path preloading in the ceiling and exit-evidence reports."
+    },
+    {
+      "id": "gemini-plan-mode-delegation",
+      "bump": "patch",
+      "title": "Enforce read-only Gemini plan-mode delegation and map Gemini agent door tools",
+      "summary": "Passes an ephemeral user-tier --policy TOML to gemini --approval-mode plan in delegate.mjs so exit_plan_mode, enter_plan_mode, write_file, replace and run_shell_command are denied while mcp_ia_* door tools are allowed non-interactively; preserves declared mcp_ia_* door tools in generated Gemini CLI agent allowlists; and fixes the README Gemini extension install command."
+    },
+    {
+      "id": "move-to-ia-3-10-0",
+      "bump": "minor",
+      "title": "Move to IA 3.10.0",
+      "summary": "The plugin, its IA door and all eight bundled public kits now target `@inventarch/cli` and `@inventarch/mcp-door` 3.10.0, keeping `inventarch/language` locked on 3.2.0 (`^3.0.0`) so older CLIs still restore them. Pin 3.10.0 in your repository: `npm install --save-dev --save-exact @inventarch/cli@3.10.0`."
+    },
+    {
+      "id": "move-to-ia-3-8-0",
+      "bump": "minor",
+      "title": "Move to IA 3.8.0",
+      "summary": "The plugin, its IA door and its kits now target `@inventarch/cli` and `@inventarch/mcp-door` 3.8.0. A 3.8.0 CLI carries every published 3.x language base, so the kits no longer hold you to one CLI release: ia-authoring 0.1.5, ia-kb 0.9.5 and ia-method 0.9.1 declare `inventarch/language ^3.0.0`, the minimum they are proven on with `ia floor --verify`, and stay locked on 3.2.0 so older CLIs still restore them. Pin 3.8.0 in your repository: `npm install --save-dev --save-exact @inventarch/cli@3.8.0`."
+    },
+    {
+      "id": "public-base-kits-approval-and-repo",
+      "bump": "minor",
+      "title": "Bundle the `ia-approval` and `ia-repo` public base kits",
+      "summary": "Carries `inventarch/ia-approval-kit` 0.1.0 (`approval-system`: `@approver`, `@approval-rule`, `@docket` and `@approval` with the offline Ed25519 + RFC 8785 JCS `check-seal` verifier) and `inventarch/ia-repo-kit` 0.1.0 (`repo-system`: `@repository`, `@layer`, `@package` and `@area` with the rank-independent dependency-role grammar and offline `check-layers` verifier) under Apache-2.0 alongside the three lane defaults."
+    },
+    {
+      "id": "public-base-kits-slack-design-product",
+      "bump": "minor",
+      "title": "Bundle `ia-slack-base`, `ia-design-base` and `ia-product-base` and fix Windows `npm` checks",
+      "summary": "Carries `inventarch/ia-slack-base-kit` 0.1.0 (`slack-system`: `@slack-channel`, the five public Slack channel governance rules and offline `check-slack-channels`), `inventarch/ia-design-base-kit` 0.1.0 (`design-base-system`: `@design-token`, `@level`, `@part`, `@slot`, `@pattern` and `@recipe` and offline `check-design-patterns`) and `inventarch/ia-product-base-kit` 0.1.0 (`product-base-system`: `@prd` with `@spec`, `@decision`, `@plan`, `@docket` and `@approval` traceability and offline `check-prds`) under Apache-2.0, and resolves Windows `npm`, `npx`, `pnpm` and `yarn` check `argv` entries under `process.execPath` without a shell (#32)."
+    },
+    {
+      "id": "public-punt-runner-and-antigravity-swarm-plan",
+      "bump": "minor",
+      "title": "Public punt runner and Antigravity swarm plan sync",
+      "summary": "Add public-kit punt envelope helper and Antigravity local swarm plan.json sync script."
+    },
+    {
+      "id": "seal-probe-hardening",
+      "bump": "patch",
+      "title": "Harden seal checking in `check-seal`, `check-design-patterns` and `check-prds` (`ia-design-base` / `ia-product-base` 0.1.2, `@inventarch/public-kits` 1.2.2)",
+      "summary": "Moves `ia-approval` to 0.1.1, `ia-design-base` and `ia-product-base` to 0.1.2, and `@inventarch/public-kits` to 1.2.2. All three verifiers accept a `current-revision` seal on a revision computed with `@approval` records stripped only when every other record keeps its digest and none is added, and only approval-system's `@approval` counts as an approval there, so stripping approvals can never stand in for a change to another record. `check-design-patterns` and `check-prds` also fail a `current-revision` seal when no revision could be computed, and report an `@approval` saved under a file name other than its record, digest and key as `APPROVAL_FILE_MISNAMED`, as `check-seal` does with `seal-malformed`. A workspace whose approvals use another file name, which these two checks passed before, now fails until the files are renamed."
+    },
+    {
+      "id": "vendor-the-retained-consumer-language-base-on",
+      "bump": "patch",
+      "title": "Vendor the retained consumer language base on kit adoption",
+      "summary": "When a compatible workspace keeps its language base, kit adoption vendors that exact verified archive beside the kit and build base for offline restore. Repeating adoption repairs earlier incomplete vendor trees without reinstalling. If the locked archive cannot be verified, adoption stops before changing the workspace."
+    }
+  ]
+}

@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "minor",
-  "title": "Move to IA 3.10.0",
-  "summary": "The plugin, its IA door and all eight bundled public kits now target `@inventarch/cli` and `@inventarch/mcp-door` 3.10.0, keeping `inventarch/language` locked on 3.2.0 (`^3.0.0`) so older CLIs still restore them. Pin 3.10.0 in your repository: `npm install --save-dev --save-exact @inventarch/cli@3.10.0`.",
-  "plugins": [
-    "ia"
-  ]
-}
