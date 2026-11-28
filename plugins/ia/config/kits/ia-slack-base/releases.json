@@ -1,7 +1,7 @@
 {
   "format": 2,
   "kit": "inventarch/ia-slack-base-kit",
-  "latest": "0.1.0",
+  "latest": "0.1.1",
   "releases": [
     {
       "version": "0.1.0",
@@ -14,6 +14,19 @@
       "source": {
         "repository": "https://github.com/inventarch/marketplace.git",
         "commit": "25e0c9336cafcbf98e4201e0758add4ef9fdd193"
+      }
+    },
+    {
+      "version": "0.1.1",
+      "archive": "62d46ea6f793f578ce3de23cd86a5c115ac46bbab45a2188ff000e223c1e3a20",
+      "manifest": "79932f473b599915b070ce51a1d2ee38e7b69acc69407db5f3cd2fba24a2509c",
+      "sources": "1bbcad5dbc0e708fd121460d9e76113dbe8f19179c94bd409f4454b876f5c6d7",
+      "language": "inventarch/language ^3.0.0",
+      "cli": "@inventarch/cli 3.10.0",
+      "file": "releases/0.1.1.json",
+      "source": {
+        "repository": "https://github.com/inventarch/marketplace.git",
+        "commit": "6af434c6de541c753dd9811779357932ea0de50f"
       }
     }
   ]

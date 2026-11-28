@@ -10,7 +10,7 @@ See [assets/product-vocabulary.md](assets/product-vocabulary.md) for the field c
 
 ## Compatibility Rule
 
-No workspace may compose another system that mints `prd`. Product and engineering workspaces stand on `inventarch/ia-product-base-kit` (and optionally `inventarch/ia-approval-kit` for cryptographic seals) to validate `@prd` records and their `@spec`/`@decision` coverage 100% offline with `@inventarch/cli@3.8.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`), while proprietary PRD-to-spec procedures and external wiki connectors stay outside the public base kit.
+No workspace may compose another system that mints `prd`. Product and engineering workspaces stand on `inventarch/ia-product-base-kit` (and optionally `inventarch/ia-approval-kit` for cryptographic seals) to validate `@prd` records and their `@spec`/`@decision` coverage 100% offline with `@inventarch/cli@3.10.0` and `inventarch/language` (`^3.0.0`, locked at `3.2.0`), while proprietary PRD-to-spec procedures and external wiki connectors stay outside the public base kit.
 
 ## Declared Checks (`checks.json`)
 

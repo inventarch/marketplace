@@ -398,8 +398,8 @@ test('REQ-PRODUCT-BASE-03 success: consented relationships to spec, decision, pl
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system approval-system, @system product-base-system]'));
 
@@ -726,7 +726,7 @@ test('REQ-PRODUCT-BASE-05 success: check.mjs runs product-check-validate and che
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system product-base-system]'));
 
@@ -777,7 +777,7 @@ test('REQ-PRODUCT-BASE-05 failure: check.mjs exits 3 when check-prds detects vio
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system product-base-system]'));
 
@@ -909,8 +909,8 @@ test('REQ-PRODUCT-BASE-06: check-prds refuses forged/zero-signature approvals, e
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-product-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsText = readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system approval-system, @system product-base-system]');
   writeFileSync(wsFile, wsText);

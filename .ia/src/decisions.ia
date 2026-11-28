@@ -546,7 +546,7 @@
     says "Exactly @inventarch/cli 3.8.0 and @inventarch/mcp-door 3.8.0, in one release. The 3.8.0 CLI carries every published 3.x language base and its newest is 3.3.0; the kits stay locked on inventarch/language 3.2.0 (archive 7b36e4b4), which it carries unchanged, and the qualified runtime cohort names that locked base. Every kit is re-cut with it and declares inventarch/language ^3.0.0, the minimum ia floor --verify proves."
   work
     title "Pin @inventarch/cli 3.8.0"
-    status made
+    status superseded
     owner "InventArch maintainers"
     start "2026-11-13"
     ended "2026-11-13"
@@ -681,3 +681,23 @@
     decider "Operator"
     choice "A ship plugins/ia/scripts/punt.mjs (public-kit allowlist, single-hash subject parity, unbound fallback on IA-CORE-NO-WORKSPACE only, preview-by-default repo commands unless --execute-repo-commands, shell-free verification receipts) and plugins/ia/scripts/agy-swarm-sync.mjs (explicit --swarm-dir atomic plan.json writer supporting checkpoints/roster or tasks)"
     rationale "Keeping the public plugin strictly limited to allowlisted public kits, explicit directory arguments, preview-by-default command handling and shell-free verification preserves custody boundaries, fails closed on missing method bindings and maintains offline reproducibility while enabling cross-host punted execution and local Antigravity swarm overview rendering."
+
+# The move to IA 3.10.0 (2026-11-28): one release. Kits remain locked on inventarch/language 3.2.0.
+
+@decision public-cli-3-10-0
+  meaning
+    says "Exactly @inventarch/cli 3.10.0 and @inventarch/mcp-door 3.10.0, in one release. The 3.10.0 CLI carries every published 3.x language base (3.0.0 to 3.4.0) and its newest is 3.4.0; the kits stay locked on inventarch/language 3.2.0 (archive 7b36e4b4), which it carries unchanged, and the qualified runtime cohort names that locked base. Every kit is re-cut with it and declares inventarch/language ^3.0.0, the minimum ia floor --verify proves."
+  work
+    title "Pin @inventarch/cli 3.10.0"
+    status made
+    owner "InventArch maintainers"
+    start "2026-11-28"
+    ended "2026-11-28"
+    source "docs/decisions.md"
+  decision
+    question "Which IA CLI do the catalogue and its kits target after the 3.10.0 release?"
+    decider "Operator"
+    choice "Exactly @inventarch/cli 3.10.0 and @inventarch/mcp-door 3.10.0, in one release. The 3.10.0 CLI carries every published 3.x language base (3.0.0 to 3.4.0) and its newest is 3.4.0; the kits stay locked on inventarch/language 3.2.0 (archive 7b36e4b4), which it carries unchanged, and the qualified runtime cohort names that locked base. Every kit is re-cut with it and declares inventarch/language ^3.0.0, the minimum ia floor --verify proves."
+    rationale "One exact CLI keeps every packed archive reproducible. The 3.10.0 CLI carries every published 3.x base up to 3.4.0 while keeping inventarch/language 3.2.0 unchanged, and its SLSA provenance matches tag v3.10.0 (3429ee56). It supersedes public-cli-3-8-0."
+  relationships
+    supersedes @decision public-cli-3-8-0

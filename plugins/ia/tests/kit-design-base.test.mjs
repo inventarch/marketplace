@@ -470,8 +470,8 @@ test('REQ-DESIGN-BASE-03 success: six design words coexist with floor @template 
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(
     wsFile,
@@ -867,7 +867,7 @@ test('REQ-DESIGN-BASE-05 success: check.mjs runs design-check-validate and check
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system design-base-system]'));
 
@@ -953,7 +953,7 @@ test('REQ-DESIGN-BASE-05 failure: check.mjs exits 3 when check-design-patterns d
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system design-base-system]'));
 
@@ -1092,8 +1092,8 @@ test('REQ-DESIGN-BASE-06: forged/zero-signature seals, missing digests and varia
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
-  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-design-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
+  adopt(ws, findKit('ia-approval'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsText = readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system approval-system, @system design-base-system]');
   writeFileSync(wsFile, wsText);

@@ -150,7 +150,7 @@ Resolve \`../../\` relative to the loaded \`SKILL.md\` file's containing directo
 - **Lifecycle hooks (\`hooks.json\`):** \`scripts/agy-hook.mjs\` runs \`SessionStart\`, \`PreInvocation\`, \`PreToolUse\` (fail-closed in \`.ia/governance.json\` workspaces), \`PostToolUse\` (buffered into \`PLUGIN_DATA\`), \`PostInvocation\` (flushing buffered post-tool and \`.ia\` advisory context), and \`Stop\` (guarded by \`continuationActive\`, \`executionNum\`, and a one-continuation-per-turn cap).
 - **Tool mapping:** map \`Read\`/\`Grep\`/\`Glob\` to \`view_file\`/\`grep_search\`/\`find_by_name\` (or \`read_file\` in Antigravity 2.0 / \`agy\`), \`Edit\`/\`MultiEdit\` to \`replace_file_content\`/\`multi_replace_file_content\` (or \`edit_file\`), \`Write\` to \`write_to_file\` (or \`write_file\`), \`Bash\`/\`PowerShell\` to \`run_command\`, and \`AskUserQuestion\` to \`ask_question\` (or plain-text clarification for yes/no questions).
 - **Subagents (\`agents/*.md\`):** \`reader\`, \`checker\`, \`worker\` and \`upkeep\` ship with native Antigravity subagent frontmatter (\`subagent: true\`, \`mainAgent: false\`). Never report a check as verified without \`scripts/check.mjs\` output.
-- **CLI hygiene:** scripts resolve \`@inventarch/cli@3.8.0\` via \`IA_CLI_PATH\`, the repository install, or \`npx\`, never a bare \`ia\` on \`PATH\` and never a shell (\`ia.mjs init\` and \`ia.mjs doctor\` keep \`--host claude\` on \`@inventarch/cli@3.8.0\`).
+- **CLI hygiene:** scripts resolve \`@inventarch/cli@3.10.0\` via \`IA_CLI_PATH\`, the repository install, or \`npx\`, never a bare \`ia\` on \`PATH\` and never a shell (\`ia.mjs init\` and \`ia.mjs doctor\` keep \`--host claude\` on \`@inventarch/cli@3.10.0\`).
 `);
 }
 
@@ -172,7 +172,7 @@ Resolve \`../../\` relative to a loaded \`SKILL.md\` file's containing directory
 - **Lifecycle hooks (\`hooks/hooks.json\`):** \`scripts/gemini-hook.mjs\` wires \`SessionStart\`, \`BeforeAgent\`, \`BeforeTool\` (fail-closed in \`.ia/governance.json\` workspaces), \`AfterTool\` (running kit post handlers and \`onwrite.json\` checks), and \`AfterAgent\`, emitting strictly one JSON object on stdout.
 - **Tool mapping:** map \`Read\`/\`Grep\`/\`Glob\` to \`read_file\`/\`grep_search\`/\`glob\`, \`Edit\` to \`replace\`, \`Write\` to \`write_file\`, and \`Bash\` to \`run_shell_command\`.
 - **Agents (\`agents/*.md\`):** \`reader\`, \`checker\`, \`worker\` and \`upkeep\` define bounded role briefs and tool allowlists (including the IA door's \`mcp_ia_*\` tools). Never report a check as verified without \`scripts/check.mjs\` output.
-- **CLI hygiene:** scripts resolve \`@inventarch/cli@3.8.0\` via \`IA_CLI_PATH\`, the repository install, or \`npx\`, never a bare \`ia\` on \`PATH\` and never a shell (\`ia.mjs init\` and \`ia.mjs doctor\` keep \`--host claude\` on \`@inventarch/cli@3.8.0\`).
+- **CLI hygiene:** scripts resolve \`@inventarch/cli@3.10.0\` via \`IA_CLI_PATH\`, the repository install, or \`npx\`, never a bare \`ia\` on \`PATH\` and never a shell (\`ia.mjs init\` and \`ia.mjs doctor\` keep \`--host claude\` on \`@inventarch/cli@3.10.0\`).
 `);
 }
 

@@ -388,7 +388,7 @@ test('REQ-REPO-03 success: all four words, seven package kinds, unclassified pac
 
   const init = spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
   assert.equal(init.status, 0, init.stdout + init.stderr);
-  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
 
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system repo-system]'));
@@ -821,7 +821,7 @@ test('REQ-REPO-05 success: check.mjs runs repo-check-validate and check-layers t
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system repo-system]'));
 
@@ -903,7 +903,7 @@ test('REQ-REPO-05 failure: check.mjs exits 3 when check-layers detects structura
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-repo'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system repo-system]'));
 

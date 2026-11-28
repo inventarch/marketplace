@@ -282,7 +282,7 @@ test('REQ-SLACK-BASE-03 success: consented workspace bindings and citations vali
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsName = /@workspace\s+([a-z0-9-]+)/.exec(readFileSync(wsFile, 'utf8'))[1];
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system slack-system]'));
@@ -558,7 +558,7 @@ test('REQ-SLACK-BASE-05 success: check.mjs runs slack-check-validate and check-s
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsName = /@workspace\s+([a-z0-9-]+)/.exec(readFileSync(wsFile, 'utf8'))[1];
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system slack-system]'));
@@ -604,7 +604,7 @@ test('REQ-SLACK-BASE-05 failure: check.mjs exits 3 when check-slack-channels det
   const env = { ...process.env, IA_HOME: home, IA_CLI_PATH: CLI, IA_NO_HANDOFF: '1' };
 
   spawnSync(process.execPath, [CLI, 'init', ws, '--host', 'none', '--apply', '--yes', '--json'], { env, encoding: 'utf8', windowsHide: true });
-  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.8.0' }, env });
+  adopt(ws, findKit('ia-slack-base'), { cli: { argv: [process.execPath, CLI], version: '3.10.0' }, env });
   const wsFile = join(ws, '.ia', 'src', 'workspace.ia');
   const wsName = /@workspace\s+([a-z0-9-]+)/.exec(readFileSync(wsFile, 'utf8'))[1];
   writeFileSync(wsFile, readFileSync(wsFile, 'utf8').replace(/systems \[([^\]]+)\]/, 'systems [$1, @system slack-system]'));

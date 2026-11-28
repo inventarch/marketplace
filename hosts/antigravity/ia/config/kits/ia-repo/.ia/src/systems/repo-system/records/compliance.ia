@@ -102,8 +102,8 @@
 
 @case repo-req-03-success
   meaning
-    says "Workspaces adopting repo-system admit @repository, @layer, @package (all seven kinds plus unclassified) and @area records alongside @spec citations under CLI 3.8.0."
-    answers "Do all four words, all seven package kinds, unclassified packages and spec citations admit under CLI 3.8.0?"
+    says "Workspaces adopting repo-system admit @repository, @layer, @package (all seven kinds plus unclassified) and @area records alongside @spec citations under CLI 3.10.0."
+    answers "Do all four words, all seven package kinds, unclassified packages and spec citations admit under CLI 3.10.0?"
   scenario
     kind success
     given "An adopting workspace declaring @repository, ranked @layer tiers, eight @package records (seven kinds plus unclassified), @area records and @spec citations."
@@ -115,12 +115,12 @@
 
 @case repo-req-03-failure
   meaning
-    says "Removing any of cite * using area, require area using area or cite area using spec from repo-system causes CLI 3.8.0 to refuse that edge with IA-LANG-EDGE-UNCONSENTED."
-    answers "Is each of area's three explicit consent rows load-bearing under CLI 3.8.0?"
+    says "Removing any of cite * using area, require area using area or cite area using spec from repo-system causes CLI 3.10.0 to refuse that edge with IA-LANG-EDGE-UNCONSENTED."
+    answers "Is each of area's three explicit consent rows load-bearing under CLI 3.10.0?"
   scenario
     kind failure
     given "Three scratch copies of repo-system, each splicing out one of the three area consent rows while keeping an authoring workspace that exercises that edge."
-    request "Pack each modified kit and validate the exercising workspace under CLI 3.8.0."
+    request "Pack each modified kit and validate the exercising workspace under CLI 3.10.0."
     expected "Every one of the three copies is refused with IA-LANG-EDGE-UNCONSENTED."
     evaluator "plugins/ia/tests/kit-repo.test.mjs :: REQ-REPO-03 failure: splicing out any of the three area consent rows refuses with IA-LANG-EDGE-UNCONSENTED"
     code IA-LANG-EDGE-UNCONSENTED
