@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "minor",
-  "title": "Bundle `ia-slack-base`, `ia-design-base` and `ia-product-base` and fix Windows `npm` checks",
-  "summary": "Carries `inventarch/ia-slack-base-kit` 0.1.0 (`slack-system`: `@slack-channel`, the five public Slack channel governance rules and offline `check-slack-channels`), `inventarch/ia-design-base-kit` 0.1.0 (`design-base-system`: `@design-token`, `@level`, `@part`, `@slot`, `@pattern` and `@recipe` and offline `check-design-patterns`) and `inventarch/ia-product-base-kit` 0.1.0 (`product-base-system`: `@prd` with `@spec`, `@decision`, `@plan`, `@docket` and `@approval` traceability and offline `check-prds`) under Apache-2.0, and resolves Windows `npm`, `npx`, `pnpm` and `yarn` check `argv` entries under `process.execPath` without a shell (#32).",
-  "plugins": [
-    "ia"
-  ]
-}

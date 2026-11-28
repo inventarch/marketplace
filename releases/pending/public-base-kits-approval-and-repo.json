@@ -1,9 +1,0 @@
-{
-  "format": "inventarch-marketplace.release-note.v1",
-  "bump": "minor",
-  "title": "Bundle the `ia-approval` and `ia-repo` public base kits",
-  "summary": "Carries `inventarch/ia-approval-kit` 0.1.0 (`approval-system`: `@approver`, `@approval-rule`, `@docket` and `@approval` with the offline Ed25519 + RFC 8785 JCS `check-seal` verifier) and `inventarch/ia-repo-kit` 0.1.0 (`repo-system`: `@repository`, `@layer`, `@package` and `@area` with the rank-independent dependency-role grammar and offline `check-layers` verifier) under Apache-2.0 alongside the three lane defaults.",
-  "plugins": [
-    "ia"
-  ]
-}
